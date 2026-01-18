@@ -357,21 +357,6 @@ const ContactPage = () => {
             </div>
           </div>
 
-          <div className="mb-12">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2876234.0429857!2d-79.38318425!3d43.65320095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4cce05b25f5113af%3A0x70f8425629621e09!2sCanada!5e0!3m2!1sfr!2sca!4v1234567890"
-                width="100%"
-                height="450"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Carte du Canada"
-              ></iframe>
-            </div>
-          </div>
-
           <div>
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Questions Fréquentes</h2>

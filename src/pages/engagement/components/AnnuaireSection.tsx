@@ -1,127 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { associationsApi } from '../../../lib/api/associations';
+import { Association } from '../../../lib/api/types';
 
 const AnnuaireSection = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProvince, setSelectedProvince] = useState('Toutes');
+  const [associations, setAssociations] = useState<Association[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const associations = [
-    {
-      id: 1,
-      nom: 'Association Yam Taaba',
-      province: 'Alberta',
-      ville: 'Calgary',
-      description: 'Association culturelle et sociale dédiée à la promotion de la culture burkinabè et au soutien des membres de la communauté.',
-      domaines: ['Culture', 'Social', 'Éducation'],
-      contact: 'contact@yamtaaba.ca',
-      telephone: '+1 (403) XXX-XXXX',
-      president: 'M. Souleymane Ouédraogo',
-      membres: '85+',
-      annee: '2015',
-      image: 'https://readdy.ai/api/search-image?query=African%20cultural%20association%20group%20photo%20with%20diverse%20members%20in%20traditional%20attire%20gathered%20in%20modern%20community%20center%2C%20warm%20welcoming%20professional%20lighting%20creating%20sense%20of%20unity%20and%20pride%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-yamtaaba-001&orientation=landscape',
-    },
-    {
-      id: 2,
-      nom: 'Burkinabè de Montréal',
-      province: 'Québec',
-      ville: 'Montréal',
-      description: 'Regroupement des Burkinabè de la région de Montréal pour favoriser l\'entraide, l\'intégration et le développement communautaire.',
-      domaines: ['Intégration', 'Entraide', 'Développement'],
-      contact: 'info@burkinabemtl.org',
-      telephone: '+1 (514) XXX-XXXX',
-      president: 'Mme. Aminata Kaboré',
-      membres: '150+',
-      annee: '2012',
-      image: 'https://readdy.ai/api/search-image?query=Montreal%20African%20community%20association%20meeting%20with%20engaged%20members%20discussing%20in%20modern%20community%20space%2C%20bright%20professional%20lighting%20creating%20collaborative%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-montreal-001&orientation=landscape',
-    },
-    {
-      id: 3,
-      nom: 'Association des Étudiants Burkinabè de Toronto',
-      province: 'Ontario',
-      ville: 'Toronto',
-      description: 'Soutien aux étudiants burkinabè dans leur parcours académique et leur intégration dans le système éducatif canadien.',
-      domaines: ['Éducation', 'Jeunesse', 'Mentorat'],
-      contact: 'aebt@outlook.com',
-      telephone: '+1 (416) XXX-XXXX',
-      president: 'M. Ibrahim Sawadogo',
-      membres: '120+',
-      annee: '2018',
-      image: 'https://readdy.ai/api/search-image?query=African%20student%20association%20group%20studying%20together%20in%20university%20library%20with%20diverse%20young%20students%20collaborating%20with%20books%20and%20laptops%2C%20bright%20academic%20lighting%20creating%20studious%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-etudiants-001&orientation=landscape',
-    },
-    {
-      id: 4,
-      nom: 'Femmes Burkinabè du Canada',
-      province: 'Ontario',
-      ville: 'Ottawa',
-      description: 'Association dédiée à l\'autonomisation des femmes burkinabè à travers l\'entrepreneuriat, l\'éducation et le soutien mutuel.',
-      domaines: ['Femmes', 'Entrepreneuriat', 'Autonomisation'],
-      contact: 'femmesburkinabe@gmail.com',
-      telephone: '+1 (613) XXX-XXXX',
-      president: 'Mme. Mariam Compaoré',
-      membres: '95+',
-      annee: '2016',
-      image: 'https://readdy.ai/api/search-image?query=African%20women%20empowerment%20association%20meeting%20with%20confident%20women%20entrepreneurs%20in%20modern%20business%20center%2C%20warm%20professional%20lighting%20creating%20empowering%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-femmes-001&orientation=landscape',
-    },
-    {
-      id: 5,
-      nom: 'Jeunesse Burkinabè de Vancouver',
-      province: 'Colombie-Britannique',
-      ville: 'Vancouver',
-      description: 'Mobilisation de la jeunesse burkinabè pour des activités sportives, culturelles et de développement personnel.',
-      domaines: ['Jeunesse', 'Sport', 'Culture'],
-      contact: 'jbvancouver@yahoo.ca',
-      telephone: '+1 (604) XXX-XXXX',
-      president: 'M. Abdoul Aziz Diallo',
-      membres: '70+',
-      annee: '2019',
-      image: 'https://readdy.ai/api/search-image?query=Young%20African%20community%20group%20engaged%20in%20sports%20and%20cultural%20activities%20in%20outdoor%20Vancouver%20setting%2C%20bright%20energetic%20lighting%20creating%20youthful%20vibrant%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-jeunesse-001&orientation=landscape',
-    },
-    {
-      id: 6,
-      nom: 'Association Solidarité Burkina',
-      province: 'Québec',
-      ville: 'Québec',
-      description: 'Collecte de fonds et organisation de projets de développement au Burkina Faso dans les domaines de l\'éducation et de la santé.',
-      domaines: ['Développement', 'Santé', 'Éducation'],
-      contact: 'solidariteburkina@hotmail.com',
-      telephone: '+1 (418) XXX-XXXX',
-      president: 'M. Boureima Zongo',
-      membres: '60+',
-      annee: '2014',
-      image: 'https://readdy.ai/api/search-image?query=Solidarity%20association%20organizing%20development%20projects%20with%20volunteers%20packing%20supplies%20in%20community%20center%2C%20warm%20compassionate%20lighting%20creating%20humanitarian%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-solidarite-001&orientation=landscape',
-    },
-    {
-      id: 7,
-      nom: 'Entrepreneurs Burkinabè du Canada',
-      province: 'Ontario',
-      ville: 'Toronto',
-      description: 'Réseau d\'entrepreneurs burkinabè pour le partage d\'expériences, le mentorat et le développement des affaires.',
-      domaines: ['Entrepreneuriat', 'Business', 'Réseautage'],
-      contact: 'ebc@entrepreneursburkina.ca',
-      telephone: '+1 (647) XXX-XXXX',
-      president: 'M. Moussa Traoré',
-      membres: '45+',
-      annee: '2020',
-      image: 'https://readdy.ai/api/search-image?query=African%20business%20entrepreneurs%20networking%20at%20professional%20event%20in%20modern%20business%20venue%2C%20professional%20lighting%20creating%20dynamic%20business%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-entrepreneurs-001&orientation=landscape',
-    },
-    {
-      id: 8,
-      nom: 'Association Culturelle Mossi',
-      province: 'Manitoba',
-      ville: 'Winnipeg',
-      description: 'Préservation et promotion de la culture Mossi à travers des événements culturels, des cours de langue et des célébrations traditionnelles.',
-      domaines: ['Culture', 'Langue', 'Traditions'],
-      contact: 'culturemossi@gmail.com',
-      telephone: '+1 (204) XXX-XXXX',
-      president: 'Mme. Rasmata Ouattara',
-      membres: '55+',
-      annee: '2017',
-      image: 'https://readdy.ai/api/search-image?query=Traditional%20African%20cultural%20association%20with%20members%20in%20traditional%20Mossi%20attire%20in%20cultural%20center%2C%20warm%20cultural%20lighting%20creating%20heritage%20atmosphere%2C%20simple%20clean%20background&width=600&height=400&seq=assoc-mossi-001&orientation=landscape',
-    },
-  ];
+  useEffect(() => {
+    loadAssociations();
+  }, []);
 
-  const provinces = ['Toutes', 'Ontario', 'Québec', 'Alberta', 'Colombie-Britannique', 'Manitoba'];
+  const loadAssociations = async () => {
+    try {
+      setIsLoading(true);
+      const response = await associationsApi.getAssociations();
+      if (response.success && response.data) {
+        setAssociations(response.data);
+      } else {
+        setError('Failed to load associations');
+      }
+    } catch (error) {
+      console.error('Error loading associations:', error);
+      setError('Error loading associations');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const filteredAssociations = associations.filter(assoc => {
+  // Convert backend Association to display format
+  const formatAssociationForDisplay = (association: Association) => ({
+    id: association.id,
+    nom: association.name,
+    province: association.province,
+    ville: association.city,
+    description: association.description || 'Description à venir',
+    domaines: association.domains,
+    contact: association.contact || 'Contact à confirmer',
+    telephone: association.phone || 'Téléphone à confirmer',
+    president: association.president || 'Président à confirmer',
+    membres: association.memberCount || 'Membres à confirmer',
+    annee: association.foundedYear?.toString() || 'Année à confirmer',
+    image: association.imageUrl || 'https://readdy.ai/api/search-image?query=Professional%20association%20community%20gathering&width=600&height=400&seq=assoc-default&orientation=landscape',
+  });
+
+  const displayAssociations = associations.map(formatAssociationForDisplay);
+
+  // Generate provinces dynamically from actual associations
+  const getUniqueProvinces = () => {
+    const provinces = new Set<string>();
+    associations.forEach(association => provinces.add(association.province));
+    return ['Toutes', ...Array.from(provinces).sort()];
+  };
+
+  const provinces = getUniqueProvinces();
+
+  const filteredAssociations = displayAssociations.filter(assoc => {
     const matchesSearch = assoc.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          assoc.ville.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          assoc.domaines.some(d => d.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -167,6 +103,33 @@ const AnnuaireSection = () => {
           </div>
         </div>
 
+        {isLoading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center py-12">
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg inline-block">
+              {error}
+            </div>
+          </div>
+        )}
+
+        {!isLoading && !error && filteredAssociations.length === 0 && (
+          <div className="text-center py-12">
+            <span className="text-4xl">🏢</span>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">Aucune association trouvée</h3>
+            <p className="mt-2 text-gray-500">
+              {selectedProvince === 'Toutes' 
+                ? "Aucune association n'est actuellement répertoriée." 
+                : `Aucune association pour la province sélectionnée.`}
+            </p>
+          </div>
+        )}
+
+        {!isLoading && !error && filteredAssociations.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredAssociations.map((assoc) => (
             <div
@@ -239,14 +202,9 @@ const AnnuaireSection = () => {
             </div>
           ))}
         </div>
-
-        {filteredAssociations.length === 0 && (
-          <div className="text-center py-16">
-            <i className="ri-search-line text-6xl text-gray-300 mb-4"></i>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Aucune association trouvée</h3>
-            <p className="text-gray-600">Essayez de modifier vos critères de recherche</p>
-          </div>
         )}
+
+        {/* Remove the old empty state since we have a new one with loading/error handling */}
       </div>
     </section>
   );

@@ -1,5 +1,7 @@
 import { RouteObject } from 'react-router-dom';
 import { lazy } from 'react';
+import { ProtectedRoute } from '../components/ProtectedRoute';
+import { AdminLayout } from '../components/admin/Layout';
 
 const HomePage = lazy(() => import('../pages/home/page'));
 const ServicesPage = lazy(() => import('../pages/services/page'));
@@ -8,6 +10,55 @@ const EngagementPage = lazy(() => import('../pages/engagement/page'));
 const EspaceMembrePage = lazy(() => import('../pages/espace-membre/page'));
 const ContactPage = lazy(() => import('../pages/contact/page'));
 const NotFound = lazy(() => import('../pages/NotFound'));
+
+// Engagement sub-pages
+const AnnuairePage = lazy(() => import('../pages/engagement/annuaire/page'));
+const ProjetsPage = lazy(() => import('../pages/engagement/projets/page'));
+const ConsultationsPage = lazy(() => import('../pages/engagement/consultations/page'));
+const ProjectDetailPage = lazy(() => import('../pages/projet/page'));
+
+// Services sub-pages
+const DocumentsOfficielsPage = lazy(() => import('../pages/services/documents-officiels/page'));
+const ComitesPage = lazy(() => import('../pages/services/comites/page'));
+const BoursesPage = lazy(() => import('../pages/services/bourses/page'));
+
+// Actualités sub-pages
+const EvenementsPage = lazy(() => import('../pages/actualites/evenements/page'));
+const EventDetailPage = lazy(() => import('../pages/actualites/evenements/[id]/page'));
+const AnnoncesPage = lazy(() => import('../pages/actualites/annonces/page'));
+const SouvenirsPage = lazy(() => import('../pages/actualites/souvenirs/page'));
+
+// Admin Pages
+const AdminLoginPage = lazy(() => import('../pages/admin/login/page').then(module => ({ default: module.AdminLoginPage })));
+const AdminDashboard = lazy(() => import('../pages/admin/dashboard/page').then(module => ({ default: module.AdminDashboard })));
+const AdminEventsList = lazy(() => import('../pages/admin/events/page').then(module => ({ default: module.AdminEventsList })));
+const CreateEventPage = lazy(() => import('../pages/admin/events/create/page').then(module => ({ default: module.CreateEventPage })));
+const EditEventPage = lazy(() => import('../pages/admin/events/edit/page').then(module => ({ default: module.EditEventPage })));
+const ViewEventPage = lazy(() => import('../pages/admin/events/view/page').then(module => ({ default: module.ViewEventPage })));
+
+// Admin Association Pages
+const AdminAssociationsList = lazy(() => import('../pages/admin/associations/page').then(module => ({ default: module.AdminAssociationsList })));
+const CreateAssociationPage = lazy(() => import('../pages/admin/associations/create/page').then(module => ({ default: module.CreateAssociationPage })));
+const EditAssociationPage = lazy(() => import('../pages/admin/associations/edit/page').then(module => ({ default: module.EditAssociationPage })));
+const ViewAssociationPage = lazy(() => import('../pages/admin/associations/view/page').then(module => ({ default: module.ViewAssociationPage })));
+
+// Admin Project Pages
+const AdminProjectsList = lazy(() => import('../pages/admin/projects/page').then(module => ({ default: module.default })));
+const CreateProjectPage = lazy(() => import('../pages/admin/projects/create/page').then(module => ({ default: module.default })));
+const EditProjectPage = lazy(() => import('../pages/admin/projects/edit/page').then(module => ({ default: module.default })));
+const ViewProjectPage = lazy(() => import('../pages/admin/projects/view/page').then(module => ({ default: module.default })));
+
+// Admin Team Members Pages
+const AdminTeamMembersList = lazy(() => import('../pages/admin/team-members/page').then(module => ({ default: module.default })));
+const CreateTeamMemberPage = lazy(() => import('../pages/admin/team-members/create/page').then(module => ({ default: module.default })));
+const ViewTeamMemberPage = lazy(() => import('../pages/admin/team-members/[id]/page').then(module => ({ default: module.default })));
+const EditTeamMemberPage = lazy(() => import('../pages/admin/team-members/[id]/edit/page').then(module => ({ default: module.default })));
+
+// Admin Documents Pages
+const AdminDocumentsList = lazy(() => import('../pages/admin/documents/page').then(module => ({ default: module.default })));
+const CreateDocumentPage = lazy(() => import('../pages/admin/documents/create/page').then(module => ({ default: module.default })));
+const ViewDocumentPage = lazy(() => import('../pages/admin/documents/view/page').then(module => ({ default: module.default })));
+const EditDocumentPage = lazy(() => import('../pages/admin/documents/edit/page').then(module => ({ default: module.default })));
 
 const routes: RouteObject[] = [
   {
@@ -19,12 +70,56 @@ const routes: RouteObject[] = [
     element: <ServicesPage />,
   },
   {
+    path: '/services/documents-officiels',
+    element: <DocumentsOfficielsPage />,
+  },
+  {
+    path: '/services/comites',
+    element: <ComitesPage />,
+  },
+  {
+    path: '/services/bourses',
+    element: <BoursesPage />,
+  },
+  {
     path: '/actualites',
     element: <ActualitesPage />,
   },
   {
+    path: '/actualites/evenements',
+    element: <EvenementsPage />,
+  },
+  {
+    path: '/actualites/evenements/:id',
+    element: <EventDetailPage />,
+  },
+  {
+    path: '/actualites/annonces',
+    element: <AnnoncesPage />,
+  },
+  {
+    path: '/actualites/souvenirs',
+    element: <SouvenirsPage />,
+  },
+  {
     path: '/engagement',
     element: <EngagementPage />,
+  },
+  {
+    path: '/engagement/annuaire',
+    element: <AnnuairePage />,
+  },
+  {
+    path: '/engagement/projets',
+    element: <ProjetsPage />,
+  },
+  {
+    path: '/engagement/consultations',
+    element: <ConsultationsPage />,
+  },
+  {
+    path: '/projet/:id',
+    element: <ProjectDetailPage />,
   },
   {
     path: '/espace-membre',
@@ -33,6 +128,104 @@ const routes: RouteObject[] = [
   {
     path: '/contact',
     element: <ContactPage />,
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLoginPage />,
+  },
+  {
+    path: '/admin',
+    element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+    children: [
+      {
+        index: true,
+        element: <AdminDashboard />,
+      },
+      {
+        path: 'dashboard',
+        element: <AdminDashboard />,
+      },
+      {
+        path: 'events',
+        element: <AdminEventsList />,
+      },
+      {
+        path: 'events/create',
+        element: <CreateEventPage />,
+      },
+      {
+        path: 'events/:id',
+        element: <ViewEventPage />,
+      },
+      {
+        path: 'events/:id/edit',
+        element: <EditEventPage />,
+      },
+      {
+        path: 'associations',
+        element: <AdminAssociationsList />,
+      },
+      {
+        path: 'associations/create',
+        element: <CreateAssociationPage />,
+      },
+      {
+        path: 'associations/:id',
+        element: <ViewAssociationPage />,
+      },
+      {
+        path: 'associations/:id/edit',
+        element: <EditAssociationPage />,
+      },
+      {
+        path: 'projects',
+        element: <AdminProjectsList />,
+      },
+      {
+        path: 'projects/create',
+        element: <CreateProjectPage />,
+      },
+      {
+        path: 'projects/:id',
+        element: <ViewProjectPage />,
+      },
+      {
+        path: 'projects/:id/edit',
+        element: <EditProjectPage />,
+      },
+      {
+        path: 'team-members',
+        element: <AdminTeamMembersList />,
+      },
+      {
+        path: 'team-members/create',
+        element: <CreateTeamMemberPage />,
+      },
+      {
+        path: 'team-members/:id',
+        element: <ViewTeamMemberPage />,
+      },
+      {
+        path: 'team-members/:id/edit',
+        element: <EditTeamMemberPage />,
+      },
+      {
+        path: 'documents',
+        element: <AdminDocumentsList />,
+      },
+      {
+        path: 'documents/create',
+        element: <CreateDocumentPage />,
+      },
+      {
+        path: 'documents/:id',
+        element: <ViewDocumentPage />,
+      },
+      {
+        path: 'documents/:id/edit',
+        element: <EditDocumentPage />,
+      },
+    ],
   },
   {
     path: '*',
