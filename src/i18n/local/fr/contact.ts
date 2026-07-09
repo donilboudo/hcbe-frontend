@@ -49,7 +49,7 @@ export default {
   'public.contact.faq.subtitle': 'Trouvez rapidement des réponses à vos questions',
   'public.contact.faq.items.membership.q': 'Comment devenir membre du HCBE Canada ?',
   'public.contact.faq.items.membership.a':
-    "Pour devenir membre, vous devez remplir le formulaire d'inscription disponible dans l'Espace Membre. Votre demande sera examinée par notre comité et vous recevrez une réponse dans un délai de 2 semaines.",
+    "Pour devenir membre, remplissez le formulaire de demande d'adhésion sur la page Devenir membre. Votre candidature sera examinée par notre comité et vous recevrez une réponse dans un délai de 2 semaines.",
   'public.contact.faq.items.fees.q': "Quels sont les frais d'adhésion ?",
   'public.contact.faq.items.fees.a':
     "L'adhésion au HCBE Canada est gratuite. Nous croyons en l'accessibilité de nos services à tous les membres de la diaspora burkinabè au Canada.",

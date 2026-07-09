@@ -49,7 +49,7 @@ export default {
   'public.contact.faq.subtitle': 'Quickly find answers to your questions',
   'public.contact.faq.items.membership.q': 'How do I become a member of HCBE Canada?',
   'public.contact.faq.items.membership.a':
-    'To become a member, fill out the registration form in the Member Area. Your application will be reviewed by our committee and you should receive a response within two weeks.',
+    'To become a member, fill out the membership application form on the Become a member page. Your application will be reviewed by our committee and you should receive a response within two weeks.',
   'public.contact.faq.items.fees.q': 'What are the membership fees?',
   'public.contact.faq.items.fees.a':
     'Membership in HCBE Canada is free. We believe our services should be accessible to all members of the Burkinabè diaspora in Canada.',

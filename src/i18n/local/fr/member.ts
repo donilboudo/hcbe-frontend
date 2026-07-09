@@ -1,8 +1,8 @@
 export default {
   'public.member.hero.badge': 'Communauté HCBE',
-  'public.member.hero.title': "Rejoignez l'espace membre.",
+  'public.member.hero.title': 'Devenez membre du HCBE Canada.',
   'public.member.hero.subtitle':
-    "Soumettez votre demande d'adhésion et accédez aux services, événements et ressources réservés aux membres du HCBE Canada.",
+    "Soumettez votre demande d'adhésion. Une fois approuvée, vous pourrez profiter des services, événements et ressources réservés aux membres.",
   'public.member.hero.card.label': 'Adhésion',
   'public.member.hero.card.title': "L'adhésion est gratuite et ouverte à la diaspora burkinabè au Canada.",
   'public.member.hero.card.description':

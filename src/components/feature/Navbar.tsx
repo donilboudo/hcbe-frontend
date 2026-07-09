@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PublicLanguageSwitcher from './PublicLanguageSwitcher';
+import { HcbeLogoMark } from '../brand/HcbeLogo';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -82,15 +83,13 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-600 via-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">HCBE</span>
-            </div>
-            <div className="hidden md:block">
-              <div className={`font-bold text-lg ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
+          <Link to="/" className="flex items-center gap-3">
+            <HcbeLogoMark size="md" />
+            <div className="hidden md:block min-w-0">
+              <div className={`font-bold text-lg leading-tight ${isScrolled ? 'text-gray-900' : 'text-white'}`}>
                 HCBE Canada
               </div>
-              <div className={`text-xs ${isScrolled ? 'text-gray-600' : 'text-white/90'}`}>
+              <div className={`text-xs leading-snug max-w-[11rem] ${isScrolled ? 'text-gray-600' : 'text-white/85'}`}>
                 {t('public.nav.brandSubtitle')}
               </div>
             </div>

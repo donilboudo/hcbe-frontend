@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../contexts/AuthContext';
 import { LanguageSwitcher } from '../../../components/admin/LanguageSwitcher';
+import { HcbeLogoMark } from '../../../components/brand/HcbeLogo';
 
 const fieldClassName =
   'w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-transparent focus:ring-2 focus:ring-emerald-600';
@@ -110,9 +111,7 @@ export const AdminLoginPage = () => {
 
           <div className="rounded-[2rem] border border-gray-200 bg-white p-7 shadow-sm sm:p-8">
             <div className="mb-8">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-                <i className="ri-shield-keyhole-line text-2xl" aria-hidden="true"></i>
-              </div>
+              <HcbeLogoMark size="lg" className="mb-4" />
               <h2 className="text-2xl font-bold text-gray-950">{t('admin.login.signIn')}</h2>
               <p className="mt-2 text-sm text-gray-600">{t('admin.login.formHint')}</p>
             </div>

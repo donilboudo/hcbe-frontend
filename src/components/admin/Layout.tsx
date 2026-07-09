@@ -2,6 +2,8 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { HcbeLogoMark } from '../brand/HcbeLogo';
+import { features } from '../../config/features';
 
 interface SubItem {
   nameKey: string;
@@ -63,7 +65,9 @@ export const AdminLayout = () => {
         { nameKey: 'admin.nav.membershipApplications', href: '/admin/membership-applications', icon: 'ri-user-add-line' },
       ],
     },
-    { nameKey: 'admin.nav.teamMembers', href: '/admin/team-members', icon: 'ri-team-line' },
+    ...(features.adminTeamMembersEnabled
+      ? [{ nameKey: 'admin.nav.teamMembers', href: '/admin/team-members', icon: 'ri-team-line' }]
+      : []),
     { nameKey: 'admin.nav.documents', href: '/admin/documents', icon: 'ri-file-text-line' },
     { nameKey: 'admin.nav.users', href: '/admin/users', icon: 'ri-shield-user-line' },
   ];
@@ -87,11 +91,14 @@ export const AdminLayout = () => {
     <div className="min-h-screen bg-gray-50 text-gray-950">
       <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-hidden bg-emerald-950 text-white">
         <div className="border-b border-white/10 px-5 py-5">
-          <Link to="/admin/dashboard" className="block">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100/80">
-              HCBE
-            </p>
-            <h1 className="mt-1 text-lg font-bold">{t('admin.layout.title')}</h1>
+          <Link to="/admin/dashboard" className="flex items-center gap-3">
+            <HcbeLogoMark size="sm" />
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100/80">
+                HCBE Canada
+              </p>
+              <h1 className="mt-0.5 text-lg font-bold">{t('admin.layout.title')}</h1>
+            </div>
           </Link>
         </div>
 

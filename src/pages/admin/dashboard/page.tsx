@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { eventsApi } from '../../../lib/api/events';
 import type { Event } from '../../../lib/api/types';
 import { translateEventStatus } from '../../../lib/i18n/adminStatus';
+import { features } from '../../../config/features';
 
 const statusBadgeClass = (status: string) => {
   if (status === 'Active' || status === 'À venir') {
@@ -95,12 +96,16 @@ export const AdminDashboard = () => {
       icon: 'ri-hammer-line',
       accent: 'bg-violet-50 text-violet-700',
     },
-    {
-      label: t('admin.nav.teamMembers'),
-      href: '/admin/team-members',
-      icon: 'ri-team-line',
-      accent: 'bg-cyan-50 text-cyan-700',
-    },
+    ...(features.adminTeamMembersEnabled
+      ? [
+          {
+            label: t('admin.nav.teamMembers'),
+            href: '/admin/team-members',
+            icon: 'ri-team-line',
+            accent: 'bg-cyan-50 text-cyan-700',
+          },
+        ]
+      : []),
     {
       label: t('admin.nav.documents'),
       href: '/admin/documents',
