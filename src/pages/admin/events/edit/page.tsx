@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { eventsApi } from '../../../../lib/api/events';
-import { UpdateEventRequest, Event } from '../../../../lib/api/types';
+import type { UpdateEventRequest, Event } from '../../../../lib/api/types';
 import { EventForm } from '../../../../components/forms/EventForm';
 
 export const EditEventPage: React.FC = () => {

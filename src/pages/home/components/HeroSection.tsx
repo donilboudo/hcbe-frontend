@@ -1,89 +1,95 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const HeroSection = () => {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      step: '1',
+      titleKey: 'public.home.hero.steps.1.title',
+      textKey: 'public.home.hero.steps.1.text',
+    },
+    {
+      step: '2',
+      titleKey: 'public.home.hero.steps.2.title',
+      textKey: 'public.home.hero.steps.2.text',
+    },
+    {
+      step: '3',
+      titleKey: 'public.home.hero.steps.3.title',
+      textKey: 'public.home.hero.steps.3.text',
+    },
+  ];
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `url('https://readdy.ai/api/search-image?query=Modern%20abstract%20geometric%20pattern%20with%20green%20yellow%20and%20red%20colors%20representing%20African%20unity%20and%20diaspora%20connection%2C%20minimalist%20design%20with%20flowing%20shapes%20and%20cultural%20symbols%2C%20warm%20lighting%20creating%20sense%20of%20community%20and%20belonging%2C%20professional%20photography%20style%20with%20soft%20gradients%20and%20harmonious%20color%20palette&width=1920&height=1080&seq=hero-hcbe-001&orientation=landscape')`,
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/50"></div>
-      </div>
+    <section className="relative isolate min-h-screen overflow-hidden bg-emerald-950 pt-28 text-white">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_15%,rgba(252,209,22,0.18),transparent_28%),radial-gradient(circle_at_88%_20%,rgba(239,43,45,0.12),transparent_28%),linear-gradient(135deg,#022c22_0%,#064e3b_46%,#0f172a_100%)]" />
+      <div className="absolute inset-x-0 bottom-0 -z-10 h-44 bg-gradient-to-t from-white to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
-        <div className="mb-6 flex justify-center">
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
-            <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-            <span className="text-white text-sm font-medium">Bienvenue sur le portail officiel du HCBE Canada</span>
-          </div>
-        </div>
-
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-          Haut Conseil des Burkinabè
-          <br />
-          <span className="bg-gradient-to-r from-emerald-300 via-amber-300 to-orange-300 bg-clip-text text-transparent">
-            de l'Extérieur au Canada
-          </span>
-        </h1>
-
-        <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-          Ensemble, mobilisons la diaspora burkinabè pour le développement et la prospérité de notre pays d'origine
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <Link
-            to="/espace-membre"
-            className="px-8 py-4 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl whitespace-nowrap"
-          >
-            <i className="ri-user-add-line mr-2"></i>
-            Devenir Membre
-          </Link>
-          <Link
-            to="/services"
-            className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-lg font-semibold hover:bg-white/20 transition-all border border-white/20 whitespace-nowrap"
-          >
-            <i className="ri-service-line mr-2"></i>
-            Découvrir nos Services
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-            <div className="w-14 h-14 bg-emerald-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <i className="ri-team-line text-3xl text-emerald-300"></i>
+      <div className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl flex-col justify-center px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
+          <div>
+            <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-emerald-50 backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-amber-300" />
+              {t('public.home.hero.badge')}
             </div>
-            <h3 className="text-white font-bold text-lg mb-2">Communauté Unie</h3>
-            <p className="text-white/80 text-sm">
-              Rassembler et mobiliser la diaspora burkinabè à travers le Canada
+
+            <h1 className="max-w-4xl text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
+              {t('public.home.hero.title')}
+            </h1>
+
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90 sm:text-xl">
+              {t('public.home.hero.subtitle')}
             </p>
+
+            <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+              <Link
+                to="/services"
+                className="inline-flex items-center justify-center rounded-full bg-white px-7 py-4 font-semibold text-emerald-950 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-emerald-50"
+              >
+                {t('public.home.hero.cta.services')}
+                <i className="ri-arrow-right-line ml-2 text-lg" aria-hidden="true"></i>
+              </Link>
+              <Link
+                to="/espace-membre"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-7 py-4 font-semibold text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
+              >
+                {t('public.home.hero.cta.member')}
+              </Link>
+            </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-            <div className="w-14 h-14 bg-amber-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <i className="ri-hand-heart-line text-3xl text-amber-300"></i>
-            </div>
-            <h3 className="text-white font-bold text-lg mb-2">Services d'Accompagnement</h3>
-            <p className="text-white/80 text-sm">
-              Soutien juridique, professionnel, social et financier pour tous les membres
-            </p>
-          </div>
+          <aside className="rounded-[2rem] border border-white/15 bg-white/[0.08] p-5 shadow-2xl shadow-black/20 backdrop-blur-xl">
+            <div className="rounded-[1.5rem] bg-white p-6 text-gray-950">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-5">
+                <div>
+                  <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                    {t('public.home.hero.card.label')}
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold">{t('public.home.hero.card.title')}</h2>
+                </div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-2xl text-emerald-700">
+                  <i className="ri-compass-3-line" aria-hidden="true"></i>
+                </div>
+              </div>
 
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-            <div className="w-14 h-14 bg-orange-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <i className="ri-earth-line text-3xl text-orange-300"></i>
+              <div className="mt-6 space-y-4">
+                {steps.map((item) => (
+                  <div key={item.step} className="flex gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-700 text-sm font-bold text-white">
+                      {item.step}
+                    </span>
+                    <div>
+                      <h3 className="font-semibold text-gray-950">{t(item.titleKey)}</h3>
+                      <p className="mt-1 text-sm leading-6 text-gray-600">{t(item.textKey)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <h3 className="text-white font-bold text-lg mb-2">Développement du Burkina</h3>
-            <p className="text-white/80 text-sm">
-              Contribuer activement au développement économique et social du pays
-            </p>
-          </div>
+          </aside>
         </div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <i className="ri-arrow-down-line text-white text-3xl"></i>
       </div>
     </section>
   );

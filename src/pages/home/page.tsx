@@ -3,21 +3,15 @@ import Footer from '../../components/feature/Footer';
 import HeroSection from './components/HeroSection';
 import ZonesSection from './components/ZonesSection';
 import MissionVisionSection from './components/MissionVisionSection';
-import HistoireSection from './components/HistoireSection';
-import EquipeSection from './components/EquipeSection';
-import DocumentsSection from './components/DocumentsSection';
 import CTASection from './components/CTASection';
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-950">
       <Navbar />
       <HeroSection />
-      <ZonesSection />
       <MissionVisionSection />
-      <HistoireSection />
-      <EquipeSection />
-      <DocumentsSection />
+      <ZonesSection />
       <CTASection />
       <Footer />
     </div>

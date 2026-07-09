@@ -31,6 +31,29 @@ export interface RegisterRequest {
   lastName?: string;
 }
 
+export interface AdminUser {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  isAdmin: boolean;
+  createdAt: string;
+}
+
+export interface CreateAdminUserRequest {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface UpdateAdminUserRequest {
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+  isAdmin?: boolean;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -217,4 +240,197 @@ export interface UpdateTeamMemberRequest {
   email?: string;
   isActive?: boolean;
   order?: number;
+}
+
+// Diaspora Members
+export interface MemberDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  province?: string;
+  profession?: string;
+  expertise?: string;
+  interests?: string;
+  availability?: string;
+  zone?: string;
+  isAdmin: boolean;
+  createdAt: string;
+}
+
+export interface CreateMemberRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  province?: string;
+  profession?: string;
+  expertise?: string;
+  interests?: string;
+  availability?: string;
+  zone?: string;
+}
+
+export interface UpdateMemberRequest {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+  province?: string;
+  profession?: string;
+  expertise?: string;
+  interests?: string;
+  availability?: string;
+  zone?: string;
+  isAdmin?: boolean;
+}
+
+// Membership Applications
+export type MembershipApplicationStatus = 'Pending' | 'Approved' | 'Rejected';
+
+export interface MembershipApplicationDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  province?: string;
+  profession?: string;
+  expertise?: string;
+  motivation?: string;
+  status: MembershipApplicationStatus;
+  memberId?: string;
+  createdAt: string;
+  reviewedAt?: string;
+}
+
+export interface CreateMembershipApplicationRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  city?: string;
+  province?: string;
+  profession?: string;
+  expertise?: string;
+  motivation?: string;
+}
+
+// Grant Programs
+export interface GrantProgram {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  amount: string;
+  duration: string;
+  eligibilityCriteria: string[];
+  applicationUrl?: string;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateGrantProgramRequest {
+  title: string;
+  description: string;
+  icon: string;
+  amount: string;
+  duration: string;
+  eligibilityCriteria: string[];
+  applicationUrl?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateGrantProgramRequest {
+  title?: string;
+  description?: string;
+  icon?: string;
+  amount?: string;
+  duration?: string;
+  eligibilityCriteria?: string[];
+  applicationUrl?: string;
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+// Consultations
+export interface Consultation {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  layoutType: 'featured' | 'card';
+  actionUrl?: string;
+  actionLabel?: string;
+  secondaryActionUrl?: string;
+  secondaryActionLabel?: string;
+  accentColor: 'emerald' | 'amber';
+  displayOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateConsultationRequest {
+  title: string;
+  description: string;
+  icon: string;
+  layoutType: 'featured' | 'card';
+  actionUrl?: string;
+  actionLabel?: string;
+  secondaryActionUrl?: string;
+  secondaryActionLabel?: string;
+  accentColor?: 'emerald' | 'amber';
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+export interface UpdateConsultationRequest {
+  title?: string;
+  description?: string;
+  icon?: string;
+  layoutType?: 'featured' | 'card';
+  actionUrl?: string;
+  actionLabel?: string;
+  secondaryActionUrl?: string;
+  secondaryActionLabel?: string;
+  accentColor?: 'emerald' | 'amber';
+  displayOrder?: number;
+  isActive?: boolean;
+}
+
+// News / Annonces
+export interface NewsArticle {
+  id: string;
+  title: string;
+  content: string;
+  excerpt?: string;
+  imageUrl?: string;
+  author?: string;
+  category?: string;
+  publishedDate?: string;
+  isPinned: boolean;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateNewsRequest {
+  title: string;
+  content: string;
+  excerpt?: string;
+  imageUrl?: string;
+  author?: string;
+  category?: string;
+  publishedDate?: string;
+  isPinned?: boolean;
+  status: string;
 }

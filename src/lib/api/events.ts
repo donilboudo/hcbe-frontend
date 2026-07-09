@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { Event, CreateEventRequest, UpdateEventRequest, ApiResponse } from './types';
+import type { Event, CreateEventRequest, UpdateEventRequest, ApiResponse } from './types';
 
 export const eventsApi = {
   async getEvents(): Promise<ApiResponse<Event[]>> {

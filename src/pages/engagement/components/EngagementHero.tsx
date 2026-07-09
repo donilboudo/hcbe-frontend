@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next';
+
 const EngagementHero = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
       <div
@@ -13,13 +17,13 @@ const EngagementHero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
           <i className="ri-community-line text-white"></i>
-          <span className="text-white font-semibold text-sm">Engagement Communautaire</span>
+          <span className="text-white font-semibold text-sm">{t('public.engagement.hero.badge')}</span>
         </div>
         <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-          Ensemble, Construisons l'Avenir
+          {t('public.engagement.hero.title')}
         </h1>
         <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-          Votre engagement fait la différence. Rejoignez-nous pour renforcer notre communauté et contribuer au développement du Burkina Faso
+          {t('public.engagement.hero.subtitle')}
         </p>
       </div>
     </section>

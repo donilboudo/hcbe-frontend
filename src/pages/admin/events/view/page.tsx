@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { eventsApi } from '../../../../lib/api/events';
-import { Event } from '../../../../lib/api/types';
+import type { Event } from '../../../../lib/api/types';
 
 export const ViewEventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

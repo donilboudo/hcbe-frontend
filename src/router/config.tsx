@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 import { lazy } from 'react';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { AdminLayout } from '../components/admin/Layout';
@@ -53,6 +53,39 @@ const AdminTeamMembersList = lazy(() => import('../pages/admin/team-members/page
 const CreateTeamMemberPage = lazy(() => import('../pages/admin/team-members/create/page').then(module => ({ default: module.default })));
 const ViewTeamMemberPage = lazy(() => import('../pages/admin/team-members/[id]/page').then(module => ({ default: module.default })));
 const EditTeamMemberPage = lazy(() => import('../pages/admin/team-members/[id]/edit/page').then(module => ({ default: module.default })));
+
+// Admin Members Pages
+const AdminMembersList = lazy(() => import('../pages/admin/members/page').then(module => ({ default: module.default })));
+const CreateMemberPage = lazy(() => import('../pages/admin/members/create/page').then(module => ({ default: module.default })));
+const ViewMemberPage = lazy(() => import('../pages/admin/members/[id]/page').then(module => ({ default: module.default })));
+const EditMemberPage = lazy(() => import('../pages/admin/members/[id]/edit/page').then(module => ({ default: module.default })));
+
+// Admin Membership Applications Pages
+const AdminMembershipApplicationsList = lazy(() => import('../pages/admin/membership-applications/page').then(module => ({ default: module.default })));
+const ViewMembershipApplicationPage = lazy(() => import('../pages/admin/membership-applications/[id]/page').then(module => ({ default: module.default })));
+
+// Admin Grants Pages
+const AdminGrantsList = lazy(() => import('../pages/admin/grants/page').then(module => ({ default: module.default })));
+const CreateGrantPage = lazy(() => import('../pages/admin/grants/create/page').then(module => ({ default: module.default })));
+const ViewGrantPage = lazy(() => import('../pages/admin/grants/[id]/page').then(module => ({ default: module.default })));
+const EditGrantPage = lazy(() => import('../pages/admin/grants/[id]/edit/page').then(module => ({ default: module.default })));
+
+// Admin Users Pages
+const AdminUsersList = lazy(() => import('../pages/admin/users/page').then(module => ({ default: module.default })));
+const CreateAdminUserPage = lazy(() => import('../pages/admin/users/create/page').then(module => ({ default: module.default })));
+const EditAdminUserPage = lazy(() => import('../pages/admin/users/[id]/edit/page').then(module => ({ default: module.default })));
+
+// Admin Consultations Pages
+const AdminConsultationsList = lazy(() => import('../pages/admin/consultations/page').then(module => ({ default: module.default })));
+const CreateConsultationPage = lazy(() => import('../pages/admin/consultations/create/page').then(module => ({ default: module.default })));
+const ViewConsultationPage = lazy(() => import('../pages/admin/consultations/[id]/page').then(module => ({ default: module.default })));
+const EditConsultationPage = lazy(() => import('../pages/admin/consultations/[id]/edit/page').then(module => ({ default: module.default })));
+
+// Admin News Pages
+const AdminNewsList = lazy(() => import('../pages/admin/news/page').then(module => ({ default: module.default })));
+const CreateNewsPage = lazy(() => import('../pages/admin/news/create/page').then(module => ({ default: module.default })));
+const ViewNewsPage = lazy(() => import('../pages/admin/news/[id]/page').then(module => ({ default: module.default })));
+const EditNewsPage = lazy(() => import('../pages/admin/news/[id]/edit/page').then(module => ({ default: module.default })));
 
 // Admin Documents Pages
 const AdminDocumentsList = lazy(() => import('../pages/admin/documents/page').then(module => ({ default: module.default })));
@@ -162,6 +195,22 @@ const routes: RouteObject[] = [
         element: <EditEventPage />,
       },
       {
+        path: 'news',
+        element: <AdminNewsList />,
+      },
+      {
+        path: 'news/create',
+        element: <CreateNewsPage />,
+      },
+      {
+        path: 'news/:id',
+        element: <ViewNewsPage />,
+      },
+      {
+        path: 'news/:id/edit',
+        element: <EditNewsPage />,
+      },
+      {
         path: 'associations',
         element: <AdminAssociationsList />,
       },
@@ -208,6 +257,74 @@ const routes: RouteObject[] = [
       {
         path: 'team-members/:id/edit',
         element: <EditTeamMemberPage />,
+      },
+      {
+        path: 'members',
+        element: <AdminMembersList />,
+      },
+      {
+        path: 'members/create',
+        element: <CreateMemberPage />,
+      },
+      {
+        path: 'members/:id',
+        element: <ViewMemberPage />,
+      },
+      {
+        path: 'members/:id/edit',
+        element: <EditMemberPage />,
+      },
+      {
+        path: 'membership-applications',
+        element: <AdminMembershipApplicationsList />,
+      },
+      {
+        path: 'membership-applications/:id',
+        element: <ViewMembershipApplicationPage />,
+      },
+      {
+        path: 'grants',
+        element: <AdminGrantsList />,
+      },
+      {
+        path: 'grants/create',
+        element: <CreateGrantPage />,
+      },
+      {
+        path: 'grants/:id',
+        element: <ViewGrantPage />,
+      },
+      {
+        path: 'grants/:id/edit',
+        element: <EditGrantPage />,
+      },
+      {
+        path: 'consultations',
+        element: <AdminConsultationsList />,
+      },
+      {
+        path: 'consultations/create',
+        element: <CreateConsultationPage />,
+      },
+      {
+        path: 'consultations/:id',
+        element: <ViewConsultationPage />,
+      },
+      {
+        path: 'consultations/:id/edit',
+        element: <EditConsultationPage />,
+      },
+      {
+        path: 'users',
+        element: <AdminUsersList />,
+      },
+      {
+        path: 'users/create',
+        element: <CreateAdminUserPage />,
+      },
+      {
+        path: 'users/:id/edit',
+        element: <EditAdminUserPage />,
       },
       {
         path: 'documents',

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { buildApiUrl } from '../../../lib/api/base-url';
 
 interface Document {
@@ -22,6 +23,7 @@ export const AdminDocumentsList: React.FC = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadDocuments();
@@ -43,7 +45,7 @@ export const AdminDocumentsList: React.FC = () => {
   };
 
   const handleDeleteDocument = async (id: string, name: string) => {
-    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer "${name}" ?`)) {
+    if (!window.confirm(t('admin.common.confirmDelete', { name }))) {
       return;
     }
 
@@ -61,7 +63,7 @@ export const AdminDocumentsList: React.FC = () => {
       }
     } catch (error) {
       console.error('Error deleting document:', error);
-      alert('Erreur lors de la suppression du document');
+      alert(t('admin.documents.errorDelete'));
     }
   };
 
@@ -100,10 +102,10 @@ export const AdminDocumentsList: React.FC = () => {
 
   const categories = [...new Set(documents.map(doc => doc.category).filter(Boolean))];
   const filterOptions = [
-    { value: 'all', label: 'Tous les documents' },
-    { value: 'active', label: 'Actifs' },
-    { value: 'inactive', label: 'Inactifs' },
-    ...categories.map(cat => ({ value: cat!, label: cat! }))
+    { value: 'all', label: t('admin.documents.filterAll') },
+    { value: 'active', label: t('admin.documents.filterActive') },
+    { value: 'inactive', label: t('admin.documents.filterInactive') },
+    ...categories.map((cat) => ({ value: cat!, label: cat! })),
   ];
 
   if (isLoading) {
@@ -119,15 +121,15 @@ export const AdminDocumentsList: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des Documents</h1>
-          <p className="mt-2 text-gray-600">Gérer tous les documents officiels du HCBE</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('admin.documents.title')}</h1>
+          <p className="mt-2 text-gray-600">{t('admin.documents.subtitle')}</p>
         </div>
         <Link
           to="/admin/documents/create"
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
         >
           <i className="ri-add-line mr-2"></i>
-          Créer un Document
+          {t('admin.documents.create')}
         </Link>
       </div>
 
@@ -136,7 +138,7 @@ export const AdminDocumentsList: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-1">
-              Filtrer par
+              {t('admin.common.filterBy')}
             </label>
             <select
               id="filter"
@@ -157,18 +159,18 @@ export const AdminDocumentsList: React.FC = () => {
         {sortedDocuments.length === 0 ? (
           <div className="text-center py-12">
             <i className="ri-file-line text-6xl text-gray-400"></i>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">Aucun document trouvé</h3>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">{t('admin.documents.emptyTitle')}</h3>
             <p className="mt-2 text-gray-500">
-              {filter === 'all' 
-                ? 'Commencez par créer votre premier document.' 
-                : 'Aucun document ne correspond à vos critères.'}
+              {filter === 'all'
+                ? t('admin.documents.emptyAll')
+                : t('admin.documents.emptyFilter')}
             </p>
             {filter === 'all' && (
               <Link
                 to="/admin/documents/create"
                 className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
               >
-                Créer un Document
+                {t('admin.documents.create')}
               </Link>
             )}
           </div>
@@ -178,22 +180,22 @@ export const AdminDocumentsList: React.FC = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Document
+                    {t('admin.documents.colDocument')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Taille
+                    {t('admin.documents.colSize')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Pages
+                    {t('admin.documents.colPages')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Téléchargements
+                    {t('admin.documents.colDownloads')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
+                    {t('admin.common.status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    {t('admin.common.actions')}
                   </th>
                 </tr>
               </thead>
@@ -216,10 +218,10 @@ export const AdminDocumentsList: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {doc.size || 'N/A'}
+                      {doc.size || t('admin.common.na')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {doc.pages || 'N/A'}
+                      {doc.pages || t('admin.common.na')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {doc.downloads}
@@ -233,7 +235,7 @@ export const AdminDocumentsList: React.FC = () => {
                             : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {doc.isActive ? 'Actif' : 'Inactif'}
+                        {doc.isActive ? t('admin.common.active') : t('admin.common.inactive')}
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -241,18 +243,21 @@ export const AdminDocumentsList: React.FC = () => {
                         <Link
                           to={`/admin/documents/${doc.id}`}
                           className="text-blue-600 hover:text-blue-900"
+                          title={t('admin.common.view')}
                         >
                           <i className="ri-eye-line text-lg"></i>
                         </Link>
                         <Link
                           to={`/admin/documents/${doc.id}/edit`}
                           className="text-emerald-600 hover:text-emerald-900"
+                          title={t('admin.common.edit')}
                         >
                           <i className="ri-edit-line text-lg"></i>
                         </Link>
                         <button
                           onClick={() => handleDeleteDocument(doc.id, doc.name)}
                           className="text-red-600 hover:text-red-900"
+                          title={t('admin.common.delete')}
                         >
                           <i className="ri-delete-bin-line text-lg"></i>
                         </button>
@@ -276,7 +281,7 @@ export const AdminDocumentsList: React.FC = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Documents</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">{t('admin.documents.statsTotal')}</dt>
                   <dd className="text-lg font-medium text-gray-900">{documents.length}</dd>
                 </dl>
               </div>
@@ -291,7 +296,7 @@ export const AdminDocumentsList: React.FC = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Documents Actifs</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">{t('admin.documents.statsActive')}</dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {documents.filter(d => d.isActive).length}
                   </dd>
@@ -308,7 +313,7 @@ export const AdminDocumentsList: React.FC = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Téléchargements</dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">{t('admin.documents.statsDownloads')}</dt>
                   <dd className="text-lg font-medium text-gray-900">
                     {documents.reduce((sum, d) => sum + d.downloads, 0)}
                   </dd>

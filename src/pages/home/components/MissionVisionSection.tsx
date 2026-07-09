@@ -1,127 +1,89 @@
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const MissionVisionSection = () => {
-  const items = [
+  const { t } = useTranslation();
+
+  const priorities = [
     {
-      icon: 'ri-flag-fill',
-      title: 'Notre Mission',
-      color: 'red',
-      description:
-        'Représenter et mobiliser la diaspora burkinabè au Canada pour favoriser son intégration harmonieuse dans la société canadienne et contribuer activement au développement socio-économique du Burkina Faso.',
-      points: [
-        'Défendre les intérêts de la communauté burkinabè au Canada',
-        'Faciliter l\'intégration des nouveaux arrivants',
-        'Promouvoir la culture et les valeurs burkinabè',
-        'Renforcer les liens avec le Burkina Faso',
-      ],
+      icon: 'ri-hand-heart-line',
+      titleKey: 'public.home.mission.welcome.title',
+      descriptionKey: 'public.home.mission.welcome.description',
+      link: '/services',
+      linkKey: 'public.home.mission.welcome.link',
     },
     {
-      icon: 'ri-eye-line',
-      title: 'Notre Vision',
-      color: 'yellow',
-      description:
-        'Être le porte-voix incontournable de la diaspora burkinabè au Canada, reconnu pour son excellence dans l\'accompagnement communautaire et son impact positif sur le développement du Burkina Faso.',
-      points: [
-        'Une communauté unie et solidaire',
-        'Des services d\'excellence pour tous les membres',
-        'Un partenariat fort avec les institutions canadiennes et burkinabè',
-        'Un impact mesurable sur le développement du Burkina Faso',
-      ],
+      icon: 'ri-team-line',
+      titleKey: 'public.home.mission.connect.title',
+      descriptionKey: 'public.home.mission.connect.description',
+      link: '/engagement/annuaire',
+      linkKey: 'public.home.mission.connect.link',
     },
     {
-      icon: 'ri-heart-line',
-      title: 'Nos Valeurs',
-      color: 'green',
-      description:
-        'Nos actions sont guidées par des valeurs fondamentales qui reflètent l\'identité burkinabè et les principes d\'excellence que nous défendons. Ces valeurs constituent le socle de notre engagement envers la communauté et orientent toutes nos décisions et initiatives pour le bien-être collectif et le développement durable.',
-      points: [
-        'Solidarité et entraide communautaire',
-        'Intégrité et transparence dans nos actions',
-        'Excellence et professionnalisme',
-        'Respect de la diversité et inclusion',
-        'Engagement patriotique et développement',
-        'Innovation et adaptation continue',
-      ],
+      icon: 'ri-megaphone-line',
+      titleKey: 'public.home.mission.represent.title',
+      descriptionKey: 'public.home.mission.represent.description',
+      link: '/contact',
+      linkKey: 'public.home.mission.represent.link',
     },
   ];
 
-  const colorClasses = {
-    red: {
-      bg: 'bg-red-50',
-      iconBg: 'bg-red-100',
-      iconText: 'text-red-600',
-      border: 'border-red-600',
-      checkIcon: 'text-red-600',
-    },
-    yellow: {
-      bg: 'bg-amber-50',
-      iconBg: 'bg-amber-100',
-      iconText: 'text-amber-600',
-      border: 'border-amber-600',
-      checkIcon: 'text-amber-600',
-    },
-    green: {
-      bg: 'bg-emerald-50',
-      iconBg: 'bg-emerald-100',
-      iconText: 'text-emerald-600',
-      border: 'border-emerald-600',
-      checkIcon: 'text-emerald-600',
-    },
-  };
-
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-white px-4 py-2 rounded-full mb-4 border border-gray-200">
-            <i className="ri-compass-3-line text-emerald-600"></i>
-            <span className="text-emerald-600 font-semibold text-sm">Nos Fondements</span>
+    <section className="bg-white py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+              <i className="ri-leaf-line" aria-hidden="true"></i>
+              {t('public.home.mission.badge')}
+            </div>
+            <h2 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
+              {t('public.home.mission.title')}
+            </h2>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Mission, Vision et Valeurs
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Les principes qui guident notre action au service de la diaspora burkinabè au Canada
-          </p>
+
+          <p className="text-lg leading-8 text-gray-600">{t('public.home.mission.subtitle')}</p>
         </div>
 
-        <div className="space-y-8">
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className={`${colorClasses[item.color as keyof typeof colorClasses].bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow border border-gray-200`}
+        <div className="mt-14 grid gap-6 md:grid-cols-3">
+          {priorities.map((priority) => (
+            <article
+              key={priority.titleKey}
+              className="group rounded-[1.75rem] border border-gray-200 bg-white p-7 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl"
             >
-              <div className="p-8 md:p-12">
-                <div className="flex flex-col md:flex-row md:items-start md:space-x-8">
-                  <div className="flex-shrink-0 mb-6 md:mb-0">
-                    <div className={`w-20 h-20 ${colorClasses[item.color as keyof typeof colorClasses].iconBg} rounded-2xl flex items-center justify-center`}>
-                      <i className={`${item.icon} text-4xl ${colorClasses[item.color as keyof typeof colorClasses].iconText}`}></i>
-                    </div>
-                  </div>
-
-                  <div className="flex-1">
-                    <h3 className="text-3xl font-bold mb-4 text-gray-900">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 text-base leading-relaxed mb-6">
-                      {item.description}
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {item.points.map((point, idx) => (
-                        <div
-                          key={idx}
-                          className={`flex items-start space-x-3 p-4 bg-white rounded-lg border-l-4 ${colorClasses[item.color as keyof typeof colorClasses].border}`}
-                        >
-                          <i className={`ri-checkbox-circle-fill text-xl ${colorClasses[item.color as keyof typeof colorClasses].checkIcon} flex-shrink-0 mt-0.5`}></i>
-                          <span className="text-gray-700 text-sm font-medium">{point}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-3xl text-emerald-700">
+                <i className={priority.icon} aria-hidden="true"></i>
               </div>
-            </div>
+              <h3 className="mt-7 text-2xl font-bold text-gray-950">{t(priority.titleKey)}</h3>
+              <p className="mt-4 min-h-24 text-base leading-7 text-gray-600">
+                {t(priority.descriptionKey)}
+              </p>
+              <Link
+                to={priority.link}
+                className="mt-6 inline-flex items-center font-semibold text-emerald-700 transition group-hover:text-emerald-800"
+              >
+                {t(priority.linkKey)}
+                <i
+                  className="ri-arrow-right-line ml-2 transition group-hover:translate-x-1"
+                  aria-hidden="true"
+                ></i>
+              </Link>
+            </article>
           ))}
+        </div>
+
+        <div className="mt-16 overflow-hidden rounded-[2rem] bg-gray-950 text-white">
+          <div className="grid lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="bg-gradient-to-br from-emerald-700 to-emerald-950 p-8 md:p-10">
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-100">
+                {t('public.home.mission.compass.label')}
+              </p>
+              <h3 className="mt-4 text-3xl font-bold">{t('public.home.mission.compass.title')}</h3>
+            </div>
+            <div className="p-8 md:p-10">
+              <p className="text-lg leading-8 text-gray-200">{t('public.home.mission.compass.text')}</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

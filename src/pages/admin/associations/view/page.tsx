@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { associationsApi } from '../../../../lib/api/associations';
-import { Association } from '../../../../lib/api/types';
+import type { Association } from '../../../../lib/api/types';
 
 export const ViewAssociationPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

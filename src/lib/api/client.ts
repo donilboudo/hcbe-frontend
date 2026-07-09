@@ -1,5 +1,5 @@
 import { getApiBaseUrl } from './base-url';
-import { ApiResponse } from './types';
+import type { ApiResponse } from './types';
 
 export class ApiClient {
   private baseURL: string;
@@ -80,7 +80,26 @@ export class ApiClient {
       throw new Error(errorMessage);
     }
 
-    const data = await response.json();
+    if (response.status === 204) {
+      return {
+        success: true,
+        message: 'Success',
+        data: null,
+        errors: null,
+      } as ApiResponse<T>;
+    }
+
+    const text = await response.text();
+    if (!text.trim()) {
+      return {
+        success: true,
+        message: 'Success',
+        data: null,
+        errors: null,
+      } as ApiResponse<T>;
+    }
+
+    const data = JSON.parse(text);
     return data as ApiResponse<T>;
   }
 

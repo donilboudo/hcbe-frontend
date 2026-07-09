@@ -1,54 +1,57 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../../components/feature/Navbar';
 import Footer from '../../../components/feature/Footer';
 import GalerieSection from '../components/GalerieSection';
 
-export const SouvenirsPage: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-white">
-      <Navbar />
-      
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-amber-600 to-orange-700 text-white py-20 pt-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="text-sm mb-4">
-            <Link to="/" className="hover:underline">Accueil</Link>
-            <span className="mx-2">/</span>
-            <Link to="/actualites" className="hover:underline">Actualités et Événements</Link>
-            <span className="mx-2">/</span>
-            <span>Souvenirs de nos Événements</span>
-          </nav>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Souvenirs de nos Événements</h1>
-          <p className="text-xl text-amber-100 max-w-3xl">
-            Revivez les moments forts de la communauté burkinabè au Canada
-          </p>
-        </div>
-      </div>
+const MEDIA_EMAIL = 'media@hcbecanada.org';
 
-      {/* Galerie Section */}
+export const SouvenirsPage: React.FC = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="min-h-screen bg-white text-gray-950">
+      <Navbar />
+
+      <section className="relative isolate overflow-hidden bg-emerald-950 pt-32 text-white">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_15%,rgba(245,158,11,0.24),transparent_30%),radial-gradient(circle_at_86%_14%,rgba(239,68,68,0.18),transparent_32%),linear-gradient(135deg,#0f172a_0%,#064e3b_55%,#022c22_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-t from-white to-transparent" />
+        <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-emerald-50 backdrop-blur">
+              <i className="ri-gallery-line" aria-hidden="true"></i>
+              {t('public.news.souvenirs.badge')}
+            </div>
+            <h1 className="text-5xl font-bold tracking-tight md:text-6xl">{t('public.news.souvenirs.title')}</h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90">
+              {t('public.news.souvenirs.subtitle')}
+            </p>
+          </div>
+        </div>
+      </section>
+
       <GalerieSection />
 
-      {/* Info Box */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-amber-50 border-l-4 border-amber-600 p-6 rounded-r-lg">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <i className="ri-camera-line text-amber-600 text-2xl"></i>
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-[2rem] bg-gray-950 text-white">
+          <div className="grid gap-0 lg:grid-cols-[0.75fr_1.25fr]">
+            <div className="bg-gradient-to-br from-amber-500 to-orange-700 p-8 md:p-10">
+              <i className="ri-camera-line text-5xl" aria-hidden="true"></i>
+              <h3 className="mt-6 text-3xl font-bold">{t('public.news.souvenirs.share.title')}</h3>
             </div>
-            <div className="ml-4">
-              <h3 className="text-lg font-semibold text-amber-900 mb-2">
-                Partagez vos photos
-              </h3>
-              <p className="text-amber-800">
-                Vous avez participé à un de nos événements et souhaitez partager vos photos ? 
-                Contactez-nous à <a href="mailto:media@hcbecanada.org" className="underline font-medium">media@hcbecanada.org</a>
+            <div className="p-8 md:p-10">
+              <p className="text-lg leading-8 text-gray-300">
+                {t('public.news.souvenirs.share.description')}{' '}
+                <a href={`mailto:${MEDIA_EMAIL}`} className="font-semibold text-white underline">
+                  {MEDIA_EMAIL}
+                </a>
+                .
               </p>
             </div>
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { ApiResponse, Association, CreateAssociationRequest, UpdateAssociationRequest } from './types';
+import type { ApiResponse, Association, CreateAssociationRequest, UpdateAssociationRequest } from './types';
 
 export const associationsApi = {
   // Get all associations (public - active only)

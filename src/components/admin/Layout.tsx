@@ -1,89 +1,126 @@
-import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface SubItem {
-  name: string;
+  nameKey: string;
   href: string;
   icon: string;
   disabled?: boolean;
 }
 
 interface NavItem {
-  name: string;
+  nameKey: string;
   href?: string;
   icon: string;
   disabled?: boolean;
   subItems?: SubItem[];
 }
 
-export const AdminLayout: React.FC = () => {
+const navLinkClass = (active: boolean, disabled?: boolean) => {
+  if (disabled) {
+    return 'cursor-not-allowed text-emerald-100/35';
+  }
+  if (active) {
+    return 'bg-white/12 text-white ring-1 ring-white/15';
+  }
+  return 'text-emerald-50/75 hover:bg-white/8 hover:text-white';
+};
+
+export const AdminLayout = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const { t } = useTranslation();
 
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  };
+  const isActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   const handleLogout = () => {
     logout();
     window.location.href = '/';
   };
 
-  const navigation = [
-    { name: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
-    { 
-      name: 'Actualités', 
-      icon: '📰',
+  const navigation: NavItem[] = [
+    { nameKey: 'admin.nav.dashboard', href: '/admin/dashboard', icon: 'ri-dashboard-line' },
+    {
+      nameKey: 'admin.nav.news',
+      icon: 'ri-newspaper-line',
       subItems: [
-        { name: 'Events', href: '/admin/events', icon: '🎟️' },
-        { name: 'News', href: '/admin/news', icon: '📄', disabled: true },
-      ]
+        { nameKey: 'admin.nav.events', href: '/admin/events', icon: 'ri-calendar-event-line' },
+        { nameKey: 'admin.nav.announcements', href: '/admin/news', icon: 'ri-article-line' },
+      ],
     },
-    { name: 'Associations', href: '/admin/associations', icon: '🏢' },
-    { name: 'Projects', href: '/admin/projects', icon: '🚧' },
-    { name: 'Team Members', href: '/admin/team-members', icon: '👥' },
-    { name: 'Documents', href: '/admin/documents', icon: '📄' },
+    { nameKey: 'admin.nav.associations', href: '/admin/associations', icon: 'ri-building-line' },
+    { nameKey: 'admin.nav.projects', href: '/admin/projects', icon: 'ri-hammer-line' },
+    { nameKey: 'admin.nav.grants', href: '/admin/grants', icon: 'ri-hand-coin-line' },
+    { nameKey: 'admin.nav.consultations', href: '/admin/consultations', icon: 'ri-chat-poll-line' },
+    {
+      nameKey: 'admin.nav.members',
+      icon: 'ri-group-line',
+      subItems: [
+        { nameKey: 'admin.nav.membersList', href: '/admin/members', icon: 'ri-user-line' },
+        { nameKey: 'admin.nav.membershipApplications', href: '/admin/membership-applications', icon: 'ri-user-add-line' },
+      ],
+    },
+    { nameKey: 'admin.nav.teamMembers', href: '/admin/team-members', icon: 'ri-team-line' },
+    { nameKey: 'admin.nav.documents', href: '/admin/documents', icon: 'ri-file-text-line' },
+    { nameKey: 'admin.nav.users', href: '/admin/users', icon: 'ri-shield-user-line' },
   ];
 
+  const getPageTitle = () => {
+    for (const item of navigation) {
+      if (item.href && isActive(item.href)) {
+        return t(item.nameKey);
+      }
+      if (item.subItems) {
+        const subItem = item.subItems.find((sub) => isActive(sub.href));
+        if (subItem) {
+          return t(subItem.nameKey);
+        }
+      }
+    }
+    return t('admin.layout.defaultPage');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 overflow-y-auto">
-        <div className="flex items-center justify-center h-16 px-4 bg-gray-800">
-          <h1 className="text-xl font-bold text-white">HCBE Admin</h1>
+    <div className="min-h-screen bg-gray-50 text-gray-950">
+      <aside className="fixed inset-y-0 left-0 z-50 flex w-64 flex-col overflow-hidden bg-emerald-950 text-white">
+        <div className="border-b border-white/10 px-5 py-5">
+          <Link to="/admin/dashboard" className="block">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-100/80">
+              HCBE
+            </p>
+            <h1 className="mt-1 text-lg font-bold">{t('admin.layout.title')}</h1>
+          </Link>
         </div>
-        
-        <nav className="mt-8 px-4">
-          <div className="space-y-2">
+
+        <nav className="flex-1 overflow-y-auto px-3 py-5">
+          <div className="space-y-1">
             {navigation.map((item) => (
-              <div key={item.name}>
+              <div key={item.nameKey}>
                 {item.subItems ? (
-                  // Menu avec sous-items
                   <div className="space-y-1">
-                    <div className="flex items-center px-3 py-2 text-sm font-medium text-gray-300">
-                      <span className="mr-3 text-lg">{item.icon}</span>
-                      {item.name}
+                    <div className="flex items-center px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-100/55">
+                      <i className={`${item.icon} mr-2 text-sm`} aria-hidden="true"></i>
+                      {t(item.nameKey)}
                     </div>
-                    <div className="ml-6 space-y-1">
+                    <div className="space-y-1 pl-2">
                       {item.subItems.map((subItem) => (
                         <Link
-                          key={subItem.name}
+                          key={subItem.nameKey}
                           to={subItem.disabled ? '#' : subItem.href}
-                          className={`flex items-center px-3 py-2 text-sm rounded-lg transition-colors ${
-                            subItem.disabled
-                              ? 'text-gray-500 cursor-not-allowed'
-                              : isActive(subItem.href)
-                              ? 'bg-blue-600 text-white'
-                              : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                          }`}
+                          className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition ${navLinkClass(
+                            isActive(subItem.href),
+                            subItem.disabled,
+                          )}`}
                           onClick={(e) => subItem.disabled && e.preventDefault()}
                         >
-                          <span className="mr-3">{subItem.icon}</span>
-                          {subItem.name}
+                          <i className={`${subItem.icon} mr-3 text-base`} aria-hidden="true"></i>
+                          <span className="truncate">{t(subItem.nameKey)}</span>
                           {subItem.disabled && (
-                            <span className="ml-auto text-xs bg-gray-700 text-gray-400 px-2 py-1 rounded">
-                              Soon
+                            <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/60">
+                              {t('admin.common.soon')}
                             </span>
                           )}
                         </Link>
@@ -91,23 +128,19 @@ export const AdminLayout: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  // Menu simple
                   <Link
-                    to={item.disabled ? '#' : item.href}
-                    className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      item.disabled
-                        ? 'text-gray-500 cursor-not-allowed'
-                        : isActive(item.href)
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
+                    to={item.disabled ? '#' : item.href!}
+                    className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition ${navLinkClass(
+                      isActive(item.href!),
+                      item.disabled,
+                    )}`}
                     onClick={(e) => item.disabled && e.preventDefault()}
                   >
-                    <span className="mr-3 text-lg">{item.icon}</span>
-                    {item.name}
+                    <i className={`${item.icon} mr-3 text-base`} aria-hidden="true"></i>
+                    <span className="truncate">{t(item.nameKey)}</span>
                     {item.disabled && (
-                      <span className="ml-auto text-xs bg-gray-700 text-gray-400 px-2 py-1 rounded">
-                        Soon
+                      <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/60">
+                        {t('admin.common.soon')}
                       </span>
                     )}
                   </Link>
@@ -117,54 +150,42 @@ export const AdminLayout: React.FC = () => {
           </div>
         </nav>
 
-        <div className="absolute bottom-0 w-full p-4">
-          <div className="bg-gray-800 rounded-lg p-3 text-sm">
-            <div className="text-white font-medium">
+        <div className="border-t border-white/10 p-4">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-3">
+            <div className="truncate text-sm font-semibold text-white">
               {user?.firstName} {user?.lastName}
             </div>
-            <div className="text-gray-400 text-xs">{user?.email}</div>
+            <div className="truncate text-xs text-emerald-100/65">{user?.email}</div>
             <button
+              type="button"
               onClick={handleLogout}
-              className="mt-2 w-full text-left text-gray-300 hover:text-white text-xs"
+              className="mt-3 inline-flex items-center text-xs font-semibold text-emerald-100/80 transition hover:text-white"
             >
-              Sign out →
+              {t('admin.layout.signOut')}
+              <i className="ri-logout-box-r-line ml-1" aria-hidden="true"></i>
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Main content */}
       <div className="pl-64">
-        {/* Top header */}
-        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+        <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 px-6 py-4 backdrop-blur">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-2xl font-semibold text-gray-900">
-                {(() => {
-                  const current = navigation.find(item => {
-                    if (item.href && isActive(item.href)) return true;
-                    if (item.subItems) {
-                      return item.subItems.some(sub => isActive(sub.href));
-                    }
-                    return false;
-                  });
-                  if (current?.subItems) {
-                    const subItem = current.subItems.find(sub => isActive(sub.href));
-                    return subItem?.name || current.name;
-                  }
-                  return current?.name || 'Admin';
-                })()}
-              </h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                Administration
+              </p>
+              <h2 className="mt-1 text-2xl font-bold text-gray-950">{getPageTitle()}</h2>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Welcome back, {user?.firstName}!
+            <div className="flex items-center gap-4">
+              <LanguageSwitcher />
+              <span className="hidden text-sm text-gray-600 md:inline">
+                {t('admin.layout.welcome', { name: user?.firstName })}
               </span>
             </div>
           </div>
         </header>
 
-        {/* Page content */}
         <main className="p-6">
           <Outlet />
         </main>

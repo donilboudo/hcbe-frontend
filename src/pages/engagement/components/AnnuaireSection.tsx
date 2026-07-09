@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { associationsApi } from '../../../lib/api/associations';
-import { Association } from '../../../lib/api/types';
+import type { Association } from '../../../lib/api/types';
 
 const AnnuaireSection = () => {
   const [searchTerm, setSearchTerm] = useState('');

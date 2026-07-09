@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { buildApiUrl } from '../../../lib/api/base-url';
 
 interface Document {
@@ -20,6 +21,7 @@ interface Document {
 const DocumentsSection = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadDocuments();
@@ -28,13 +30,17 @@ const DocumentsSection = () => {
   const loadDocuments = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const response = await fetch(buildApiUrl('/api/documents'));
       const data = await response.json();
       if (data.success && data.data) {
         setDocuments(data.data);
+      } else {
+        setError('Les documents ne sont pas disponibles pour le moment.');
       }
     } catch (error) {
       console.error('Error loading documents:', error);
+      setError('Impossible de charger les documents officiels.');
     } finally {
       setIsLoading(false);
     }
@@ -57,18 +63,29 @@ const DocumentsSection = () => {
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
+      } else {
+        throw new Error(`Download failed with status ${response.status}`);
       }
     } catch (error) {
       console.error('Error downloading document:', error);
+      setError('Le téléchargement a échoué. Veuillez réessayer ou nous contacter.');
     }
   };
 
   if (isLoading) {
     return (
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      <section id="documents" className="bg-white py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-6 md:grid-cols-2">
+            {[1, 2].map((item) => (
+              <div key={item} className="rounded-[2rem] border border-gray-200 bg-gray-50 p-7">
+                <div className="h-12 w-12 animate-pulse rounded-2xl bg-gray-200" />
+                <div className="mt-6 h-5 w-2/3 animate-pulse rounded-full bg-gray-200" />
+                <div className="mt-4 h-4 w-full animate-pulse rounded-full bg-gray-200" />
+                <div className="mt-2 h-4 w-4/5 animate-pulse rounded-full bg-gray-200" />
+                <div className="mt-7 h-11 w-40 animate-pulse rounded-full bg-gray-200" />
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -76,80 +93,131 @@ const DocumentsSection = () => {
   }
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-full mb-4">
-            <i className="ri-folder-line text-emerald-600"></i>
-            <span className="text-emerald-600 font-semibold text-sm">Documents Officiels</span>
+    <section id="documents" className="bg-white py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-14 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+          <div>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+              <i className="ri-file-list-3-line" aria-hidden="true"></i>
+              Bibliothèque officielle
+            </div>
+            <h2 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
+              Statuts, règlements et ressources à jour.
+            </h2>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Statuts et Règlements
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Consultez et téléchargez les documents officiels régissant le fonctionnement du HCBE Canada
+          <p className="text-lg leading-8 text-gray-600">
+            Les documents sont regroupés ici pour faciliter la consultation. Chaque fichier peut
+            être téléchargé directement lorsque sa version est disponible.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {documents.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-gray-50 rounded-2xl p-8 border-2 border-gray-200 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-md border border-gray-200">
-                  <i className={`${doc.icon || 'ri-file-line'} text-3xl text-emerald-600`}></i>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{doc.name}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4">{doc.description}</p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                    <span className="flex items-center">
-                      <i className="ri-file-line mr-1"></i>
-                      {doc.size || 'N/A'}
-                    </span>
-                    <span className="flex items-center">
-                      <i className="ri-pages-line mr-1"></i>
-                      {doc.pages || 'N/A'}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleDownload(doc.id)}
-                    className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors shadow-md whitespace-nowrap"
-                  >
-                    <i className="ri-download-line mr-2"></i>
-                    Télécharger le PDF
-                  </button>
-                </div>
-              </div>
+        {error && (
+          <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900">
+            <div className="flex gap-3">
+              <i className="ri-error-warning-line mt-0.5 text-xl" aria-hidden="true"></i>
+              <p className="text-sm font-medium">{error}</p>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 border border-gray-200">
-          <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-            <div className="flex-shrink-0">
-              <div className="w-20 h-20 bg-emerald-600 rounded-2xl flex items-center justify-center">
-                <i className="ri-information-line text-4xl text-white"></i>
-              </div>
+        {documents.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2">
+            {documents.map((doc) => (
+              <article
+                key={doc.id}
+                className="group overflow-hidden rounded-[2rem] border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl"
+              >
+                <div className="h-2 bg-gradient-to-r from-emerald-700 via-amber-400 to-red-500" />
+                <div className="p-7">
+                  <div className="flex items-start gap-5">
+                    <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-3xl text-emerald-700 ring-1 ring-emerald-100">
+                      <i className={doc.icon || 'ri-file-pdf-2-line'} aria-hidden="true"></i>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-3 flex flex-wrap gap-2">
+                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-600">
+                          {doc.category || 'Document officiel'}
+                        </span>
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                          Actif
+                        </span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-950">{doc.name}</h3>
+                      {doc.description && (
+                        <p className="mt-3 text-sm leading-6 text-gray-600">{doc.description}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-7 grid grid-cols-2 gap-3 border-y border-gray-100 py-5 sm:grid-cols-3">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Format</p>
+                      <p className="mt-1 font-semibold text-gray-800">{doc.type || 'PDF'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Taille</p>
+                      <p className="mt-1 font-semibold text-gray-800">{doc.size || 'Non précisée'}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Pages</p>
+                      <p className="mt-1 font-semibold text-gray-800">{doc.pages || 'N/A'}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-gray-500">
+                      {doc.downloads.toLocaleString('fr-CA')} téléchargement{doc.downloads > 1 ? 's' : ''}
+                    </p>
+                    <button
+                      onClick={() => handleDownload(doc.id)}
+                      className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-900/10 transition hover:bg-emerald-800"
+                    >
+                      Télécharger
+                      <i className="ri-download-line ml-2" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[2rem] border border-dashed border-gray-300 bg-gray-50 p-10 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl text-emerald-700 shadow-sm">
+              <i className="ri-folder-open-line" aria-hidden="true"></i>
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Besoin d'informations supplémentaires ?
-              </h3>
-              <p className="text-gray-600 leading-relaxed mb-6">
-                Si vous avez des questions concernant nos statuts, règlements ou tout autre document officiel, notre équipe est à votre disposition pour vous fournir les éclaircissements nécessaires.
+            <h3 className="mt-6 text-2xl font-bold text-gray-950">Aucun document publié pour le moment.</h3>
+            <p className="mx-auto mt-3 max-w-2xl text-gray-600">
+              Les documents officiels seront ajoutés ici dès qu'ils seront disponibles.
+            </p>
+          </div>
+        )}
+
+        <div className="mt-14 overflow-hidden rounded-[2rem] bg-gray-950 text-white">
+          <div className="grid gap-0 lg:grid-cols-[0.75fr_1.25fr]">
+            <div className="bg-gradient-to-br from-emerald-700 to-emerald-950 p-8 md:p-10">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-3xl">
+                <i className="ri-information-line" aria-hidden="true"></i>
+              </div>
+              <h3 className="mt-6 text-3xl font-bold">Besoin d'une précision ?</h3>
+            </div>
+            <div className="p-8 md:p-10">
+              <p className="max-w-3xl text-lg leading-8 text-gray-300">
+                Si un document manque, si une version semble ancienne ou si vous avez besoin d'une
+                explication, envoyez un message à l'équipe du HCBE Canada.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <button className="px-6 py-3 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-colors whitespace-nowrap">
-                  <i className="ri-mail-line mr-2"></i>
-                  Nous Contacter
-                </button>
-                <button className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200 transition-colors whitespace-nowrap">
-                  <i className="ri-question-line mr-2"></i>
-                  FAQ
-                </button>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-gray-950 transition hover:bg-emerald-50"
+                >
+                  Contacter l'équipe
+                </Link>
+                <Link
+                  to="/services"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/15"
+                >
+                  Retour aux services
+                </Link>
               </div>
             </div>
           </div>

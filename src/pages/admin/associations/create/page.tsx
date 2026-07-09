@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { associationsApi } from '../../../../lib/api/associations';
-import { CreateAssociationRequest } from '../../../../lib/api/types';
+import type { CreateAssociationRequest } from '../../../../lib/api/types';
 
 export const CreateAssociationPage: React.FC = () => {
   const navigate = useNavigate();

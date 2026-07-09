@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { projectsApi } from '../../../lib/api/projects';
 import type { Project } from '../../../lib/api/types';
 
@@ -9,6 +10,7 @@ const AdminProjectsList = () => {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadProjects();
@@ -22,21 +24,21 @@ const AdminProjectsList = () => {
       setProjects(response.data);
     } catch (err) {
       console.error('Error loading projects:', err);
-      setError('Failed to load projects');
+      setError(t('admin.projects.errorLoad'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
+    if (!confirm(t('admin.common.confirmDeleteGeneric'))) return;
 
     try {
       await projectsApi.deleteProject(id);
       setProjects(projects.filter(p => p.id !== id));
     } catch (err) {
       console.error('Error deleting project:', err);
-      setError('Failed to delete project');
+      setError(t('admin.projects.errorDelete'));
     }
   };
 
@@ -64,7 +66,7 @@ const AdminProjectsList = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-gray-600">Loading projects...</div>
+        <div className="text-gray-600">{t('admin.projects.loading')}</div>
       </div>
     );
   }
@@ -77,7 +79,7 @@ const AdminProjectsList = () => {
           onClick={loadProjects}
           className="mt-2 text-red-600 hover:text-red-800 underline"
         >
-          Try again
+          {t('admin.common.tryAgain')}
         </button>
       </div>
     );
@@ -88,15 +90,15 @@ const AdminProjectsList = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-          <p className="text-gray-600">Manage community projects and initiatives</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin.projects.title')}</h1>
+          <p className="text-gray-600">{t('admin.projects.subtitle')}</p>
         </div>
         <Link
           to="/admin/projects/create"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           <i className="ri-add-line mr-2"></i>
-          Add Project
+          {t('admin.projects.create')}
         </Link>
       </div>
 
@@ -107,7 +109,7 @@ const AdminProjectsList = () => {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="all">All Status</option>
+          <option value="all">{t('admin.projects.filterAllStatus')}</option>
           <option value="En cours">En cours</option>
           <option value="Actif">Actif</option>
           <option value="Planification">Planification</option>
@@ -119,13 +121,13 @@ const AdminProjectsList = () => {
           onChange={(e) => setTypeFilter(e.target.value)}
           className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="all">All Types</option>
+          <option value="all">{t('admin.projects.filterAllTypes')}</option>
           <option value="Développement au Burkina">Développement au Burkina</option>
           <option value="Initiative Locale">Initiative Locale</option>
         </select>
 
         <div className="ml-auto text-sm text-gray-600">
-          {filteredProjects.length} of {projects.length} projects
+          {t('admin.projects.count', { count: filteredProjects.length, total: projects.length })}
         </div>
       </div>
 
@@ -135,22 +137,22 @@ const AdminProjectsList = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Project
+                {t('admin.projects.colProject')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
+                {t('admin.common.status')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
+                {t('admin.common.type')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Progress
+                {t('admin.projects.colProgress')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Budget
+                {t('admin.projects.colBudget')}
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
+                {t('admin.common.actions')}
               </th>
             </tr>
           </thead>
@@ -184,7 +186,7 @@ const AdminProjectsList = () => {
                     {project.status}
                   </span>
                   {!project.isActive && (
-                    <span className="block text-xs text-red-500 mt-1">Inactive</span>
+                    <span className="block text-xs text-red-500 mt-1">{t('admin.common.inactive')}</span>
                   )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900">
@@ -205,28 +207,30 @@ const AdminProjectsList = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-sm text-gray-900">{project.budget}</div>
-                  <div className="text-xs text-emerald-600">{project.fundsRaised} raised</div>
+                  <div className="text-xs text-emerald-600">
+                    {t('admin.projects.raised', { amount: project.fundsRaised })}
+                  </div>
                 </td>
                 <td className="px-6 py-4 text-sm font-medium">
                   <div className="flex space-x-2">
                     <Link
                       to={`/admin/projects/${project.id}`}
                       className="text-blue-600 hover:text-blue-900"
-                      title="View"
+                      title={t('admin.common.view')}
                     >
                       <i className="ri-eye-line"></i>
                     </Link>
                     <Link
                       to={`/admin/projects/${project.id}/edit`}
                       className="text-emerald-600 hover:text-emerald-900"
-                      title="Edit"
+                      title={t('admin.common.edit')}
                     >
                       <i className="ri-edit-line"></i>
                     </Link>
                     <button
                       onClick={() => handleDelete(project.id)}
                       className="text-red-600 hover:text-red-900"
-                      title="Delete"
+                      title={t('admin.common.delete')}
                     >
                       <i className="ri-delete-bin-line"></i>
                     </button>
@@ -242,19 +246,18 @@ const AdminProjectsList = () => {
             <div className="text-gray-500 mb-4">
               <i className="ri-folder-open-line text-4xl"></i>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('admin.projects.emptyTitle')}</h3>
             <p className="text-gray-600 mb-4">
-              {statusFilter !== 'all' || typeFilter !== 'all' 
-                ? 'Try adjusting your filters.' 
-                : 'Get started by creating a new project.'
-              }
+              {statusFilter !== 'all' || typeFilter !== 'all'
+                ? t('admin.projects.emptyFilter')
+                : t('admin.projects.emptyAll')}
             </p>
             {statusFilter === 'all' && typeFilter === 'all' && (
               <Link
                 to="/admin/projects/create"
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Create your first project
+                {t('admin.projects.createFirst')}
               </Link>
             )}
           </div>

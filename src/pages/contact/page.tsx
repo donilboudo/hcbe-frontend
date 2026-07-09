@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/feature/Navbar';
 import Footer from '../../components/feature/Footer';
 
 const ContactPage = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -13,12 +15,38 @@ const ContactPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const subjectOptions = useMemo(
+    () => [
+      { value: 'Adhésion', labelKey: 'public.contact.form.subject.membership' },
+      { value: 'Services', labelKey: 'public.contact.form.subject.services' },
+      { value: 'Événements', labelKey: 'public.contact.form.subject.events' },
+      { value: 'Projets', labelKey: 'public.contact.form.subject.projects' },
+      { value: 'Bénévolat', labelKey: 'public.contact.form.subject.volunteer' },
+      { value: 'Partenariat', labelKey: 'public.contact.form.subject.partnership' },
+      { value: 'Autre', labelKey: 'public.contact.form.subject.other' },
+    ],
+    [],
+  );
+
+  const faqItems = useMemo(
+    () => [
+      { questionKey: 'public.contact.faq.items.membership.q', answerKey: 'public.contact.faq.items.membership.a' },
+      { questionKey: 'public.contact.faq.items.fees.q', answerKey: 'public.contact.faq.items.fees.a' },
+      { questionKey: 'public.contact.faq.items.committees.q', answerKey: 'public.contact.faq.items.committees.a' },
+      { questionKey: 'public.contact.faq.items.projects.q', answerKey: 'public.contact.faq.items.projects.a' },
+      { questionKey: 'public.contact.faq.items.events.q', answerKey: 'public.contact.faq.items.events.a' },
+      { questionKey: 'public.contact.faq.items.passport.q', answerKey: 'public.contact.faq.items.passport.a' },
+    ],
+    [],
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.message.length > 500) {
-      alert('Le message ne peut pas dépasser 500 caractères.');
+      alert(t('public.contact.form.validation.messageTooLong'));
       return;
     }
 
@@ -52,81 +80,56 @@ const ContactPage = () => {
       } else {
         setSubmitStatus('error');
       }
-    } catch (error) {
+    } catch {
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const faqItems = [
-    {
-      question: 'Comment devenir membre du HCBE Canada ?',
-      reponse: 'Pour devenir membre, vous devez remplir le formulaire d\'inscription disponible dans l\'Espace Membre. Votre demande sera examinée par notre comité et vous recevrez une réponse dans un délai de 2 semaines.',
-    },
-    {
-      question: 'Quels sont les frais d\'adhésion ?',
-      reponse: 'L\'adhésion au HCBE Canada est gratuite. Nous croyons en l\'accessibilité de nos services à tous les membres de la diaspora burkinabè au Canada.',
-    },
-    {
-      question: 'Comment puis-je bénéficier des services des comités ?',
-      reponse: 'Une fois membre, vous pouvez contacter directement les comités via leurs adresses courriels respectives. Certains services sont gratuits, d\'autres peuvent nécessiter des frais (notamment pour le Comité Juridique).',
-    },
-    {
-      question: 'Comment puis-je contribuer aux projets communautaires ?',
-      reponse: 'Vous pouvez contribuer de plusieurs façons : dons financiers, bénévolat, partage de compétences, ou participation aux événements de collecte de fonds. Consultez la section Engagement Communautaire pour plus de détails.',
-    },
-    {
-      question: 'Le HCBE Canada organise-t-il des événements ?',
-      reponse: 'Oui, nous organisons régulièrement des événements culturels, éducatifs et de réseautage. Consultez notre calendrier dans la section Actualités et Événements pour rester informé.',
-    },
-    {
-      question: 'Comment puis-je renouveler mon passeport burkinabè ?',
-      reponse: 'Pour le renouvellement de passeport, vous devez contacter l\'Ambassade du Burkina Faso au Canada. Nous pouvons vous orienter et vous fournir des informations, mais les démarches se font directement avec l\'Ambassade.',
-    },
-  ];
-
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-950">
       <Navbar />
-      
-      <section className="relative pt-32 pb-20 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('https://readdy.ai/api/search-image?query=Contact%20and%20communication%20concept%20with%20modern%20phone%20and%20email%20symbols%20in%20professional%20setting%2C%20minimalist%20design%20with%20welcoming%20elements%2C%20bright%20professional%20lighting%20creating%20accessible%20atmosphere%2C%20simple%20clean%20background&width=1920&height=800&seq=contact-hero-001&orientation=landscape')`,
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/60"></div>
-        </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
-            <i className="ri-customer-service-line text-white"></i>
-            <span className="text-white font-semibold text-sm">Nous Sommes à Votre Écoute</span>
+      <section className="relative isolate overflow-hidden bg-emerald-950 pt-32 text-white">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_15%,rgba(252,209,22,0.18),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,0.22),transparent_32%),linear-gradient(135deg,#022c22_0%,#064e3b_48%,#0f172a_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-t from-gray-50 to-transparent" />
+        <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-end">
+            <div>
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-emerald-50 backdrop-blur">
+                <i className="ri-customer-service-line" aria-hidden="true"></i>
+                {t('public.contact.hero.badge')}
+              </div>
+              <h1 className="max-w-4xl text-5xl font-bold tracking-tight md:text-6xl">
+                {t('public.contact.hero.title')}
+              </h1>
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90">
+                {t('public.contact.hero.subtitle')}
+              </p>
+            </div>
+            <div className="rounded-[2rem] border border-white/15 bg-white/[0.08] p-6 shadow-2xl shadow-black/20 backdrop-blur-xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">
+                {t('public.contact.hero.card.label')}
+              </p>
+              <p className="mt-4 text-2xl font-bold">{t('public.contact.hero.card.title')}</p>
+              <p className="mt-4 leading-7 text-white/75">{t('public.contact.hero.card.description')}</p>
+            </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Contactez-Nous
-          </h1>
-          <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-            Notre équipe est disponible pour répondre à toutes vos questions et vous accompagner dans vos démarches
-          </p>
         </div>
       </section>
 
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-8">Envoyez-nous un Message</h2>
-              
+      <section className="bg-gray-50 py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-20 grid grid-cols-1 gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-[2rem] border border-gray-200 bg-white p-7 shadow-sm md:p-8">
+              <h2 className="mb-8 text-3xl font-bold text-gray-950">{t('public.contact.form.title')}</h2>
+
               <form id="contact-form" data-readdy-form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label htmlFor="prenom" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Prénom <span className="text-red-600">*</span>
+                    <label htmlFor="prenom" className="mb-2 block text-sm font-semibold text-gray-700">
+                      {t('public.contact.form.fields.firstName')} <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="text"
@@ -135,12 +138,12 @@ const ContactPage = () => {
                       value={formData.prenom}
                       onChange={(e) => setFormData({ ...formData, prenom: e.target.value })}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
+                      className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
                     />
                   </div>
                   <div>
-                    <label htmlFor="nom" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Nom <span className="text-red-600">*</span>
+                    <label htmlFor="nom" className="mb-2 block text-sm font-semibold text-gray-700">
+                      {t('public.contact.form.fields.lastName')} <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="text"
@@ -149,15 +152,15 @@ const ContactPage = () => {
                       value={formData.nom}
                       onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
+                      className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Courriel <span className="text-red-600">*</span>
+                    <label htmlFor="email" className="mb-2 block text-sm font-semibold text-gray-700">
+                      {t('public.contact.form.fields.email')} <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="email"
@@ -166,12 +169,12 @@ const ContactPage = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
+                      className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
                     />
                   </div>
                   <div>
-                    <label htmlFor="telephone" className="block text-sm font-semibold text-gray-700 mb-2">
-                      Téléphone
+                    <label htmlFor="telephone" className="mb-2 block text-sm font-semibold text-gray-700">
+                      {t('public.contact.form.fields.phone')}
                     </label>
                     <input
                       type="tel"
@@ -179,14 +182,14 @@ const ContactPage = () => {
                       name="telephone"
                       value={formData.telephone}
                       onChange={(e) => setFormData({ ...formData, telephone: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
+                      className="w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="sujet" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Sujet <span className="text-red-600">*</span>
+                  <label htmlFor="sujet" className="mb-2 block text-sm font-semibold text-gray-700">
+                    {t('public.contact.form.fields.subject')} <span className="text-red-600">*</span>
                   </label>
                   <select
                     id="sujet"
@@ -194,22 +197,20 @@ const ContactPage = () => {
                     value={formData.sujet}
                     onChange={(e) => setFormData({ ...formData, sujet: e.target.value })}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm cursor-pointer"
+                    className="w-full cursor-pointer rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
                   >
-                    <option value="">Sélectionnez un sujet</option>
-                    <option value="Adhésion">Adhésion au HCBE</option>
-                    <option value="Services">Services des comités</option>
-                    <option value="Événements">Événements et activités</option>
-                    <option value="Projets">Projets communautaires</option>
-                    <option value="Bénévolat">Bénévolat</option>
-                    <option value="Partenariat">Partenariat</option>
-                    <option value="Autre">Autre</option>
+                    <option value="">{t('public.contact.form.subject.placeholder')}</option>
+                    {subjectOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(option.labelKey)}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
-                    Message <span className="text-red-600">*</span>
+                  <label htmlFor="message" className="mb-2 block text-sm font-semibold text-gray-700">
+                    {t('public.contact.form.fields.message')} <span className="text-red-600">*</span>
                   </label>
                   <textarea
                     id="message"
@@ -219,32 +220,30 @@ const ContactPage = () => {
                     required
                     rows={6}
                     maxLength={500}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm resize-none"
-                    placeholder="Décrivez votre demande..."
-                  ></textarea>
-                  <p className="text-xs text-gray-500 mt-1">{formData.message.length}/500 caractères</p>
+                    className="w-full resize-none rounded-2xl border border-gray-300 px-4 py-3 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
+                    placeholder={t('public.contact.form.message.placeholder')}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    {t('public.contact.form.charCount', { count: formData.message.length })}
+                  </p>
                 </div>
 
                 {submitStatus === 'success' && (
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start space-x-3">
-                    <i className="ri-checkbox-circle-fill text-emerald-600 text-xl flex-shrink-0"></i>
+                  <div className="flex items-start space-x-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                    <i className="ri-checkbox-circle-fill flex-shrink-0 text-xl text-emerald-600" aria-hidden="true"></i>
                     <div>
-                      <h4 className="font-semibold text-emerald-900 mb-1">Message envoyé !</h4>
-                      <p className="text-sm text-emerald-700">
-                        Nous avons bien reçu votre message et vous répondrons dans les plus brefs délais.
-                      </p>
+                      <h4 className="mb-1 font-semibold text-emerald-900">{t('public.contact.form.success.title')}</h4>
+                      <p className="text-sm text-emerald-700">{t('public.contact.form.success.message')}</p>
                     </div>
                   </div>
                 )}
 
                 {submitStatus === 'error' && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start space-x-3">
-                    <i className="ri-error-warning-fill text-red-600 text-xl flex-shrink-0"></i>
+                  <div className="flex items-start space-x-3 rounded-lg border border-red-200 bg-red-50 p-4">
+                    <i className="ri-error-warning-fill flex-shrink-0 text-xl text-red-600" aria-hidden="true"></i>
                     <div>
-                      <h4 className="font-semibold text-red-900 mb-1">Erreur d'envoi</h4>
-                      <p className="text-sm text-red-700">
-                        Une erreur s'est produite. Veuillez réessayer plus tard.
-                      </p>
+                      <h4 className="mb-1 font-semibold text-red-900">{t('public.contact.form.error.title')}</h4>
+                      <p className="text-sm text-red-700">{t('public.contact.form.error.message')}</p>
                     </div>
                   </div>
                 )}
@@ -252,17 +251,17 @@ const ContactPage = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full px-8 py-4 bg-emerald-600 text-white rounded-lg font-semibold hover:bg-emerald-700 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap cursor-pointer"
+                  className="w-full cursor-pointer rounded-full bg-emerald-700 px-8 py-4 font-semibold text-white shadow-lg transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <i className="ri-loader-4-line mr-2 animate-spin"></i>
-                      Envoi en cours...
+                      <i className="ri-loader-4-line mr-2 animate-spin" aria-hidden="true"></i>
+                      {t('public.contact.form.submit.loading')}
                     </>
                   ) : (
                     <>
-                      <i className="ri-send-plane-fill mr-2"></i>
-                      Envoyer le Message
+                      <i className="ri-send-plane-fill mr-2" aria-hidden="true"></i>
+                      {t('public.contact.form.submit.label')}
                     </>
                   )}
                 </button>
@@ -270,112 +269,103 @@ const ContactPage = () => {
             </div>
 
             <div className="space-y-8">
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Coordonnées</h3>
+              <div className="rounded-[2rem] border border-gray-200 bg-white p-8 shadow-sm">
+                <h3 className="mb-6 text-2xl font-bold text-gray-950">{t('public.contact.coordinates.title')}</h3>
                 <div className="space-y-6">
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i className="ri-mail-line text-2xl text-emerald-600"></i>
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-100">
+                      <i className="ri-mail-line text-2xl text-emerald-600" aria-hidden="true"></i>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">Courriel</h4>
-                      <a href="mailto:contact@hcbecanada.org" className="text-emerald-600 hover:text-emerald-700 cursor-pointer">
+                      <h4 className="mb-1 font-semibold text-gray-900">{t('public.contact.coordinates.email')}</h4>
+                      <a href="mailto:contact@hcbecanada.org" className="cursor-pointer text-emerald-600 hover:text-emerald-700">
                         contact@hcbecanada.org
                       </a>
                     </div>
                   </div>
-
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i className="ri-phone-line text-2xl text-amber-600"></i>
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100">
+                      <i className="ri-phone-line text-2xl text-amber-600" aria-hidden="true"></i>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">Téléphone</h4>
+                      <h4 className="mb-1 font-semibold text-gray-900">{t('public.contact.coordinates.phone')}</h4>
                       <p className="text-gray-600">+1 (XXX) XXX-XXXX</p>
                     </div>
                   </div>
-
                   <div className="flex items-start space-x-4">
-                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <i className="ri-map-pin-line text-2xl text-orange-600"></i>
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-orange-100">
+                      <i className="ri-map-pin-line text-2xl text-orange-600" aria-hidden="true"></i>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-1">Adresse</h4>
-                      <p className="text-gray-600">Canada</p>
+                      <h4 className="mb-1 font-semibold text-gray-900">{t('public.contact.coordinates.address')}</h4>
+                      <p className="text-gray-600">{t('public.contact.coordinates.country')}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-2xl p-8 border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Liens Utiles</h3>
+              <div className="rounded-[2rem] border border-gray-200 bg-white p-8 shadow-sm">
+                <h3 className="mb-4 text-xl font-bold text-gray-900">{t('public.contact.links.title')}</h3>
                 <ul className="space-y-3">
                   <li>
-                    <a href="https://www.ambassadeburkina.ca" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-700 hover:text-emerald-600 transition-colors cursor-pointer">
-                      <i className="ri-external-link-line mr-2"></i>
-                      Ambassade du Burkina Faso au Canada
+                    <a href="https://www.ambassadeburkina.ca" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
+                      <i className="ri-external-link-line mr-2" aria-hidden="true"></i>
+                      {t('public.contact.links.embassy')}
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="flex items-center text-gray-700 hover:text-emerald-600 transition-colors cursor-pointer">
-                      <i className="ri-external-link-line mr-2"></i>
-                      Consulat du Burkina Faso
+                    <a href="mailto:contact@hcbecanada.org?subject=Demande%20consulaire" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
+                      <i className="ri-mail-line mr-2" aria-hidden="true"></i>
+                      {t('public.contact.links.consulate')}
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.canada.ca/fr/immigration-refugies-citoyennete.html" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-700 hover:text-emerald-600 transition-colors cursor-pointer">
-                      <i className="ri-external-link-line mr-2"></i>
-                      Immigration, Réfugiés et Citoyenneté Canada
+                    <a href="https://www.canada.ca/fr/immigration-refugies-citoyennete.html" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
+                      <i className="ri-external-link-line mr-2" aria-hidden="true"></i>
+                      {t('public.contact.links.ircc')}
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.canada.ca" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-700 hover:text-emerald-600 transition-colors cursor-pointer">
-                      <i className="ri-external-link-line mr-2"></i>
-                      Services gouvernementaux du Canada
+                    <a href="https://www.canada.ca" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
+                      <i className="ri-external-link-line mr-2" aria-hidden="true"></i>
+                      {t('public.contact.links.govCanada')}
                     </a>
                   </li>
                 </ul>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Suivez-nous</h3>
-                <div className="flex space-x-4">
-                  <a href="#" className="w-12 h-12 bg-emerald-100 hover:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
-                    <i className="ri-facebook-fill text-2xl text-emerald-600"></i>
-                  </a>
-                  <a href="#" className="w-12 h-12 bg-emerald-100 hover:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
-                    <i className="ri-twitter-x-fill text-2xl text-emerald-600"></i>
-                  </a>
-                  <a href="#" className="w-12 h-12 bg-emerald-100 hover:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
-                    <i className="ri-linkedin-fill text-2xl text-emerald-600"></i>
-                  </a>
-                  <a href="#" className="w-12 h-12 bg-emerald-100 hover:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors cursor-pointer">
-                    <i className="ri-youtube-fill text-2xl text-emerald-600"></i>
-                  </a>
+              <div className="rounded-[2rem] border border-gray-200 bg-white p-8 shadow-sm">
+                <h3 className="mb-4 text-xl font-bold text-gray-900">{t('public.contact.social.title')}</h3>
+                <div className="rounded-2xl bg-emerald-50 p-5 text-sm leading-6 text-emerald-900">
+                  {t('public.contact.social.placeholder')}
                 </div>
               </div>
             </div>
           </div>
 
           <div>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Questions Fréquentes</h2>
-              <p className="text-gray-600">Trouvez rapidement des réponses à vos questions</p>
+            <div className="mb-12 text-center">
+              <h2 className="mb-4 text-3xl font-bold text-gray-900">{t('public.contact.faq.title')}</h2>
+              <p className="text-gray-600">{t('public.contact.faq.subtitle')}</p>
             </div>
 
-            <div className="max-w-4xl mx-auto space-y-4">
+            <div className="mx-auto max-w-4xl space-y-4">
               {faqItems.map((item, index) => (
-                <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
+                <div key={item.questionKey} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
                   <button
+                    type="button"
                     onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
-                    className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-left transition-colors hover:bg-gray-50"
                   >
-                    <span className="font-semibold text-gray-900 pr-4">{item.question}</span>
-                    <i className={`ri-arrow-${openFaqIndex === index ? 'up' : 'down'}-s-line text-2xl text-emerald-600 flex-shrink-0`}></i>
+                    <span className="pr-4 font-semibold text-gray-900">{t(item.questionKey)}</span>
+                    <i
+                      className={`ri-arrow-${openFaqIndex === index ? 'up' : 'down'}-s-line flex-shrink-0 text-2xl text-emerald-600`}
+                      aria-hidden="true"
+                    ></i>
                   </button>
                   {openFaqIndex === index && (
                     <div className="px-6 pb-5">
-                      <p className="text-gray-600 leading-relaxed">{item.reponse}</p>
+                      <p className="leading-relaxed text-gray-600">{t(item.answerKey)}</p>
                     </div>
                   )}
                 </div>

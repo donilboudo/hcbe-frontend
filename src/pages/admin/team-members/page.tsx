@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { teamMembersApi } from '../../../lib/api/team-members';
 import type { TeamMemberDto } from '../../../lib/api/types';
 import { buildApiUrl } from '../../../lib/api/base-url';
@@ -7,6 +8,7 @@ const TeamMembersPage: React.FC = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMemberDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const loadTeamMembers = async () => {
     try {
@@ -15,11 +17,11 @@ const TeamMembersPage: React.FC = () => {
       if (response.success && response.data) {
         setTeamMembers(response.data);
       } else {
-        setError('Failed to load team members');
+        setError(t('admin.team.errorLoad'));
       }
     } catch (err) {
       console.error('Error loading team members:', err);
-      setError('Error loading team members');
+      setError(t('admin.team.errorLoad'));
     } finally {
       setLoading(false);
     }
@@ -41,7 +43,7 @@ const TeamMembersPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this team member?')) {
+    if (window.confirm(t('admin.common.confirmDeleteGeneric'))) {
       try {
         const response = await teamMembersApi.deleteTeamMember(id);
         if (response.success) {
@@ -69,7 +71,7 @@ const TeamMembersPage: React.FC = () => {
           onClick={loadTeamMembers}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Try again
+          {t('admin.common.tryAgain')}
         </button>
       </div>
     );
@@ -78,13 +80,13 @@ const TeamMembersPage: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Team Members</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('admin.team.title')}</h1>
         <a
           href="/admin/team-members/create"
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <i className="ri-add-line mr-2"></i>
-          Add Member
+          {t('admin.team.create')}
         </a>
       </div>
 
@@ -94,22 +96,22 @@ const TeamMembersPage: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Member
+                  {t('admin.team.colMember')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Position
+                  {t('admin.team.colPosition')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Zone
+                  {t('admin.common.zone')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  {t('admin.common.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order
+                  {t('admin.team.colOrder')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  {t('admin.common.actions')}
                 </th>
               </tr>
             </thead>
@@ -147,7 +149,7 @@ const TeamMembersPage: React.FC = () => {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {member.isActive ? 'Active' : 'Inactive'}
+                      {member.isActive ? t('admin.common.active') : t('admin.common.inactive')}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -158,14 +160,14 @@ const TeamMembersPage: React.FC = () => {
                       <a
                         href={`/admin/team-members/${member.id}`}
                         className="text-indigo-600 hover:text-indigo-900"
-                        title="View"
+                        title={t('admin.common.view')}
                       >
                         <i className="ri-eye-line"></i>
                       </a>
                       <a
                         href={`/admin/team-members/${member.id}/edit`}
                         className="text-indigo-600 hover:text-indigo-900"
-                        title="Edit"
+                        title={t('admin.common.edit')}
                       >
                         <i className="ri-edit-line"></i>
                       </a>
@@ -176,7 +178,7 @@ const TeamMembersPage: React.FC = () => {
                             ? 'text-yellow-600 hover:text-yellow-900' 
                             : 'text-green-600 hover:text-green-900'
                         }`}
-                        title={member.isActive ? 'Deactivate' : 'Activate'}
+                        title={member.isActive ? t('admin.team.deactivate') : t('admin.team.activate')}
                       >
                         {member.isActive ? (
                           <i className="ri-pause-circle-line"></i>
@@ -187,7 +189,7 @@ const TeamMembersPage: React.FC = () => {
                       <button
                         onClick={() => handleDelete(member.id)}
                         className="text-red-600 hover:text-red-900"
-                        title="Delete"
+                        title={t('admin.common.delete')}
                       >
                         <i className="ri-delete-bin-line"></i>
                       </button>
@@ -202,13 +204,13 @@ const TeamMembersPage: React.FC = () => {
 
       {teamMembers.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">No team members found</p>
+          <p className="text-gray-500 mb-4">{t('admin.team.emptyTitle')}</p>
           <a
             href="/admin/team-members/create"
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <i className="ri-add-line mr-2"></i>
-            Add First Member
+            {t('admin.team.createFirst')}
           </a>
         </div>
       )}

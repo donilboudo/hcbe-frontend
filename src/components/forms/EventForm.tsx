@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreateEventRequest, UpdateEventRequest, Event } from '../../lib/api/types';
+import type { CreateEventRequest, UpdateEventRequest, Event } from '../../lib/api/types';
 
 interface EventFormProps {
   initialValues?: Event;

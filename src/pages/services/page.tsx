@@ -1,30 +1,33 @@
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/feature/Navbar';
 import Footer from '../../components/feature/Footer';
 import ServicesHero from './components/ServicesHero';
 import { Link } from 'react-router-dom';
 
 const ServicesPage = () => {
+  const { t } = useTranslation();
+
   const services = [
     {
       id: 1,
-      title: 'Documents Officiels',
-      description: 'Consultez et téléchargez les statuts, règlements et documents officiels du HCBE Canada',
+      titleKey: 'public.services.page.cards.documents.title',
+      descriptionKey: 'public.services.page.cards.documents.description',
       icon: 'ri-folder-line',
       color: 'emerald',
       link: '/services/documents-officiels',
     },
     {
       id: 2,
-      title: 'Nos Comités Spécialisés',
-      description: 'Quatre comités dédiés pour répondre à tous vos besoins : juridique, RH, SONGRÉ et finances',
+      titleKey: 'public.services.page.cards.comites.title',
+      descriptionKey: 'public.services.page.cards.comites.description',
       icon: 'ri-service-line',
       color: 'blue',
       link: '/services/comites',
     },
     {
       id: 3,
-      title: 'Bourses et Subventions',
-      description: 'Découvrez nos programmes de soutien financier pour vos projets éducatifs et entrepreneuriaux',
+      titleKey: 'public.services.page.cards.bourses.title',
+      descriptionKey: 'public.services.page.cards.bourses.description',
       icon: 'ri-hand-coin-line',
       color: 'amber',
       link: '/services/bourses',
@@ -56,16 +59,15 @@ const ServicesPage = () => {
     <div className="min-h-screen bg-white">
       <Navbar />
       <ServicesHero />
-      
-      {/* Services Grid */}
+
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nos Services et Ressources
+              {t('public.services.page.section.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Découvrez nos différents services pour vous accompagner dans votre parcours au Canada
+              {t('public.services.page.section.subtitle')}
             </p>
           </div>
 
@@ -81,16 +83,16 @@ const ServicesPage = () => {
                     <i className={`${service.icon} text-3xl ${colors.icon}`}></i>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {service.title}
+                    {t(service.titleKey)}
                   </h3>
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    {service.description}
+                    {t(service.descriptionKey)}
                   </p>
                   <Link
                     to={service.link}
                     className={`inline-flex items-center px-6 py-3 ${colors.button} text-white rounded-lg font-semibold transition-colors whitespace-nowrap`}
                   >
-                    En savoir plus
+                    {t('public.common.learnMore')}
                     <i className="ri-arrow-right-line ml-2"></i>
                   </Link>
                 </div>
@@ -99,7 +101,7 @@ const ServicesPage = () => {
           </div>
         </div>
       </section>
-      
+
       <Footer />
     </div>
   );

@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next';
+
 const ServicesHero = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative pt-32 pb-20 overflow-hidden">
       <div
@@ -13,13 +17,13 @@ const ServicesHero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
           <i className="ri-service-line text-white"></i>
-          <span className="text-white font-semibold text-sm">Services et Ressources</span>
+          <span className="text-white font-semibold text-sm">{t('public.services.hero.badge')}</span>
         </div>
         <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-          Nos Services d'Accompagnement
+          {t('public.services.hero.title')}
         </h1>
         <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-          Le HCBE Canada met à votre disposition une gamme complète de services pour vous accompagner dans votre parcours au Canada et contribuer au développement du Burkina Faso
+          {t('public.services.hero.subtitle')}
         </p>
       </div>
     </section>

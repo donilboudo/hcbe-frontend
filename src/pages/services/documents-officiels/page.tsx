@@ -1,33 +1,86 @@
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../../components/feature/Navbar';
 import Footer from '../../../components/feature/Footer';
 import DocumentsSection from '../../home/components/DocumentsSection';
+import { Link } from 'react-router-dom';
+
+const rememberItems = [
+  {
+    titleKey: 'public.services.documents.remember.validity.title',
+    descriptionKey: 'public.services.documents.remember.validity.description',
+  },
+  {
+    titleKey: 'public.services.documents.remember.access.title',
+    descriptionKey: 'public.services.documents.remember.access.description',
+  },
+  {
+    titleKey: 'public.services.documents.remember.support.title',
+    descriptionKey: 'public.services.documents.remember.support.description',
+  },
+] as const;
 
 const DocumentsOfficielsPage = () => {
+  const { t } = useTranslation();
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white text-gray-950">
       <Navbar />
-      
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-emerald-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <i className="ri-folder-line"></i>
-              <span className="font-semibold text-sm">Services et Ressources</span>
+
+      <section className="relative isolate overflow-hidden bg-emerald-950 pt-32 text-white">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_15%_15%,rgba(252,209,22,0.18),transparent_28%),radial-gradient(circle_at_85%_10%,rgba(16,185,129,0.22),transparent_32%),linear-gradient(135deg,#022c22_0%,#064e3b_48%,#0f172a_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-28 bg-gradient-to-t from-white to-transparent" />
+
+        <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-end">
+            <div>
+              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-semibold text-emerald-50 backdrop-blur">
+                <i className="ri-folder-shield-2-line" aria-hidden="true"></i>
+                {t('public.services.documents.badge')}
+              </div>
+              <h1 className="max-w-4xl text-5xl font-bold tracking-tight md:text-6xl">
+                {t('public.services.documents.title')}
+              </h1>
+              <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90">
+                {t('public.services.documents.subtitle')}
+              </p>
+              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+                <a
+                  href="#documents"
+                  className="inline-flex items-center justify-center rounded-full bg-white px-7 py-4 font-semibold text-emerald-950 shadow-xl shadow-black/20 transition hover:-translate-y-0.5 hover:bg-emerald-50"
+                >
+                  {t('public.services.documents.cta.view')}
+                  <i className="ri-arrow-down-line ml-2" aria-hidden="true"></i>
+                </a>
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-7 py-4 font-semibold text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
+                >
+                  {t('public.services.documents.cta.ask')}
+                </Link>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Documents Officiels
-            </h1>
-            <p className="text-xl text-gray-100 max-w-3xl mx-auto">
-              Consultez et téléchargez les documents officiels régissant le fonctionnement du HCBE Canada
-            </p>
+
+            <div className="rounded-[2rem] border border-white/15 bg-white/[0.08] p-5 shadow-2xl shadow-black/20 backdrop-blur-xl">
+              <div className="rounded-[1.5rem] bg-white p-6 text-gray-950">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-700">
+                  {t('public.services.documents.remember.label')}
+                </p>
+                <div className="mt-6 space-y-4">
+                  {rememberItems.map((item) => (
+                    <div key={item.titleKey} className="rounded-2xl border border-gray-100 bg-gray-50 p-4">
+                      <h2 className="font-semibold text-gray-950">{t(item.titleKey)}</h2>
+                      <p className="mt-1 text-sm leading-6 text-gray-600">{t(item.descriptionKey)}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Documents Section */}
       <DocumentsSection />
-      
+
       <Footer />
     </div>
   );

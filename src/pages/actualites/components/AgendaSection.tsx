@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { eventsApi } from '../../../lib/api/events';
-import { Event } from '../../../lib/api/types';
+import type { Event } from '../../../lib/api/types';
 
 const AgendaSection = () => {
   const [selectedMonth, setSelectedMonth] = useState('tous');

@@ -1,193 +1,224 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-interface News {
-  id: string;
-  title: string;
-  content: string;
-  category: string;
-  author: string;
-  publishedAt: string;
-  imageUrl?: string;
-  isPinned: boolean;
-}
-
-const annoncesExemples: News[] = [
-  {
-    id: '1',
-    title: 'Nouvelle Procédure de Demande de Passeport Burkinabè',
-    content: 'Le Consulat du Burkina Faso annonce la mise en place d\'une nouvelle procédure simplifiée pour la demande de passeport. Les citoyens burkinabè résidant au Canada peuvent désormais soumettre leur demande en ligne via le portail consulaire. Les documents requis incluent: preuve de citoyenneté, photos d\'identité récentes, formulaire de demande complété. Le délai de traitement est estimé à 4-6 semaines.',
-    category: 'Communiqué Officiel',
-    author: 'Secrétariat HCBE',
-    publishedAt: '2024-01-15',
-    imageUrl: 'https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=800',
-    isPinned: true
-  },
-  {
-    id: '2',
-    title: 'Programme de Bourses d\'Études 2024',
-    content: 'Le HCBE Canada est fier d\'annoncer le lancement de son programme de bourses d\'études pour l\'année 2024. Nous offrons 10 bourses d\'une valeur de 2 000$ chacune aux étudiants burkinabè inscrits dans des établissements d\'enseignement supérieur canadiens. Les critères d\'éligibilité comprennent: excellence académique (moyenne minimale de 3.0), engagement communautaire, projet de développement pour le Burkina Faso. Date limite de candidature: 31 mars 2024.',
-    category: 'Éducation',
-    author: 'Comité Éducation',
-    publishedAt: '2024-01-10',
-    imageUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800',
-    isPinned: true
-  },
-  {
-    id: '3',
-    title: 'Assemblée Générale Annuelle 2024',
-    content: 'Nous invitons tous les membres du HCBE Canada à participer à notre Assemblée Générale Annuelle qui se tiendra le samedi 16 mars 2024 à 14h00 au Centre Communautaire de Toronto. À l\'ordre du jour: rapport d\'activités 2023, présentation des comptes, élections du nouveau conseil d\'administration, orientations stratégiques 2024-2026. Votre présence et participation sont essentielles pour l\'avenir de notre communauté.',
-    category: 'Événement',
-    author: 'Bureau Exécutif',
-    publishedAt: '2024-01-05',
-    imageUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800',
-    isPinned: false
-  },
-  {
-    id: '4',
-    title: 'Services de Légalisation de Documents',
-    content: 'Le HCBE Canada, en partenariat avec le Consulat, propose maintenant un service de légalisation de documents pour faciliter vos démarches administratives. Ce service comprend: authentification de diplômes, certification de documents d\'état civil, légalisation pour usage au Burkina Faso. Les rendez-vous se tiennent tous les mardis et jeudis de 10h à 15h. Frais: 50$ par document. Réservation obligatoire.',
-    category: 'Service',
-    author: 'Département Services',
-    publishedAt: '2023-12-20',
-    imageUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800',
-    isPinned: false
-  },
-  {
-    id: '5',
-    title: 'Collecte de Fonds pour les Déplacés Internes',
-    content: 'Face à la situation humanitaire au Burkina Faso, le HCBE Canada lance une campagne de collecte de fonds pour venir en aide aux personnes déplacées internes. L\'objectif est de collecter 50 000$ pour fournir des kits alimentaires, des articles d\'hygiène et des fournitures scolaires. Vous pouvez contribuer par virement bancaire ou via notre plateforme en ligne. Chaque don fait la différence. Ensemble, soutenons nos compatriotes.',
-    category: 'Solidarité',
-    author: 'Comité Solidarité',
-    publishedAt: '2023-12-15',
-    imageUrl: 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=800',
-    isPinned: false
-  },
-  {
-    id: '6',
-    title: 'Atelier: Entrepreneuriat et Création d\'Entreprise au Canada',
-    content: 'Le HCBE organise un atelier pratique sur l\'entrepreneuriat et la création d\'entreprise au Canada. Au programme: structures juridiques, financement et subventions disponibles, fiscalité pour entrepreneurs, marketing et développement commercial. Animé par des entrepreneurs burkinabè à succès et des experts en développement des affaires. Date: 27 janvier 2024, 13h-17h. Inscription gratuite mais places limitées.',
-    category: 'Formation',
-    author: 'Comité Entrepreneuriat',
-    publishedAt: '2023-12-10',
-    imageUrl: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800',
-    isPinned: false
-  },
-  {
-    id: '7',
-    title: 'Nouvelle Section Jeunesse du HCBE',
-    content: 'Nous sommes heureux d\'annoncer la création de la Section Jeunesse du HCBE Canada, dédiée aux membres de 16 à 35 ans. Cette section vise à favoriser l\'engagement des jeunes, préserver le patrimoine culturel burkinabè, créer des opportunités de mentorat et de réseautage. Première réunion le 3 février 2024. Si vous souhaitez vous impliquer ou proposer des projets, contactez jeunesse@hcbecanada.org',
-    category: 'Annonce',
-    author: 'Coordination Jeunesse',
-    publishedAt: '2023-12-05',
-    imageUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800',
-    isPinned: false
-  },
-  {
-    id: '8',
-    title: 'Partenariat avec Immigration Canada',
-    content: 'Le HCBE Canada a signé un protocole d\'accord avec Immigration, Réfugiés et Citoyenneté Canada (IRCC) pour faciliter l\'intégration des nouveaux arrivants burkinabè. Ce partenariat permettra d\'offrir: séances d\'information sur l\'immigration, aide à la recherche d\'emploi, cours de français/anglais, accompagnement administratif. Un agent d\'IRCC sera disponible à nos bureaux le premier mercredi de chaque mois.',
-    category: 'Partenariat',
-    author: 'Direction HCBE',
-    publishedAt: '2023-11-28',
-    imageUrl: 'https://images.unsplash.com/photo-1521791055366-0d553872125f?w=800',
-    isPinned: false
-  }
-];
+import { useTranslation } from 'react-i18next';
+import { newsApi } from '../../../lib/api/news';
+import type { NewsArticle } from '../../../lib/api/types';
+import { getNewsCategoryStyle } from '../../../lib/news/category-styles';
 
 interface AnnoncesExemplesProps {
   selectedCategory: string;
 }
 
-export const AnnoncesExemples: React.FC<AnnoncesExemplesProps> = ({ selectedCategory }) => {
-  const filteredNews = selectedCategory === 'all' 
-    ? annoncesExemples 
-    : annoncesExemples.filter(n => n.category === selectedCategory);
+const formatDate = (dateString: string, locale: string) =>
+  new Intl.DateTimeFormat(locale === 'en' ? 'en-CA' : 'fr-CA', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(new Date(dateString));
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }).format(date);
-  };
+const AnnoncesExemples = ({ selectedCategory }: AnnoncesExemplesProps) => {
+  const { t, i18n } = useTranslation();
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [selectedNews, setSelectedNews] = useState<NewsArticle | null>(null);
 
-  if (filteredNews.length === 0) {
+  useEffect(() => {
+    const loadNews = async () => {
+      try {
+        const response = await newsApi.getPublishedNews();
+        if (response.success && response.data) {
+          setArticles(response.data);
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        console.error('Error loading news:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNews();
+  }, []);
+
+  const filteredNews =
+    selectedCategory === 'all'
+      ? articles
+      : articles.filter((item) => item.category === selectedCategory);
+
+  const sortedNews = [...filteredNews].sort((a, b) => {
+    if (a.isPinned !== b.isPinned) {
+      return a.isPinned ? -1 : 1;
+    }
+    const dateA = new Date(a.publishedDate || a.createdAt).getTime();
+    const dateB = new Date(b.publishedDate || b.createdAt).getTime();
+    return dateB - dateA;
+  });
+
+  if (loading) {
     return (
-      <div className="text-center py-12 bg-white rounded-lg shadow">
-        <i className="ri-newspaper-line text-6xl text-gray-400 mb-4"></i>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          Aucune annonce dans cette catégorie
-        </h3>
-        <p className="text-gray-600">
-          Consultez d'autres catégories pour plus d'actualités
-        </p>
+      <div className="flex justify-center py-16">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-[2rem] border border-red-200 bg-red-50 p-10 text-center text-red-700">
+        {t('public.news.annonces.errorLoad')}
+      </div>
+    );
+  }
+
+  if (sortedNews.length === 0) {
+    return (
+      <div className="rounded-[2rem] border border-dashed border-gray-300 bg-white p-10 text-center">
+        <i className="ri-newspaper-line mb-4 text-5xl text-gray-300" aria-hidden="true"></i>
+        <h3 className="text-xl font-bold text-gray-950">{t('public.news.annonces.emptyCategory')}</h3>
+        <p className="mx-auto mt-3 max-w-md text-gray-600">{t('public.news.annonces.emptyCategoryHint')}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {filteredNews.map((item) => (
-        <article
-          key={item.id}
-          className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow"
+    <>
+      <div className="grid gap-5 sm:gap-6">
+        {sortedNews.map((item) => {
+          const style = getNewsCategoryStyle(item.category);
+          const publishedAt = item.publishedDate || item.createdAt;
+          const preview = item.excerpt || item.content;
+
+          return (
+            <article
+              key={item.id}
+              className="overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-lg sm:rounded-[2rem]"
+            >
+              <div className="grid gap-0 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
+                <div className={`relative min-h-[140px] bg-gradient-to-br ${style.accent} p-5 text-white sm:min-h-[160px] md:min-h-full`}>
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.2),transparent_35%)]" />
+                  <div className="relative flex h-full flex-col justify-between">
+                    <i className={`${style.icon} text-3xl text-white/85`} aria-hidden="true"></i>
+                    <span className="mt-4 inline-flex w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">
+                      {item.category}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-5 sm:p-6 lg:p-7">
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    {item.isPinned && (
+                      <span className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
+                        <i className="ri-pushpin-line mr-1" aria-hidden="true"></i>
+                        {t('public.news.annonces.pinned')}
+                      </span>
+                    )}
+                    <span className="text-sm text-gray-500">{formatDate(publishedAt, i18n.language)}</span>
+                  </div>
+
+                  <h2 className="text-xl font-bold leading-snug text-gray-950 sm:text-2xl">{item.title}</h2>
+
+                  {item.author && <p className="mt-2 text-sm text-gray-600 sm:text-base">{item.author}</p>}
+
+                  <p className="mt-4 line-clamp-3 text-sm leading-6 text-gray-700 sm:text-base sm:leading-7">
+                    {preview}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedNews(item)}
+                    className="mt-5 inline-flex items-center rounded-full bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                  >
+                    {t('public.news.annonces.readMore')}
+                    <i className="ri-arrow-right-line ml-2" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {selectedNews && (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+          onClick={() => setSelectedNews(null)}
+          role="presentation"
         >
-          <div className="md:flex">
-            {item.imageUrl && (
-              <div className="md:w-1/3">
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-64 md:h-full object-cover"
-                />
-              </div>
-            )}
-            <div className={`p-6 ${item.imageUrl ? 'md:w-2/3' : 'w-full'}`}>
-              <div className="flex items-center gap-3 mb-3">
-                {item.isPinned && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                    <i className="ri-pushpin-line mr-1"></i>
-                    Épinglé
+          <div
+            className="max-h-[92vh] w-full overflow-y-auto rounded-t-[2rem] bg-white sm:max-w-3xl sm:rounded-[2rem]"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="annonce-modal-title"
+          >
+            <div className={`bg-gradient-to-br ${getNewsCategoryStyle(selectedNews.category).accent} p-6 text-white sm:p-8`}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">
+                    {selectedNews.category}
                   </span>
+                  <h2 id="annonce-modal-title" className="mt-4 text-2xl font-bold leading-snug sm:text-3xl">
+                    {selectedNews.title}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedNews(null)}
+                  aria-label={t('public.common.close')}
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/15 transition hover:bg-white/25"
+                >
+                  <i className="ri-close-line text-xl" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 sm:p-8">
+              {selectedNews.imageUrl && (
+                <img
+                  src={selectedNews.imageUrl}
+                  alt={selectedNews.title}
+                  className="mb-6 h-48 w-full rounded-2xl object-cover"
+                />
+              )}
+
+              <div className="flex flex-col gap-1 text-sm text-gray-600 sm:flex-row sm:gap-4">
+                <span>{formatDate(selectedNews.publishedDate || selectedNews.createdAt, i18n.language)}</span>
+                {selectedNews.author && (
+                  <>
+                    <span className="hidden sm:inline">•</span>
+                    <span>{selectedNews.author}</span>
+                  </>
                 )}
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  {item.category}
-                </span>
               </div>
 
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {item.title}
-              </h2>
-
-              <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">
-                <span className="flex items-center">
-                  <i className="ri-user-line mr-1"></i>
-                  {item.author}
-                </span>
-                <span className="flex items-center">
-                  <i className="ri-calendar-line mr-1"></i>
-                  {formatDate(item.publishedAt)}
-                </span>
-              </div>
-
-              <p className="text-gray-700 mb-4 line-clamp-3">
-                {item.content}
+              <p className="mt-6 whitespace-pre-wrap text-base leading-7 text-gray-700 sm:text-lg sm:leading-8">
+                {selectedNews.content}
               </p>
 
-              <button
-                className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
-                onClick={() => alert('Fonctionnalité de détail à implémenter')}
-              >
-                Lire la suite
-                <i className="ri-arrow-right-line ml-2"></i>
-              </button>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/contact"
+                  onClick={() => setSelectedNews(null)}
+                  className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-6 py-3 font-semibold text-white transition hover:bg-emerald-800"
+                >
+                  {t('public.news.annonces.askQuestion')}
+                </Link>
+                <Link
+                  to="/actualites/evenements"
+                  onClick={() => setSelectedNews(null)}
+                  className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-6 py-3 font-semibold text-gray-800 transition hover:bg-gray-50"
+                >
+                  {t('public.news.annonces.viewEvents')}
+                </Link>
+              </div>
             </div>
           </div>
-        </article>
-      ))}
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 
