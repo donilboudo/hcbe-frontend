@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { associationsApi } from '../../../lib/api/associations';
 import type { Association } from '../../../lib/api/types';
+import associationDefaultImage from '../../../assets/association-default.jpg';
 
 const AnnuaireSection = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedProvince, setSelectedProvince] = useState('Toutes');
+  const [selectedProvince, setSelectedProvince] = useState('all');
   const [associations, setAssociations] = useState<Association[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [brokenImages, setBrokenImages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     loadAssociations();
@@ -20,84 +24,79 @@ const AnnuaireSection = () => {
       if (response.success && response.data) {
         setAssociations(response.data);
       } else {
-        setError('Failed to load associations');
+        setError(t('public.engagement.annuaire.errorLoad'));
       }
-    } catch (error) {
-      console.error('Error loading associations:', error);
-      setError('Error loading associations');
+    } catch (err) {
+      console.error('Error loading associations:', err);
+      setError(t('public.engagement.annuaire.errorLoad'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Convert backend Association to display format
-  const formatAssociationForDisplay = (association: Association) => ({
-    id: association.id,
-    nom: association.name,
-    province: association.province,
-    ville: association.city,
-    description: association.description || 'Description à venir',
-    domaines: association.domains,
-    contact: association.contact || 'Contact à confirmer',
-    telephone: association.phone || 'Téléphone à confirmer',
-    president: association.president || 'Président à confirmer',
-    membres: association.memberCount || 'Membres à confirmer',
-    annee: association.foundedYear?.toString() || 'Année à confirmer',
-    image: association.imageUrl || 'https://readdy.ai/api/search-image?query=Professional%20association%20community%20gathering&width=600&height=400&seq=assoc-default&orientation=landscape',
-  });
+  const provinces = [
+    'all',
+    ...Array.from(new Set(associations.map((association) => association.province))).sort(),
+  ];
 
-  const displayAssociations = associations.map(formatAssociationForDisplay);
-
-  // Generate provinces dynamically from actual associations
-  const getUniqueProvinces = () => {
-    const provinces = new Set<string>();
-    associations.forEach(association => provinces.add(association.province));
-    return ['Toutes', ...Array.from(provinces).sort()];
-  };
-
-  const provinces = getUniqueProvinces();
-
-  const filteredAssociations = displayAssociations.filter(assoc => {
-    const matchesSearch = assoc.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         assoc.ville.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         assoc.domaines.some(d => d.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesProvince = selectedProvince === 'Toutes' || assoc.province === selectedProvince;
+  const filteredAssociations = associations.filter((assoc) => {
+    const haystack = [
+      assoc.name,
+      assoc.city,
+      assoc.province,
+      ...assoc.domains,
+    ]
+      .join(' ')
+      .toLowerCase();
+    const matchesSearch = haystack.includes(searchTerm.toLowerCase());
+    const matchesProvince = selectedProvince === 'all' || assoc.province === selectedProvince;
     return matchesSearch && matchesProvince;
   });
 
+  const getImageSrc = (assoc: Association) => {
+    if (!assoc.imageUrl || brokenImages[assoc.id]) {
+      return associationDefaultImage;
+    }
+    return assoc.imageUrl;
+  };
+
   return (
-    <section className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center space-x-2 bg-emerald-50 px-4 py-2 rounded-full mb-4">
-            <i className="ri-building-line text-emerald-600"></i>
-            <span className="text-emerald-600 font-semibold text-sm">Annuaire des Associations</span>
+    <section className="bg-gray-50 py-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <div className="mb-4 inline-flex items-center space-x-2 rounded-full bg-emerald-50 px-4 py-2">
+            <i className="ri-building-line text-emerald-600" aria-hidden="true"></i>
+            <span className="text-sm font-semibold text-emerald-600">
+              {t('public.engagement.annuaire.badge')}
+            </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Associations Burkinabè au Canada
+          <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
+            {t('public.engagement.annuaire.title')}
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-            Découvrez et connectez-vous avec les associations burkinabè à travers le Canada
+          <p className="mx-auto mb-8 max-w-3xl text-lg text-gray-600">
+            {t('public.engagement.annuaire.subtitle')}
           </p>
 
-          <div className="flex flex-col md:flex-row gap-4 max-w-4xl mx-auto">
-            <div className="flex-1 relative">
-              <i className="ri-search-line absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+          <div className="mx-auto flex max-w-4xl flex-col gap-4 md:flex-row">
+            <div className="relative flex-1">
+              <i className="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-400" aria-hidden="true"></i>
               <input
                 type="text"
-                placeholder="Rechercher par nom, ville ou domaine..."
+                placeholder={t('public.engagement.annuaire.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm"
+                className="w-full rounded-lg border border-gray-300 py-3 pl-12 pr-4 text-sm focus:border-transparent focus:ring-2 focus:ring-emerald-600"
               />
             </div>
             <select
               value={selectedProvince}
               onChange={(e) => setSelectedProvince(e.target.value)}
-              className="px-6 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent text-sm font-medium cursor-pointer"
+              className="cursor-pointer rounded-lg border border-gray-300 px-6 py-3 text-sm font-medium focus:border-transparent focus:ring-2 focus:ring-emerald-600"
             >
-              {provinces.map(prov => (
-                <option key={prov} value={prov}>{prov}</option>
+              {provinces.map((prov) => (
+                <option key={prov} value={prov}>
+                  {prov === 'all' ? t('public.engagement.annuaire.filterAllProvinces') : prov}
+                </option>
               ))}
             </select>
           </div>
@@ -105,106 +104,130 @@ const AnnuaireSection = () => {
 
         {isLoading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
           </div>
         )}
 
         {error && (
-          <div className="text-center py-12">
-            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg inline-block">
+          <div className="py-12 text-center">
+            <div className="inline-block rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800">
               {error}
             </div>
           </div>
         )}
 
         {!isLoading && !error && filteredAssociations.length === 0 && (
-          <div className="text-center py-12">
-            <span className="text-4xl">🏢</span>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">Aucune association trouvée</h3>
+          <div className="py-12 text-center">
+            <i className="ri-building-line text-5xl text-gray-300" aria-hidden="true"></i>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              {t('public.engagement.annuaire.emptyTitle')}
+            </h3>
             <p className="mt-2 text-gray-500">
-              {selectedProvince === 'Toutes' 
-                ? "Aucune association n'est actuellement répertoriée." 
-                : `Aucune association pour la province sélectionnée.`}
+              {selectedProvince === 'all'
+                ? t('public.engagement.annuaire.emptyAll')
+                : t('public.engagement.annuaire.emptyFilter')}
             </p>
           </div>
         )}
 
         {!isLoading && !error && filteredAssociations.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredAssociations.map((assoc) => (
-            <div
-              key={assoc.id}
-              className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-gray-100"
-            >
-              <div className="relative h-56 w-full">
-                <img
-                  src={assoc.image}
-                  alt={assoc.nom}
-                  className="w-full h-full object-cover object-top"
-                />
-                <div className="absolute top-4 left-4">
-                  <span className="px-4 py-2 bg-emerald-600 text-white rounded-full text-sm font-bold">
-                    {assoc.province}
-                  </span>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {filteredAssociations.map((assoc) => {
+              const imageSrc = getImageSrc(assoc);
+              const hasContactEmail = Boolean(assoc.contact?.trim());
 
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{assoc.nom}</h3>
-                <div className="flex items-center text-gray-600 text-sm mb-4">
-                  <i className="ri-map-pin-line mr-2 text-emerald-600"></i>
-                  <span>{assoc.ville}, {assoc.province}</span>
-                </div>
-
-                <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                  {assoc.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {assoc.domaines.map((domaine, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium"
-                    >
-                      {domaine}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="space-y-2 mb-6 text-sm">
-                  <div className="flex items-center text-gray-600">
-                    <i className="ri-user-line mr-2 text-emerald-600 w-5 h-5 flex items-center justify-center"></i>
-                    <span>{assoc.president}</span>
+              return (
+                <article
+                  key={assoc.id}
+                  className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all hover:shadow-xl"
+                >
+                  <div className="relative h-56 w-full bg-gray-100">
+                    <img
+                      src={imageSrc}
+                      alt={assoc.name}
+                      className="h-full w-full object-cover object-center"
+                      onError={() =>
+                        setBrokenImages((prev) => ({
+                          ...prev,
+                          [assoc.id]: true,
+                        }))
+                      }
+                    />
+                    <div className="absolute left-4 top-4">
+                      <span className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white">
+                        {assoc.province}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center text-gray-600">
-                    <i className="ri-team-line mr-2 text-emerald-600 w-5 h-5 flex items-center justify-center"></i>
-                    <span>{assoc.membres} membres</span>
-                  </div>
-                  <div className="flex items-center text-gray-600">
-                    <i className="ri-calendar-line mr-2 text-emerald-600 w-5 h-5 flex items-center justify-center"></i>
-                    <span>Fondée en {assoc.annee}</span>
-                  </div>
-                </div>
 
-                <div className="flex gap-2">
-                  <a
-                    href={`mailto:${assoc.contact}`}
-                    className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition-colors text-center whitespace-nowrap cursor-pointer"
-                  >
-                    <i className="ri-mail-line mr-2"></i>
-                    Contacter
-                  </a>
-                  <button className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors cursor-pointer">
-                    <i className="ri-information-line"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+                  <div className="p-6">
+                    <h3 className="mb-2 text-xl font-bold text-gray-900">{assoc.name}</h3>
+                    <div className="mb-4 flex items-center text-sm text-gray-600">
+                      <i className="ri-map-pin-line mr-2 text-emerald-600" aria-hidden="true"></i>
+                      <span>
+                        {assoc.city}, {assoc.province}
+                      </span>
+                    </div>
+
+                    {assoc.description?.trim() && (
+                      <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-gray-600">
+                        {assoc.description}
+                      </p>
+                    )}
+
+                    {assoc.domains.length > 0 && (
+                      <div className="mb-4 flex flex-wrap gap-2">
+                        {assoc.domains.map((domaine) => (
+                          <span
+                            key={domaine}
+                            className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700"
+                          >
+                            {domaine}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mb-6 space-y-2 text-sm">
+                      {assoc.president?.trim() && (
+                        <div className="flex items-center text-gray-600">
+                          <i className="ri-user-line mr-2 flex h-5 w-5 items-center justify-center text-emerald-600" aria-hidden="true"></i>
+                          <span>{assoc.president}</span>
+                        </div>
+                      )}
+                      {assoc.memberCount?.trim() && (
+                        <div className="flex items-center text-gray-600">
+                          <i className="ri-team-line mr-2 flex h-5 w-5 items-center justify-center text-emerald-600" aria-hidden="true"></i>
+                          <span>
+                            {t('public.engagement.annuaire.members', { count: assoc.memberCount })}
+                          </span>
+                        </div>
+                      )}
+                      {assoc.foundedYear != null && (
+                        <div className="flex items-center text-gray-600">
+                          <i className="ri-calendar-line mr-2 flex h-5 w-5 items-center justify-center text-emerald-600" aria-hidden="true"></i>
+                          <span>
+                            {t('public.engagement.annuaire.founded', { year: assoc.foundedYear })}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {hasContactEmail && (
+                      <a
+                        href={`mailto:${assoc.contact}`}
+                        className="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+                      >
+                        <i className="ri-mail-line mr-2" aria-hidden="true"></i>
+                        {t('public.engagement.annuaire.contact')}
+                      </a>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         )}
-
-        {/* Remove the old empty state since we have a new one with loading/error handling */}
       </div>
     </section>
   );

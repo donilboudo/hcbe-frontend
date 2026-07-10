@@ -205,6 +205,21 @@ export default {
   'public.engagement.projets.subtitle':
     'Follow community-led initiatives, their progress and meaningful ways to contribute.',
 
+  // Engagement — directory
+  'public.engagement.annuaire.badge': 'Association directory',
+  'public.engagement.annuaire.title': 'Burkinabè associations in Canada',
+  'public.engagement.annuaire.subtitle':
+    'Discover and connect with Burkinabè associations across Canada',
+  'public.engagement.annuaire.searchPlaceholder': 'Search by name, city or domain...',
+  'public.engagement.annuaire.filterAllProvinces': 'All provinces',
+  'public.engagement.annuaire.emptyTitle': 'No associations found',
+  'public.engagement.annuaire.emptyAll': 'No associations are currently listed.',
+  'public.engagement.annuaire.emptyFilter': 'No associations for the selected province.',
+  'public.engagement.annuaire.errorLoad': 'Error loading associations',
+  'public.engagement.annuaire.members': '{{count}} members',
+  'public.engagement.annuaire.founded': 'Founded in {{year}}',
+  'public.engagement.annuaire.contact': 'Contact',
+
   // Engagement — consultations
   'public.engagement.consultations.badge': 'Consultations',
   'public.engagement.consultations.title': 'Your opinion should guide our priorities.',
