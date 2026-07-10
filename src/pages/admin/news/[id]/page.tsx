@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { AdminBackButton } from '../../../../components/admin/AdminBackButton';
 import { newsApi } from '../../../../lib/api/news';
 import type { NewsArticle } from '../../../../lib/api/types';
+import { formatFileSize, resolveMediaUrl } from '../../../../lib/api/media-url';
 import { getNewsCategoryStyle } from '../../../../lib/news/category-styles';
 
 const NewsViewPage: React.FC = () => {
@@ -102,7 +103,11 @@ const NewsViewPage: React.FC = () => {
       </div>
 
       {article.imageUrl && (
-        <img src={article.imageUrl} alt={article.title} className="mb-6 h-64 w-full rounded-2xl object-cover" />
+        <img
+          src={resolveMediaUrl(article.imageUrl)}
+          alt={article.title}
+          className="mb-6 h-64 w-full rounded-2xl object-cover"
+        />
       )}
 
       {article.excerpt && (
@@ -112,6 +117,30 @@ const NewsViewPage: React.FC = () => {
       <div className="rounded-lg bg-white p-6 shadow">
         <p className="whitespace-pre-wrap text-base leading-7 text-gray-700">{article.content}</p>
       </div>
+
+      {(article.attachments?.length ?? 0) > 0 && (
+        <div className="mt-6 rounded-lg border border-gray-200 bg-white p-6 shadow">
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">{t('admin.news.attachments')}</h2>
+          <ul className="space-y-2">
+            {article.attachments?.map((attachment) => (
+              <li key={attachment.id}>
+                <a
+                  href={resolveMediaUrl(attachment.url)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 font-medium text-emerald-700 hover:underline"
+                >
+                  <i className="ri-attachment-2" aria-hidden="true"></i>
+                  {attachment.fileName}
+                  <span className="text-sm font-normal text-gray-500">
+                    ({formatFileSize(attachment.sizeBytes)})
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

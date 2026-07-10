@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AdminBackButton } from '../../../../../components/admin/AdminBackButton';
 import { newsApi } from '../../../../../lib/api/news';
-import type { CreateNewsRequest } from '../../../../../lib/api/types';
+import type { CreateNewsRequest, NewsAttachment } from '../../../../../lib/api/types';
 import { NewsForm } from '../../NewsForm';
 
 const NewsEditPage: React.FC = () => {
@@ -13,6 +13,9 @@ const NewsEditPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<File[]>([]);
+  const [existingAttachments, setExistingAttachments] = useState<NewsAttachment[]>([]);
   const [formData, setFormData] = useState<CreateNewsRequest>({
     title: '',
     content: '',
@@ -44,6 +47,7 @@ const NewsEditPage: React.FC = () => {
             isPinned: article.isPinned,
             status: article.status,
           });
+          setExistingAttachments(article.attachments ?? []);
         } else {
           setError(t('admin.news.errorLoad'));
         }
@@ -57,18 +61,52 @@ const NewsEditPage: React.FC = () => {
     loadArticle();
   }, [id, t]);
 
+  const handleDeleteAttachment = async (attachmentId: string) => {
+    if (!id) return;
+    const response = await newsApi.deleteAttachment(id, attachmentId);
+    if (response.success) {
+      setExistingAttachments((prev) => prev.filter((item) => item.id !== attachmentId));
+    } else {
+      setError(response.message || t('admin.news.errorUpload'));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
     setSubmitting(true);
     setError(null);
     try {
-      const response = await newsApi.updateNews(id, formData);
-      if (response.success) {
-        navigate(`/admin/news/${id}`);
-      } else {
-        setError(response.message || t('admin.news.errorUpdate'));
+      let imageUrl = formData.imageUrl || undefined;
+
+      if (coverFile) {
+        const coverResponse = await newsApi.uploadCover(id, coverFile);
+        if (!coverResponse.success || !coverResponse.data) {
+          setError(coverResponse.message || t('admin.news.errorUpload'));
+          return;
+        }
+        imageUrl = coverResponse.data.url;
       }
+
+      const response = await newsApi.updateNews(id, {
+        ...formData,
+        imageUrl,
+      });
+
+      if (!response.success) {
+        setError(response.message || t('admin.news.errorUpdate'));
+        return;
+      }
+
+      for (const file of pendingAttachments) {
+        const attachmentResponse = await newsApi.uploadAttachment(id, file);
+        if (!attachmentResponse.success) {
+          setError(attachmentResponse.message || t('admin.news.errorUpload'));
+          return;
+        }
+      }
+
+      navigate(`/admin/news/${id}`);
     } catch (err) {
       console.error('Error updating news:', err);
       setError(t('admin.news.errorUpdate'));
@@ -99,6 +137,12 @@ const NewsEditPage: React.FC = () => {
         submitting={submitting}
         submitLabel={t('admin.common.save')}
         onCancel={() => navigate(`/admin/news/${id}`)}
+        coverFile={coverFile}
+        onCoverFileChange={setCoverFile}
+        pendingAttachments={pendingAttachments}
+        onPendingAttachmentsChange={setPendingAttachments}
+        existingAttachments={existingAttachments}
+        onDeleteAttachment={handleDeleteAttachment}
       />
     </div>
   );

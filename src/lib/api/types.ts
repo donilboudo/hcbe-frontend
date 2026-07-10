@@ -408,6 +408,22 @@ export interface UpdateConsultationRequest {
 }
 
 // News / Annonces
+export interface NewsAttachment {
+  id: string;
+  fileName: string;
+  url: string;
+  contentType: string;
+  sizeBytes: number;
+  createdAt: string;
+}
+
+export interface MediaUpload {
+  url: string;
+  fileName: string;
+  contentType: string;
+  sizeBytes: number;
+}
+
 export interface NewsArticle {
   id: string;
   title: string;
@@ -421,6 +437,7 @@ export interface NewsArticle {
   status: string;
   createdAt: string;
   updatedAt: string;
+  attachments?: NewsAttachment[];
 }
 
 export interface CreateNewsRequest {

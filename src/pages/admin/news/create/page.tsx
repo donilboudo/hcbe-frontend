@@ -11,6 +11,8 @@ const NewsCreatePage: React.FC = () => {
   const { t } = useTranslation();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<File[]>([]);
   const [formData, setFormData] = useState<CreateNewsRequest>({
     title: '',
     content: '',
@@ -29,12 +31,38 @@ const NewsCreatePage: React.FC = () => {
     setError(null);
 
     try {
-      const response = await newsApi.createNews(formData);
-      if (response.success && response.data) {
-        navigate(`/admin/news/${response.data.id}`);
-      } else {
-        setError(response.message || t('admin.news.errorCreate'));
+      let imageUrl = formData.imageUrl || undefined;
+
+      if (coverFile) {
+        const mediaResponse = await newsApi.uploadMedia(coverFile);
+        if (!mediaResponse.success || !mediaResponse.data) {
+          setError(mediaResponse.message || t('admin.news.errorUpload'));
+          return;
+        }
+        imageUrl = mediaResponse.data.url;
       }
+
+      const response = await newsApi.createNews({
+        ...formData,
+        imageUrl,
+      });
+
+      if (!response.success || !response.data) {
+        setError(response.message || t('admin.news.errorCreate'));
+        return;
+      }
+
+      const newsId = response.data.id;
+      for (const file of pendingAttachments) {
+        const attachmentResponse = await newsApi.uploadAttachment(newsId, file);
+        if (!attachmentResponse.success) {
+          setError(attachmentResponse.message || t('admin.news.errorUpload'));
+          navigate(`/admin/news/${newsId}/edit`);
+          return;
+        }
+      }
+
+      navigate(`/admin/news/${newsId}`);
     } catch (err) {
       console.error('Error creating news:', err);
       setError(t('admin.news.errorCreate'));
@@ -57,6 +85,10 @@ const NewsCreatePage: React.FC = () => {
         submitting={submitting}
         submitLabel={t('admin.common.create')}
         onCancel={() => navigate('/admin/news')}
+        coverFile={coverFile}
+        onCoverFileChange={setCoverFile}
+        pendingAttachments={pendingAttachments}
+        onPendingAttachmentsChange={setPendingAttachments}
       />
     </div>
   );

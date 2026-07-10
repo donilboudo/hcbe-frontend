@@ -99,6 +99,8 @@ export default {
     'To suggest an announcement or report useful information for the community, contact the HCBE Canada team.',
   'public.news.annonces.pinned': 'Pinned',
   'public.news.annonces.readMore': 'Read announcement',
+  'public.news.annonces.attachments': 'Attachments',
+  'public.news.annonces.download': 'Download',
   'public.news.annonces.askQuestion': 'Ask a question',
   'public.news.annonces.viewEvents': 'View events',
   'public.news.annonces.errorLoad': 'Unable to load announcements at this time.',

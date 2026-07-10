@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { newsApi } from '../../../lib/api/news';
 import type { NewsArticle } from '../../../lib/api/types';
+import { formatFileSize, resolveMediaUrl } from '../../../lib/api/media-url';
 import { getNewsCategoryStyle } from '../../../lib/news/category-styles';
 
 interface AnnoncesExemplesProps {
@@ -178,7 +179,7 @@ const AnnoncesExemples = ({ selectedCategory }: AnnoncesExemplesProps) => {
             <div className="p-6 sm:p-8">
               {selectedNews.imageUrl && (
                 <img
-                  src={selectedNews.imageUrl}
+                  src={resolveMediaUrl(selectedNews.imageUrl)}
                   alt={selectedNews.title}
                   className="mb-6 h-48 w-full rounded-2xl object-cover"
                 />
@@ -197,6 +198,32 @@ const AnnoncesExemples = ({ selectedCategory }: AnnoncesExemplesProps) => {
               <p className="mt-6 whitespace-pre-wrap text-base leading-7 text-gray-700 sm:text-lg sm:leading-8">
                 {selectedNews.content}
               </p>
+
+              {(selectedNews.attachments?.length ?? 0) > 0 && (
+                <div className="mt-8 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-5">
+                  <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                    {t('public.news.annonces.attachments')}
+                  </h3>
+                  <ul className="mt-3 space-y-2">
+                    {selectedNews.attachments?.map((attachment) => (
+                      <li key={attachment.id}>
+                        <a
+                          href={resolveMediaUrl(attachment.url)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition hover:text-emerald-800"
+                        >
+                          <i className="ri-download-2-line" aria-hidden="true"></i>
+                          {attachment.fileName}
+                          <span className="font-normal text-gray-500">
+                            ({formatFileSize(attachment.sizeBytes)})
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link

@@ -99,6 +99,8 @@ export default {
     "Pour proposer une annonce ou signaler une information utile à la communauté, contactez l'équipe du HCBE Canada.",
   'public.news.annonces.pinned': 'Épinglé',
   'public.news.annonces.readMore': "Lire l'annonce",
+  'public.news.annonces.attachments': 'Pièces jointes',
+  'public.news.annonces.download': 'Télécharger',
   'public.news.annonces.askQuestion': 'Poser une question',
   'public.news.annonces.viewEvents': 'Voir les événements',
   'public.news.annonces.errorLoad': 'Impossible de charger les annonces pour le moment.',

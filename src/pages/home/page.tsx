@@ -4,6 +4,7 @@ import HeroSection from './components/HeroSection';
 import ZonesSection from './components/ZonesSection';
 import MissionVisionSection from './components/MissionVisionSection';
 import UpcomingEventsSection from './components/UpcomingEventsSection';
+import RecentAnnouncementsSection from './components/RecentAnnouncementsSection';
 import CTASection from './components/CTASection';
 
 const HomePage = () => {
@@ -14,6 +15,7 @@ const HomePage = () => {
       <MissionVisionSection />
       <ZonesSection />
       <UpcomingEventsSection />
+      <RecentAnnouncementsSection />
       <CTASection />
       <Footer />
     </div>

@@ -68,6 +68,13 @@ export default {
   'public.home.events.viewAll': 'Voir tous les événements',
   'public.home.events.details': 'Voir les détails',
 
+  'public.home.announcements.badge': 'Annonces',
+  'public.home.announcements.title': 'Les dernières annonces de la communauté.',
+  'public.home.announcements.subtitle':
+    'Communiqués, informations pratiques et nouvelles publiées par le HCBE Canada.',
+  'public.home.announcements.viewAll': 'Voir toutes les annonces',
+  'public.home.announcements.readMore': 'Lire l’annonce',
+
   'public.home.cta.label': "Passer à l'action",
   'public.home.cta.title': 'Une communauté se construit mieux quand chacun sait où contribuer.',
   'public.home.cta.subtitle':
