@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { CreateEventRequest, UpdateEventRequest, Event } from '../../lib/api/types';
+import { useTranslation } from 'react-i18next';
 
 interface EventFormProps {
   initialValues?: Event;
@@ -12,8 +13,9 @@ export const EventForm: React.FC<EventFormProps> = ({
   initialValues,
   onSubmit,
   isLoading,
-  submitButtonText = 'Save Event'
+  submitButtonText,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: initialValues?.title || '',
     description: initialValues?.description || '',
@@ -22,23 +24,24 @@ export const EventForm: React.FC<EventFormProps> = ({
     type: initialValues?.type || '',
     zone: initialValues?.zone || '',
     capacity: initialValues?.capacity?.toString() || '',
-    registrationDeadline: initialValues?.registrationDeadline 
-      ? new Date(initialValues.registrationDeadline).toISOString().slice(0, 16) 
+    registrationDeadline: initialValues?.registrationDeadline
+      ? new Date(initialValues.registrationDeadline).toISOString().slice(0, 16)
       : '',
     meetingLink: initialValues?.meetingLink || '',
     imageUrl: initialValues?.imageUrl || '',
-    status: initialValues?.status || 'Draft'
+    status: initialValues?.status || 'Draft',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -46,27 +49,29 @@ export const EventForm: React.FC<EventFormProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = t('admin.events.form.validation.titleRequired');
     }
 
     if (!formData.date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = t('admin.events.form.validation.dateRequired');
     }
-    // Allow past dates for testing and editing existing events
-    // } else if (new Date(formData.date) < new Date()) {
-    //   newErrors.date = 'Event date cannot be in the past';
-    // }
 
     if (!formData.status) {
-      newErrors.status = 'Status is required';
+      newErrors.status = t('admin.events.form.validation.statusRequired');
     }
 
-    if (formData.registrationDeadline && new Date(formData.registrationDeadline) >= new Date(formData.date)) {
-      newErrors.registrationDeadline = 'Registration deadline must be before event date';
+    if (
+      formData.registrationDeadline &&
+      new Date(formData.registrationDeadline) >= new Date(formData.date)
+    ) {
+      newErrors.registrationDeadline = t('admin.events.form.validation.deadlineBeforeDate');
     }
 
-    if (formData.capacity && (isNaN(parseInt(formData.capacity)) || parseInt(formData.capacity) < 1)) {
-      newErrors.capacity = 'Capacity must be a positive number';
+    if (
+      formData.capacity &&
+      (isNaN(parseInt(formData.capacity, 10)) || parseInt(formData.capacity, 10) < 1)
+    ) {
+      newErrors.capacity = t('admin.events.form.validation.capacityPositive');
     }
 
     setErrors(newErrors);
@@ -75,7 +80,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -87,50 +92,49 @@ export const EventForm: React.FC<EventFormProps> = ({
       location: formData.location || undefined,
       type: formData.type || undefined,
       zone: formData.zone || undefined,
-      capacity: formData.capacity ? parseInt(formData.capacity) : undefined,
+      capacity: formData.capacity ? parseInt(formData.capacity, 10) : undefined,
       registrationDeadline: formData.registrationDeadline || undefined,
       meetingLink: formData.meetingLink || undefined,
       imageUrl: formData.imageUrl || undefined,
-      status: formData.status
+      status: formData.status,
     };
 
     await onSubmit(submitData);
   };
 
   const statusOptions = [
-    { value: 'Draft', label: 'Draft' },
-    { value: 'Active', label: 'Active' },
-    { value: 'Cancelled', label: 'Cancelled' },
-    { value: 'Completed', label: 'Completed' }
+    { value: 'Draft', label: t('admin.eventPublication.draft') },
+    { value: 'Active', label: t('admin.events.form.statusPublished') },
+    { value: 'Cancelled', label: t('admin.eventPublication.cancelled') },
+    { value: 'Completed', label: t('admin.eventPublication.completed') },
   ];
 
   const typeOptions = [
-    { value: '', label: 'Select type...' },
-    { value: 'Workshop', label: 'Workshop' },
-    { value: 'Conference', label: 'Conference' },
-    { value: 'Networking', label: 'Networking' },
-    { value: 'Training', label: 'Training' },
-    { value: 'Social', label: 'Social' },
-    { value: 'Other', label: 'Other' }
+    { value: '', label: t('admin.events.form.selectType') },
+    { value: 'Workshop', label: t('admin.events.type.workshop') },
+    { value: 'Conference', label: t('admin.events.type.conference') },
+    { value: 'Networking', label: t('admin.events.type.networking') },
+    { value: 'Training', label: t('admin.events.type.training') },
+    { value: 'Social', label: t('admin.events.type.social') },
+    { value: 'Other', label: t('admin.events.type.other') },
   ];
 
   const zoneOptions = [
-    { value: '', label: 'Select zone...' },
-    { value: 'Montreal', label: 'Montreal' },
-    { value: 'Quebec', label: 'Quebec' },
-    { value: 'Ottawa', label: 'Ottawa' },
-    { value: 'Toronto', label: 'Toronto' },
-    { value: 'Virtual', label: 'Virtual' },
-    { value: 'Other', label: 'Other' }
+    { value: '', label: t('admin.events.form.selectZone') },
+    { value: 'Montreal', label: t('admin.events.zone.montreal') },
+    { value: 'Quebec', label: t('admin.events.zone.quebec') },
+    { value: 'Ottawa', label: t('admin.events.zone.ottawa') },
+    { value: 'Toronto', label: t('admin.events.zone.toronto') },
+    { value: 'Virtual', label: t('admin.events.zone.virtual') },
+    { value: 'Other', label: t('admin.events.zone.other') },
   ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Title */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="md:col-span-2">
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-            Title *
+          <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.events.form.title')} *
           </label>
           <input
             type="text"
@@ -138,18 +142,17 @@ export const EventForm: React.FC<EventFormProps> = ({
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+            className={`block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 ${
               errors.title ? 'border-red-300' : 'border-gray-300'
             }`}
-            placeholder="Enter event title"
+            placeholder={t('admin.events.form.titlePlaceholder')}
           />
           {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
         </div>
 
-        {/* Description */}
         <div className="md:col-span-2">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-            Description
+          <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.description')}
           </label>
           <textarea
             id="description"
@@ -157,15 +160,14 @@ export const EventForm: React.FC<EventFormProps> = ({
             rows={4}
             value={formData.description}
             onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter event description"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
+            placeholder={t('admin.events.form.descriptionPlaceholder')}
           />
         </div>
 
-        {/* Date */}
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-            Event Date *
+          <label htmlFor="date" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.events.form.eventDate')} *
           </label>
           <input
             type="datetime-local"
@@ -173,17 +175,19 @@ export const EventForm: React.FC<EventFormProps> = ({
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+            className={`block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 ${
               errors.date ? 'border-red-300' : 'border-gray-300'
             }`}
           />
           {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
         </div>
 
-        {/* Registration Deadline */}
         <div>
-          <label htmlFor="registrationDeadline" className="block text-sm font-medium text-gray-700 mb-1">
-            Registration Deadline
+          <label
+            htmlFor="registrationDeadline"
+            className="mb-1 block text-sm font-medium text-gray-700"
+          >
+            {t('admin.events.registrationDeadline')}
           </label>
           <input
             type="datetime-local"
@@ -191,17 +195,18 @@ export const EventForm: React.FC<EventFormProps> = ({
             name="registrationDeadline"
             value={formData.registrationDeadline}
             onChange={handleChange}
-            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+            className={`block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 ${
               errors.registrationDeadline ? 'border-red-300' : 'border-gray-300'
             }`}
           />
-          {errors.registrationDeadline && <p className="mt-1 text-sm text-red-600">{errors.registrationDeadline}</p>}
+          {errors.registrationDeadline && (
+            <p className="mt-1 text-sm text-red-600">{errors.registrationDeadline}</p>
+          )}
         </div>
 
-        {/* Location */}
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-            Location
+          <label htmlFor="location" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.location')}
           </label>
           <input
             type="text"
@@ -209,15 +214,14 @@ export const EventForm: React.FC<EventFormProps> = ({
             name="location"
             value={formData.location}
             onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter event location"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
+            placeholder={t('admin.events.form.locationPlaceholder')}
           />
         </div>
 
-        {/* Meeting Link */}
         <div>
-          <label htmlFor="meetingLink" className="block text-sm font-medium text-gray-700 mb-1">
-            Meeting Link
+          <label htmlFor="meetingLink" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.events.form.meetingLink')}
           </label>
           <input
             type="url"
@@ -225,15 +229,14 @@ export const EventForm: React.FC<EventFormProps> = ({
             name="meetingLink"
             value={formData.meetingLink}
             onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
             placeholder="https://zoom.us/j/..."
           />
         </div>
 
-        {/* Image URL */}
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-1">
-            Event Image URL
+          <label htmlFor="imageUrl" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.events.form.imageUrl')}
           </label>
           <input
             type="url"
@@ -241,54 +244,53 @@ export const EventForm: React.FC<EventFormProps> = ({
             name="imageUrl"
             value={formData.imageUrl}
             onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
             placeholder="https://example.com/event-image.jpg"
           />
-          <p className="mt-1 text-sm text-gray-500">
-            Optional: Add a URL for the event image to display in listings and details
-          </p>
+          <p className="mt-1 text-sm text-gray-500">{t('admin.events.form.imageUrlHint')}</p>
         </div>
 
-        {/* Type */}
         <div>
-          <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-            Event Type
+          <label htmlFor="type" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.events.form.eventType')}
           </label>
           <select
             id="type"
             name="type"
             value={formData.type}
             onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
           >
-            {typeOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+            {typeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* Zone */}
         <div>
-          <label htmlFor="zone" className="block text-sm font-medium text-gray-700 mb-1">
-            Zone
+          <label htmlFor="zone" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.zone')}
           </label>
           <select
             id="zone"
             name="zone"
             value={formData.zone}
             onChange={handleChange}
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
           >
-            {zoneOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+            {zoneOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* Capacity */}
         <div>
-          <label htmlFor="capacity" className="block text-sm font-medium text-gray-700 mb-1">
-            Capacity
+          <label htmlFor="capacity" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.capacity')}
           </label>
           <input
             type="number"
@@ -297,50 +299,51 @@ export const EventForm: React.FC<EventFormProps> = ({
             value={formData.capacity}
             onChange={handleChange}
             min="1"
-            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+            className={`block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 ${
               errors.capacity ? 'border-red-300' : 'border-gray-300'
             }`}
-            placeholder="Maximum attendees"
+            placeholder={t('admin.events.form.capacityPlaceholder')}
           />
           {errors.capacity && <p className="mt-1 text-sm text-red-600">{errors.capacity}</p>}
         </div>
 
-        {/* Status */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-            Status *
+          <label htmlFor="status" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.status')} *
           </label>
           <select
             id="status"
             name="status"
             value={formData.status}
             onChange={handleChange}
-            className={`block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${
+            className={`block w-full rounded-md border px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500 ${
               errors.status ? 'border-red-300' : 'border-gray-300'
             }`}
           >
-            {statusOptions.map(option => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </select>
+          <p className="mt-1 text-xs text-gray-500">{t('admin.events.form.statusHint')}</p>
           {errors.status && <p className="mt-1 text-sm text-red-600">{errors.status}</p>}
         </div>
       </div>
 
-      {/* Submit Button */}
       <div className="flex justify-end">
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center rounded-md border border-transparent bg-emerald-700 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-              Saving...
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
+              {t('admin.events.form.saving')}
             </div>
           ) : (
-            submitButtonText
+            submitButtonText ?? t('admin.common.save')
           )}
         </button>
       </div>

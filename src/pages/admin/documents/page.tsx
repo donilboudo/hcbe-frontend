@@ -119,14 +119,11 @@ export const AdminDocumentsList: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('admin.documents.title')}</h1>
-          <p className="mt-2 text-gray-600">{t('admin.documents.subtitle')}</p>
-        </div>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-gray-600 sm:text-base">{t('admin.documents.subtitle')}</p>
         <Link
           to="/admin/documents/create"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
+          className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 sm:w-auto"
         >
           <i className="ri-add-line mr-2"></i>
           {t('admin.documents.create')}

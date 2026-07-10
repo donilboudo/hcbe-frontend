@@ -128,22 +128,26 @@ export default {
 
   // News — events
   'public.news.evenements.badge': 'News and events',
-  'public.news.evenements.title': 'Upcoming events',
+  'public.news.evenements.title': 'Community events',
   'public.news.evenements.subtitle':
     'Meetings, workshops and community moments to stay close to the Burkinabè network in Canada.',
-  'public.news.evenements.filter.all': 'All events',
-  'public.news.evenements.filter.upcoming': 'Upcoming',
-  'public.news.evenements.filter.ongoing': 'Ongoing',
+  'public.news.evenements.filter.current': 'Upcoming & ongoing',
+  'public.news.evenements.filter.past': 'Past',
+  'public.news.evenements.filter.all': 'All',
   'public.news.evenements.error.unavailable': 'Events are not available at the moment.',
   'public.news.evenements.error.load': 'Unable to load events.',
   'public.news.evenements.empty.title': 'No events found',
-  'public.news.evenements.empty.upcoming': 'No upcoming events at the moment.',
-  'public.news.evenements.empty.ongoing': 'No events currently ongoing.',
+  'public.news.evenements.empty.current': 'No upcoming or ongoing events at the moment.',
+  'public.news.evenements.empty.past': 'No past events to display.',
   'public.news.evenements.empty.all':
     'Check this page regularly so you don\'t miss any events.',
+  'public.news.evenements.status.upcoming': 'Upcoming',
   'public.news.evenements.status.ongoing': 'Ongoing',
+  'public.news.evenements.status.past': 'Past',
   'public.news.evenements.status.virtual': 'Virtual',
+  'public.news.evenements.pastNotice': 'This event has ended.',
   'public.news.evenements.cta.details': 'Details',
+  'public.news.evenements.cta.recap': 'View recap',
   'public.news.evenements.cta.register': 'Register',
 
   // News — memories

@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../../../components/feature/Navbar';
 import Footer from '../../../components/feature/Footer';
 import { buildApiUrl } from '../../../lib/api/base-url';
+import {
+  getEventLifecycle,
+  isPublicAgendaEvent,
+  sortEventsForPublic,
+  type EventLifecycle,
+} from '../../../lib/events/lifecycle';
 
 interface Event {
   id: string;
@@ -12,16 +18,46 @@ interface Event {
   date: string;
   location: string;
   imageUrl?: string;
-  isVirtual: boolean;
-  registrationUrl?: string;
-  status: 'upcoming' | 'ongoing' | 'past';
+  type?: string;
+  meetingLink?: string;
+  status: string;
 }
+
+type PublicFilter = 'current' | 'past' | 'all';
+
+const lifecycleBadge = (lifecycle: EventLifecycle, label: string) => {
+  if (lifecycle === 'ongoing') {
+    return (
+      <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-800">
+        <i className="ri-live-line mr-1" aria-hidden="true"></i>
+        {label}
+      </span>
+    );
+  }
+  if (lifecycle === 'upcoming') {
+    return (
+      <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-sm font-medium text-emerald-800">
+        <i className="ri-calendar-line mr-1" aria-hidden="true"></i>
+        {label}
+      </span>
+    );
+  }
+  if (lifecycle === 'past') {
+    return (
+      <span className="inline-flex items-center rounded-full bg-gray-200 px-3 py-1 text-sm font-medium text-gray-700">
+        <i className="ri-check-line mr-1" aria-hidden="true"></i>
+        {label}
+      </span>
+    );
+  }
+  return null;
+};
 
 export const EvenementsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'upcoming' | 'ongoing'>('all');
+  const [filter, setFilter] = useState<PublicFilter>('current');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -33,27 +69,33 @@ export const EvenementsPage: React.FC = () => {
       setError(null);
       const response = await fetch(buildApiUrl('/api/events'));
       const result = await response.json();
-      if (result.success) {
-        const futureEvents = result.data
-          .filter((event: Event) => event.status !== 'past')
-          .sort((a: Event, b: Event) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        setEvents(futureEvents);
+      if (result.success && Array.isArray(result.data)) {
+        const published = result.data.filter((event: Event) => isPublicAgendaEvent(event));
+        setEvents(sortEventsForPublic(published));
       } else {
         setError(t('public.news.evenements.error.unavailable'));
       }
-    } catch (error) {
-      console.error('Error loading events:', error);
+    } catch (err) {
+      console.error('Error loading events:', err);
       setError(t('public.news.evenements.error.load'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredEvents = filter === 'all' ? events : events.filter((event) => event.status === filter);
+  const filteredEvents = useMemo(() => {
+    if (filter === 'all') return events;
+    if (filter === 'past') {
+      return events.filter((event) => getEventLifecycle(event) === 'past');
+    }
+    return events.filter((event) => {
+      const life = getEventLifecycle(event);
+      return life === 'upcoming' || life === 'ongoing';
+    });
+  }, [events, filter]);
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const locale = i18n.language === 'fr' ? 'fr-FR' : 'en-CA';
+    const locale = i18n.language.startsWith('fr') ? 'fr-CA' : 'en-CA';
     return new Intl.DateTimeFormat(locale, {
       weekday: 'long',
       year: 'numeric',
@@ -61,15 +103,27 @@ export const EvenementsPage: React.FC = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    }).format(date);
+    }).format(new Date(dateString));
+  };
+
+  const lifecycleLabel = (lifecycle: EventLifecycle) => {
+    if (lifecycle === 'ongoing') return t('public.news.evenements.status.ongoing');
+    if (lifecycle === 'upcoming') return t('public.news.evenements.status.upcoming');
+    if (lifecycle === 'past') return t('public.news.evenements.status.past');
+    return '';
   };
 
   const emptyMessageKey =
-    filter === 'upcoming'
-      ? 'public.news.evenements.empty.upcoming'
-      : filter === 'ongoing'
-        ? 'public.news.evenements.empty.ongoing'
+    filter === 'current'
+      ? 'public.news.evenements.empty.current'
+      : filter === 'past'
+        ? 'public.news.evenements.empty.past'
         : 'public.news.evenements.empty.all';
+
+  const isVirtual = (event: Event) => {
+    const type = (event.type || '').toLowerCase();
+    return type.includes('virtuel') || type.includes('virtual') || Boolean(event.meetingLink);
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-950">
@@ -84,8 +138,10 @@ export const EvenementsPage: React.FC = () => {
               <i className="ri-calendar-event-line" aria-hidden="true"></i>
               {t('public.news.evenements.badge')}
             </div>
-            <h1 className="text-5xl font-bold tracking-tight md:text-6xl">{t('public.news.evenements.title')}</h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90">
+            <h1 className="text-balance break-words text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+              {t('public.news.evenements.title')}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-emerald-50/90 sm:mt-7 sm:text-lg sm:leading-8">
               {t('public.news.evenements.subtitle')}
             </p>
           </div>
@@ -96,30 +152,39 @@ export const EvenementsPage: React.FC = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 flex flex-wrap gap-3">
             <button
+              type="button"
+              onClick={() => setFilter('current')}
+              className={`rounded-full px-6 py-3 font-semibold transition-colors ${
+                filter === 'current'
+                  ? 'bg-emerald-700 text-white'
+                  : 'bg-white text-gray-700 hover:bg-emerald-50'
+              }`}
+            >
+              <i className="ri-flashlight-line mr-2" aria-hidden="true"></i>
+              {t('public.news.evenements.filter.current')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter('past')}
+              className={`rounded-full px-6 py-3 font-semibold transition-colors ${
+                filter === 'past'
+                  ? 'bg-emerald-700 text-white'
+                  : 'bg-white text-gray-700 hover:bg-emerald-50'
+              }`}
+            >
+              <i className="ri-history-line mr-2" aria-hidden="true"></i>
+              {t('public.news.evenements.filter.past')}
+            </button>
+            <button
+              type="button"
               onClick={() => setFilter('all')}
               className={`rounded-full px-6 py-3 font-semibold transition-colors ${
-                filter === 'all' ? 'bg-emerald-700 text-white' : 'bg-white text-gray-700 hover:bg-emerald-50'
+                filter === 'all'
+                  ? 'bg-emerald-700 text-white'
+                  : 'bg-white text-gray-700 hover:bg-emerald-50'
               }`}
             >
               {t('public.news.evenements.filter.all')}
-            </button>
-            <button
-              onClick={() => setFilter('upcoming')}
-              className={`rounded-full px-6 py-3 font-semibold transition-colors ${
-                filter === 'upcoming' ? 'bg-emerald-700 text-white' : 'bg-white text-gray-700 hover:bg-emerald-50'
-              }`}
-            >
-              <i className="ri-calendar-line mr-2"></i>
-              {t('public.news.evenements.filter.upcoming')}
-            </button>
-            <button
-              onClick={() => setFilter('ongoing')}
-              className={`rounded-full px-6 py-3 font-semibold transition-colors ${
-                filter === 'ongoing' ? 'bg-emerald-700 text-white' : 'bg-white text-gray-700 hover:bg-emerald-50'
-              }`}
-            >
-              <i className="ri-live-line mr-2"></i>
-              {t('public.news.evenements.filter.ongoing')}
             </button>
           </div>
 
@@ -142,7 +207,7 @@ export const EvenementsPage: React.FC = () => {
             </div>
           ) : filteredEvents.length === 0 ? (
             <div className="rounded-[2rem] border border-gray-200 bg-white p-10 text-center shadow-sm">
-              <i className="ri-calendar-line mb-4 text-6xl text-gray-300"></i>
+              <i className="ri-calendar-line mb-4 text-6xl text-gray-300" aria-hidden="true"></i>
               <h3 className="mb-2 text-xl font-semibold text-gray-950">
                 {t('public.news.evenements.empty.title')}
               </h3>
@@ -150,74 +215,87 @@ export const EvenementsPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
-              {filteredEvents.map((event) => (
-                <article
-                  key={event.id}
-                  className="overflow-hidden rounded-[2rem] border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl"
-                >
-                  <div className="relative h-56 overflow-hidden bg-gradient-to-br from-emerald-800 to-slate-900">
-                    {event.imageUrl ? (
-                      <img src={event.imageUrl} alt={event.title} className="h-full w-full object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-white">
-                        <i className="ri-calendar-event-line text-6xl text-white/70" aria-hidden="true"></i>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  </div>
-                  <div className="p-7">
-                    <div className="flex items-center gap-2 mb-3">
-                      {event.status === 'ongoing' && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                          <i className="ri-live-line mr-1"></i>
-                          {t('public.news.evenements.status.ongoing')}
-                        </span>
-                      )}
-                      {event.isVirtual && (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                          <i className="ri-video-line mr-1"></i>
-                          {t('public.news.evenements.status.virtual')}
-                        </span>
-                      )}
-                    </div>
+              {filteredEvents.map((event) => {
+                const lifecycle = getEventLifecycle(event);
+                const past = lifecycle === 'past';
 
-                    <h3 className="mb-2 text-2xl font-bold text-gray-950">{event.title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-gray-700">
-                        <i className="ri-calendar-line text-emerald-600 mr-2"></i>
-                        <span className="text-sm">{formatDate(event.date)}</span>
-                      </div>
-                      {!event.isVirtual && event.location && (
-                        <div className="flex items-center text-gray-700">
-                          <i className="ri-map-pin-line text-emerald-600 mr-2"></i>
-                          <span className="text-sm">{event.location}</span>
+                return (
+                  <article
+                    key={event.id}
+                    className={`overflow-hidden rounded-[2rem] border bg-white shadow-sm transition ${
+                      past
+                        ? 'border-gray-200 opacity-90'
+                        : 'border-gray-200 hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl'
+                    }`}
+                  >
+                    <div className="relative h-56 overflow-hidden bg-gradient-to-br from-emerald-800 to-slate-900">
+                      {event.imageUrl ? (
+                        <img
+                          src={event.imageUrl}
+                          alt=""
+                          className={`h-full w-full object-cover ${past ? 'grayscale-[35%]' : ''}`}
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-white">
+                          <i
+                            className="ri-calendar-event-line text-6xl text-white/70"
+                            aria-hidden="true"
+                          ></i>
                         </div>
                       )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+                      <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                        {lifecycleBadge(lifecycle, lifecycleLabel(lifecycle))}
+                        {isVirtual(event) && (
+                          <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+                            <i className="ri-video-line mr-1" aria-hidden="true"></i>
+                            {t('public.news.evenements.status.virtual')}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex gap-3">
-                      <Link
-                        to={`/actualites/evenements/${event.id}`}
-                        className="flex-1 rounded-full bg-emerald-700 px-4 py-3 text-center font-semibold text-white transition hover:bg-emerald-800"
-                      >
-                        {t('public.news.evenements.cta.details')}
-                      </Link>
-                      {event.registrationUrl && (
-                        <a
-                          href={event.registrationUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 rounded-full border border-emerald-700 px-4 py-3 text-center font-semibold text-emerald-700 transition hover:bg-emerald-50"
-                        >
-                          {t('public.news.evenements.cta.register')}
-                        </a>
+                    <div className="p-7">
+                      <h3 className="mb-2 text-2xl font-bold text-gray-950">{event.title}</h3>
+                      <p className="mb-4 line-clamp-2 text-gray-600">{event.description}</p>
+
+                      <div className="mb-4 space-y-2">
+                        <div className="flex items-center text-gray-700">
+                          <i className="ri-calendar-line mr-2 text-emerald-600" aria-hidden="true"></i>
+                          <span className="text-sm">{formatDate(event.date)}</span>
+                        </div>
+                        {event.location && (
+                          <div className="flex items-center text-gray-700">
+                            <i className="ri-map-pin-line mr-2 text-emerald-600" aria-hidden="true"></i>
+                            <span className="text-sm">{event.location}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {past && (
+                        <p className="mb-4 rounded-xl bg-gray-100 px-3 py-2 text-sm text-gray-600">
+                          {t('public.news.evenements.pastNotice')}
+                        </p>
                       )}
+
+                      <div className="flex gap-3">
+                        <Link
+                          to={`/actualites/evenements/${event.id}`}
+                          className={`flex-1 rounded-full px-4 py-3 text-center font-semibold transition ${
+                            past
+                              ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                              : 'bg-emerald-700 text-white hover:bg-emerald-800'
+                          }`}
+                        >
+                          {past
+                            ? t('public.news.evenements.cta.recap')
+                            : t('public.news.evenements.cta.details')}
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>

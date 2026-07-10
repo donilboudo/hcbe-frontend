@@ -8,12 +8,27 @@ import { HcbeLogoMark } from '../../../components/brand/HcbeLogo';
 const fieldClassName =
   'w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm text-gray-900 focus:border-transparent focus:ring-2 focus:ring-emerald-600';
 
+const mapLoginError = (message: string | undefined, t: (key: string) => string) => {
+  const normalized = (message ?? '').toLowerCase();
+  if (
+    !message ||
+    normalized.includes('invalid email') ||
+    normalized.includes('invalid password') ||
+    normalized.includes('unauthorized') ||
+    normalized.includes('401')
+  ) {
+    return t('admin.login.invalidCredentials');
+  }
+  return t('admin.login.failed');
+};
+
 export const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+  const showLocalCredentials = import.meta.env.DEV;
 
   const { login, logout } = useAuth();
   const navigate = useNavigate();
@@ -27,7 +42,7 @@ export const AdminLoginPage = () => {
     setIsLoading(true);
 
     try {
-      const result = await login(email, password);
+      const result = await login(email.trim(), password);
 
       if (result.success) {
         const storedUser = localStorage.getItem('hcbe_user');
@@ -41,7 +56,7 @@ export const AdminLoginPage = () => {
 
         navigate(from, { replace: true });
       } else {
-        setError(result.message || t('admin.login.failed'));
+        setError(mapLoginError(result.message, t));
       }
     } catch {
       setError(t('admin.common.errorUnexpected'));
@@ -121,6 +136,18 @@ export const AdminLoginPage = () => {
                 <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
                   <i className="ri-error-warning-line mt-0.5 shrink-0 text-lg" aria-hidden="true"></i>
                   <span>{error}</span>
+                </div>
+              )}
+
+              {showLocalCredentials && (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                  <p className="font-semibold">{t('admin.login.devCredentialsTitle')}</p>
+                  <p className="mt-1">
+                    {t('admin.login.devCredentialsBody', {
+                      email: 'test@hcbe.ca',
+                      password: 'hcbe@2025!',
+                    })}
+                  </p>
                 </div>
               )}
 

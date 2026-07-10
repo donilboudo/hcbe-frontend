@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (error) {
       console.error('Login error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred during login';
+      const errorMessage = error instanceof Error ? error.message : 'Login failed';
       return { success: false, message: errorMessage };
     }
   };

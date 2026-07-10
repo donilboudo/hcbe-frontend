@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Navbar from '../../../../components/feature/Navbar';
 import Footer from '../../../../components/feature/Footer';
 import { buildApiUrl } from '../../../../lib/api/base-url';
+import { getEventLifecycle } from '../../../../lib/events/lifecycle';
 
 interface Event {
   id: string;
@@ -11,19 +13,16 @@ interface Event {
   date: string;
   location: string;
   imageUrl?: string;
-  isVirtual: boolean;
-  registrationUrl?: string;
-  status: 'upcoming' | 'ongoing' | 'past';
-  organizerName?: string;
-  organizerEmail?: string;
+  type?: string;
+  meetingLink?: string;
+  status: string;
   capacity?: number;
-  registeredCount?: number;
-  tags?: string[];
 }
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,7 +39,6 @@ export const EventDetailPage: React.FC = () => {
       if (result.success) {
         setEvent(result.data);
       } else {
-        // Événement non trouvé
         setTimeout(() => navigate('/actualites/evenements'), 2000);
       }
     } catch (error) {
@@ -51,265 +49,164 @@ export const EventDetailPage: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('fr-FR', {
+  const locale = i18n.language.startsWith('fr') ? 'fr-CA' : 'en-CA';
+
+  const formatDate = (dateString: string) =>
+    new Intl.DateTimeFormat(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-
-  const formatDateShort = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('fr-FR', {
-      month: 'short',
-      day: 'numeric'
-    }).format(date);
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'upcoming':
-        return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800">
-            <i className="ri-calendar-line mr-2"></i>
-            À venir
-          </span>
-        );
-      case 'ongoing':
-        return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800">
-            <i className="ri-live-line mr-2"></i>
-            En cours
-          </span>
-        );
-      case 'past':
-        return (
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-            <i className="ri-check-line mr-2"></i>
-            Terminé
-          </span>
-        );
-    }
-  };
+      minute: '2-digit',
+    }).format(new Date(dateString));
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <i className="ri-calendar-line text-6xl text-gray-400 mb-4"></i>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Événement non trouvé</h3>
-          <p className="text-gray-600 mb-4">Redirection en cours...</p>
+          <i className="ri-calendar-line mb-4 text-6xl text-gray-400" aria-hidden="true"></i>
+          <h3 className="mb-2 text-xl font-semibold text-gray-900">
+            {t('public.news.evenements.empty.title')}
+          </h3>
         </div>
       </div>
     );
   }
 
+  const lifecycle = getEventLifecycle(event);
+  const isPast = lifecycle === 'past';
+  const isVirtual =
+    Boolean(event.meetingLink) ||
+    (event.type || '').toLowerCase().includes('virtuel') ||
+    (event.type || '').toLowerCase().includes('virtual');
+
+  const lifecycleBadge =
+    lifecycle === 'ongoing' ? (
+      <span className="inline-flex items-center rounded-full bg-red-100 px-4 py-2 text-sm font-medium text-red-800">
+        <i className="ri-live-line mr-2" aria-hidden="true"></i>
+        {t('public.news.evenements.status.ongoing')}
+      </span>
+    ) : lifecycle === 'upcoming' ? (
+      <span className="inline-flex items-center rounded-full bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-800">
+        <i className="ri-calendar-line mr-2" aria-hidden="true"></i>
+        {t('public.news.evenements.status.upcoming')}
+      </span>
+    ) : lifecycle === 'past' ? (
+      <span className="inline-flex items-center rounded-full bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700">
+        <i className="ri-check-line mr-2" aria-hidden="true"></i>
+        {t('public.news.evenements.status.past')}
+      </span>
+    ) : null;
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      
-      {/* Hero Section with Image */}
+
       <div className="relative h-96 bg-gradient-to-r from-emerald-600 to-emerald-800 pt-20">
         {event.imageUrl && (
           <>
             <img
               src={event.imageUrl}
-              alt={event.title}
-              className="absolute inset-0 w-full h-full object-cover"
+              alt=""
+              className={`absolute inset-0 h-full w-full object-cover ${isPast ? 'grayscale-[30%]' : ''}`}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/80 to-emerald-800/80"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/80 to-emerald-800/80" />
           </>
         )}
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-end pb-12">
+
+        <div className="relative mx-auto flex h-full max-w-7xl items-end px-4 pb-12 sm:px-6 lg:px-8">
           <div className="text-white">
-            <nav className="text-sm mb-4 opacity-90">
-              <Link to="/" className="hover:underline">Accueil</Link>
+            <nav className="mb-4 text-sm opacity-90">
+              <Link to="/" className="hover:underline">
+                {t('public.nav.home')}
+              </Link>
               <span className="mx-2">/</span>
-              <Link to="/actualites" className="hover:underline">Actualités</Link>
+              <Link to="/actualites" className="hover:underline">
+                {t('public.nav.news')}
+              </Link>
               <span className="mx-2">/</span>
-              <Link to="/actualites/evenements" className="hover:underline">Événements</Link>
-              <span className="mx-2">/</span>
-              <span>{event.title}</span>
+              <Link to="/actualites/evenements" className="hover:underline">
+                {t('public.nav.events')}
+              </Link>
             </nav>
-            
-            <div className="flex items-center gap-3 mb-4">
-              {getStatusBadge(event.status)}
-              {event.isVirtual && (
-                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  <i className="ri-video-line mr-2"></i>
-                  Virtuel
+
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              {lifecycleBadge}
+              {isVirtual && (
+                <span className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800">
+                  <i className="ri-video-line mr-2" aria-hidden="true"></i>
+                  {t('public.news.evenements.status.virtual')}
                 </span>
               )}
             </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{event.title}</h1>
-          </div>
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                {event.description}
+            <h1 className="mb-4 text-balance break-words text-3xl font-bold sm:text-4xl md:text-5xl">
+              {event.title}
+            </h1>
+            {isPast && (
+              <p className="max-w-2xl rounded-xl bg-black/25 px-4 py-2 text-sm text-white/90 backdrop-blur">
+                {t('public.news.evenements.pastNotice')}
               </p>
-            </div>
-
-            {event.tags && event.tags.length > 0 && (
-              <div className="bg-white rounded-lg shadow-md p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Thématiques</h2>
-                <div className="flex flex-wrap gap-2">
-                  {event.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
             )}
           </div>
+        </div>
+      </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-6 space-y-6">
-              {/* Date & Time */}
-              <div>
-                <div className="flex items-center text-gray-600 mb-2">
-                  <i className="ri-calendar-line text-emerald-600 text-xl mr-3"></i>
-                  <span className="font-medium">Date et heure</span>
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <div className="mb-8 rounded-lg bg-white p-8 shadow-md">
+              <h2 className="mb-4 text-2xl font-bold text-gray-900">
+                {t('admin.common.description')}
+              </h2>
+              <p className="whitespace-pre-line leading-relaxed text-gray-700">{event.description}</p>
+            </div>
+          </div>
+
+          <div>
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h3 className="mb-4 text-lg font-bold text-gray-900">
+                {t('public.news.evenements.cta.details')}
+              </h3>
+              <div className="space-y-4 text-sm text-gray-700">
+                <div className="flex items-start gap-3">
+                  <i className="ri-calendar-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
+                  <span>{formatDate(event.date)}</span>
                 </div>
-                <p className="text-gray-900 ml-9">{formatDate(event.date)}</p>
+                {event.location && (
+                  <div className="flex items-start gap-3">
+                    <i className="ri-map-pin-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
+                    <span>{event.location}</span>
+                  </div>
+                )}
+                {event.capacity && (
+                  <div className="flex items-start gap-3">
+                    <i className="ri-group-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
+                    <span>{t('admin.events.attendees', { count: event.capacity })}</span>
+                  </div>
+                )}
               </div>
 
-              {/* Location */}
-              {!event.isVirtual && event.location && (
-                <div>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <i className="ri-map-pin-line text-emerald-600 text-xl mr-3"></i>
-                    <span className="font-medium">Lieu</span>
-                  </div>
-                  <p className="text-gray-900 ml-9">{event.location}</p>
-                </div>
-              )}
-
-              {/* Virtual Event */}
-              {event.isVirtual && (
-                <div>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <i className="ri-video-line text-emerald-600 text-xl mr-3"></i>
-                    <span className="font-medium">Format</span>
-                  </div>
-                  <p className="text-gray-900 ml-9">Événement en ligne</p>
-                </div>
-              )}
-
-              {/* Capacity */}
-              {event.capacity && (
-                <div>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <i className="ri-group-line text-emerald-600 text-xl mr-3"></i>
-                    <span className="font-medium">Places disponibles</span>
-                  </div>
-                  <p className="text-gray-900 ml-9">
-                    {event.registeredCount || 0} / {event.capacity} inscrits
-                  </p>
-                  <div className="ml-9 mt-2">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-emerald-600 h-2 rounded-full"
-                        style={{ width: `${((event.registeredCount || 0) / event.capacity) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Organizer */}
-              {event.organizerName && (
-                <div>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <i className="ri-user-line text-emerald-600 text-xl mr-3"></i>
-                    <span className="font-medium">Organisateur</span>
-                  </div>
-                  <p className="text-gray-900 ml-9">{event.organizerName}</p>
-                  {event.organizerEmail && (
-                    <a
-                      href={`mailto:${event.organizerEmail}`}
-                      className="text-emerald-600 hover:text-emerald-700 ml-9 text-sm"
-                    >
-                      {event.organizerEmail}
-                    </a>
-                  )}
-                </div>
-              )}
-
-              {/* Registration Button */}
-              {event.status !== 'past' && event.registrationUrl && (
-                <div className="pt-4 border-t border-gray-200">
-                  <a
-                    href={event.registrationUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full text-center px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
-                  >
-                    <i className="ri-ticket-line mr-2"></i>
-                    S'inscrire à l'événement
-                  </a>
-                </div>
-              )}
-
-              {/* Share */}
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-gray-600 text-sm font-medium mb-3">Partager</p>
-                <div className="flex gap-2">
-                  <button className="flex-1 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm">
-                    <i className="ri-facebook-line"></i>
-                  </button>
-                  <button className="flex-1 px-4 py-2 bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-100 transition-colors text-sm">
-                    <i className="ri-twitter-line"></i>
-                  </button>
-                  <button className="flex-1 px-4 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors text-sm">
-                    <i className="ri-mail-line"></i>
-                  </button>
-                </div>
-              </div>
+              <Link
+                to="/actualites/evenements"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-full border border-gray-300 px-4 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+              >
+                {t('public.news.evenements.filter.current')}
+              </Link>
             </div>
           </div>
         </div>
-
-        {/* Back Button */}
-        <div className="mt-8">
-          <Link
-            to="/actualites/evenements"
-            className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-medium"
-          >
-            <i className="ri-arrow-left-line mr-2"></i>
-            Retour aux événements
-          </Link>
-        </div>
       </div>
-      
+
       <Footer />
     </div>
   );

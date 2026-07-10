@@ -19,10 +19,10 @@ const ConsultationsPage = () => {
               <i className="ri-chat-poll-line" aria-hidden="true"></i>
               {t('public.engagement.consultations.badge')}
             </div>
-            <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
+            <h1 className="text-balance break-words text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
               {t('public.engagement.consultations.title')}
             </h1>
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-emerald-50/90 sm:mt-7 sm:text-lg sm:leading-8">
               {t('public.engagement.consultations.subtitle')}
             </p>
           </div>

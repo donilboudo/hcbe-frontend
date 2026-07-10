@@ -1,9 +1,12 @@
 export const getApiBaseUrl = (): string => {
-  if (import.meta.env.DEV && !import.meta.env.VITE_API_URL) {
+  const configuredUrl = (import.meta.env.VITE_API_URL ?? '').trim();
+
+  // In development, prefer same-origin + Vite proxy unless an explicit URL is set.
+  if (import.meta.env.DEV && !configuredUrl) {
     return '';
   }
 
-  return import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  return configuredUrl || 'http://localhost:8080';
 };
 
 export const buildApiUrl = (path: string): string => `${getApiBaseUrl()}${path}`;

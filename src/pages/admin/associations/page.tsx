@@ -79,11 +79,10 @@ export const AdminAssociationsList: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">{t('admin.associations.title')}</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
         <Link
           to="/admin/associations/create"
-          className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-white transition-colors hover:bg-emerald-700 sm:w-auto"
         >
           <i className="ri-add-line mr-2"></i>
           {t('admin.associations.create')}

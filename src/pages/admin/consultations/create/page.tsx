@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AdminBackButton } from '../../../components/admin/AdminBackButton';
-import { consultationsApi } from '../../../lib/api/consultations';
-import type { CreateConsultationRequest } from '../../../lib/api/types';
+import { AdminBackButton } from '@/components/admin/AdminBackButton';
+import { consultationsApi } from '@/lib/api/consultations';
+import type { CreateConsultationRequest } from '@/lib/api/types';
 import {
   CONSULTATION_ACCENT_OPTIONS,
   CONSULTATION_ICON_OPTIONS,

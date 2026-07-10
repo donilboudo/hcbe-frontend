@@ -61,6 +61,13 @@ export default {
   'public.home.zones.deputy': 'Suppléant',
   'public.home.zones.regions': 'Provinces et territoires',
 
+  'public.home.events.badge': 'Agenda communautaire',
+  'public.home.events.title': 'Prochains événements à ne pas manquer.',
+  'public.home.events.subtitle':
+    'Rencontres, assemblées et activités organisées pour la diaspora burkinabè au Canada.',
+  'public.home.events.viewAll': 'Voir tous les événements',
+  'public.home.events.details': 'Voir les détails',
+
   'public.home.cta.label': "Passer à l'action",
   'public.home.cta.title': 'Une communauté se construit mieux quand chacun sait où contribuer.',
   'public.home.cta.subtitle':

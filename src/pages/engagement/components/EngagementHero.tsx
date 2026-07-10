@@ -4,7 +4,7 @@ const EngagementHero = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden">
+    <section className="relative overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -14,15 +14,15 @@ const EngagementHero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/60"></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20">
-          <i className="ri-community-line text-white"></i>
-          <span className="text-white font-semibold text-sm">{t('public.engagement.hero.badge')}</span>
+      <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <div className="mb-5 inline-flex max-w-full items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 backdrop-blur-sm sm:mb-6">
+          <i className="ri-community-line shrink-0 text-white" aria-hidden="true"></i>
+          <span className="text-sm font-semibold text-white">{t('public.engagement.hero.badge')}</span>
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+        <h1 className="mx-auto max-w-4xl text-balance break-words text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
           {t('public.engagement.hero.title')}
         </h1>
-        <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+        <p className="mx-auto mt-5 max-w-3xl text-base leading-relaxed text-white/90 sm:mt-6 sm:text-lg md:text-xl">
           {t('public.engagement.hero.subtitle')}
         </p>
       </div>

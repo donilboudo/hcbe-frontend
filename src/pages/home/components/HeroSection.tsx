@@ -35,11 +35,11 @@ const HeroSection = () => {
               {t('public.home.hero.badge')}
             </div>
 
-            <h1 className="max-w-4xl text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
+            <h1 className="max-w-4xl text-balance break-words text-3xl font-semibold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
               {t('public.home.hero.title')}
             </h1>
 
-            <p className="mt-7 max-w-2xl text-lg leading-8 text-emerald-50/90 sm:text-xl">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-emerald-50/90 sm:mt-7 sm:text-lg sm:leading-8 md:text-xl">
               {t('public.home.hero.subtitle')}
             </p>
 

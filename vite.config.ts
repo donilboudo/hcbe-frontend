@@ -83,6 +83,21 @@ export default defineConfig({
         target: process.env.VITE_PROXY_TARGET || 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
+        // Avoid keeping a dead upstream after the API container is recreated.
+        configure: (proxy) => {
+          proxy.on('error', (err, _req, res) => {
+            console.error('[vite] api proxy error:', err.message);
+            if (res && 'writeHead' in res && !res.headersSent) {
+              res.writeHead(502, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({
+                success: false,
+                data: null,
+                message: 'API proxy unavailable. Restart the frontend if the backend was rebuilt.',
+                errors: null,
+              }));
+            }
+          });
+        },
       },
     },
   },

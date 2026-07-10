@@ -3,52 +3,27 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { eventsApi } from '../../../lib/api/events';
 import type { Event } from '../../../lib/api/types';
-import { translateEventStatus } from '../../../lib/i18n/adminStatus';
+import {
+  getEventLifecycleStyle,
+  getPublicationLabel,
+  translateEventLifecycle,
+} from '../../../lib/i18n/adminStatus';
+import { getEventLifecycle } from '../../../lib/events/lifecycle';
 
-const getEventStatusStyle = (status: string) => {
-  const normalized = status.toLowerCase();
-
-  if (status === 'À venir' || normalized === 'active' || normalized === 'upcoming') {
-    return {
-      icon: 'ri-calendar-check-line',
-      className: 'border-emerald-200 bg-emerald-50 text-emerald-800',
-    };
-  }
-  if (status === 'Brouillon' || normalized === 'draft') {
-    return {
-      icon: 'ri-draft-line',
-      className: 'border-amber-200 bg-amber-50 text-amber-800',
-    };
-  }
-  if (status === 'Annulé' || normalized === 'cancelled' || normalized === 'canceled') {
-    return {
-      icon: 'ri-close-circle-line',
-      className: 'border-red-200 bg-red-50 text-red-800',
-    };
-  }
-  if (status === 'Terminé' || normalized === 'completed' || normalized === 'past') {
-    return {
-      icon: 'ri-checkbox-circle-line',
-      className: 'border-slate-200 bg-slate-50 text-slate-700',
-    };
-  }
-
-  return {
-    icon: 'ri-information-line',
-    className: 'border-gray-200 bg-gray-50 text-gray-700',
-  };
-};
-
-const EventStatusBadge: React.FC<{ status: string; label: string }> = ({ status, label }) => {
-  const style = getEventStatusStyle(status);
+const EventLifecycleBadge: React.FC<{ event: Event }> = ({ event }) => {
+  const { t } = useTranslation();
+  const style = getEventLifecycleStyle(event);
 
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1.5 text-xs font-medium ${style.className}`}
-    >
-      <i className={`${style.icon} text-sm`} />
-      {label}
-    </span>
+    <div className="space-y-1">
+      <span
+        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1.5 text-xs font-medium ${style.className}`}
+      >
+        <i className={`${style.icon} text-sm`} aria-hidden="true" />
+        {translateEventLifecycle(event, t)}
+      </span>
+      <div className="text-[11px] text-gray-500">{getPublicationLabel(event.status, t)}</div>
+    </div>
   );
 };
 
@@ -57,7 +32,7 @@ export const AdminEventsList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [sortBy, setSortBy] = useState('date');
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     loadEvents();
@@ -93,37 +68,27 @@ export const AdminEventsList: React.FC = () => {
     }
   };
 
-  const uniqueStatuses = [...new Set(events.map((event) => event.status))];
+  const filterOptions = [
+    { value: 'all', label: t('admin.events.filterAll') },
+    { value: 'upcoming', label: t('admin.eventLifecycle.upcoming') },
+    { value: 'ongoing', label: t('admin.eventLifecycle.ongoing') },
+    { value: 'past', label: t('admin.eventLifecycle.past') },
+    { value: 'draft', label: t('admin.eventLifecycle.draft') },
+    { value: 'cancelled', label: t('admin.eventLifecycle.cancelled') },
+  ];
 
   const filteredEvents = events.filter((event) => {
     if (filter === 'all') return true;
-    if (filter === 'upcoming') return new Date(event.date) > new Date();
-    if (filter === 'past') return new Date(event.date) <= new Date();
-    return event.status === filter;
+    return getEventLifecycle(event) === filter;
   });
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
-    if (sortBy === 'date') {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-    if (sortBy === 'title') {
-      return a.title.localeCompare(b.title);
-    }
+    if (sortBy === 'title') return a.title.localeCompare(b.title);
     if (sortBy === 'created') {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
-    return 0;
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
   });
-
-  const filterOptions = [
-    { value: 'all', label: t('admin.events.filterAll') },
-    { value: 'upcoming', label: t('admin.events.filterUpcoming') },
-    { value: 'past', label: t('admin.events.filterPast') },
-    ...uniqueStatuses.map((status) => ({
-      value: status,
-      label: translateEventStatus(status, t),
-    })),
-  ];
 
   const sortOptions = [
     { value: 'date', label: t('admin.events.sortDate') },
@@ -134,41 +99,46 @@ export const AdminEventsList: React.FC = () => {
   const currentFilterLabel =
     filterOptions.find((option) => option.value === filter)?.label ?? filter;
 
+  const locale = i18n.language.startsWith('fr') ? 'fr-CA' : 'en-CA';
+  const formatListDate = (value: string) =>
+    new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(new Date(value));
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('admin.events.title')}</h1>
-          <p className="mt-2 text-gray-600">{t('admin.events.subtitle')}</p>
-        </div>
+    <div className="mx-auto max-w-7xl">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-gray-600 sm:text-base">{t('admin.events.subtitle')}</p>
         <Link
           to="/admin/events/create"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          className="inline-flex w-full items-center justify-center rounded-md border border-transparent bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800 sm:w-auto"
         >
           <span className="mr-2">+</span>
           {t('admin.events.create')}
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow mb-6 p-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="mb-6 rounded-lg bg-white p-6 shadow">
+        <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex-1">
-            <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="filter" className="mb-1 block text-sm font-medium text-gray-700">
               {t('admin.common.filterBy')}
             </label>
             <select
               id="filter"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
             >
               {filterOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -178,14 +148,14 @@ export const AdminEventsList: React.FC = () => {
             </select>
           </div>
           <div className="flex-1">
-            <label htmlFor="sort" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="sort" className="mb-1 block text-sm font-medium text-gray-700">
               {t('admin.common.sortBy')}
             </label>
             <select
               id="sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -197,10 +167,9 @@ export const AdminEventsList: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
+      <div className="rounded-lg bg-white shadow">
         {sortedEvents.length === 0 ? (
-          <div className="text-center py-12">
-            <span className="text-6xl">📭</span>
+          <div className="py-12 text-center">
             <h3 className="mt-4 text-lg font-medium text-gray-900">{t('admin.events.emptyTitle')}</h3>
             <p className="mt-2 text-gray-500">
               {filter === 'all'
@@ -209,59 +178,52 @@ export const AdminEventsList: React.FC = () => {
             </p>
             <Link
               to="/admin/events/create"
-              className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              className="mt-6 inline-flex items-center rounded-md border border-transparent bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-800"
             >
               {t('admin.events.create')}
             </Link>
           </div>
         ) : (
-          <div className="overflow-hidden">
+          <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     {t('admin.events.colEvent')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     {t('admin.events.colDateLocation')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    {t('admin.common.status')}
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                    {t('admin.events.colLifecycle')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                     {t('admin.events.colDetails')}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
                     {t('admin.common.actions')}
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 bg-white">
                 {sortedEvents.map((event) => (
                   <tr key={event.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                        {event.description && (
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {event.description}
-                          </div>
-                        )}
-                      </div>
+                      <div className="text-sm font-medium text-gray-900">{event.title}</div>
+                      {event.description && (
+                        <div className="mt-1 max-w-xs truncate text-sm text-gray-500">
+                          {event.description}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
-                        {new Date(event.date).toLocaleDateString()}
-                      </div>
+                      <div className="text-sm text-gray-900">{formatListDate(event.date)}</div>
                       {event.location && (
                         <div className="text-sm text-gray-500">{event.location}</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <EventStatusBadge
-                        status={event.status}
-                        label={translateEventStatus(event.status, t)}
-                      />
+                      <EventLifecycleBadge event={event} />
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {event.type && (
@@ -280,29 +242,29 @@ export const AdminEventsList: React.FC = () => {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <td className="whitespace-nowrap px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1">
                         <Link
                           to={`/admin/events/${event.id}`}
-                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:text-emerald-700 hover:bg-white hover:shadow-sm transition-all"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-white hover:text-emerald-700 hover:shadow-sm"
                           title={t('admin.common.view')}
                         >
-                          <i className="ri-eye-line text-lg" />
+                          <i className="ri-eye-line text-lg" aria-hidden="true" />
                         </Link>
                         <Link
                           to={`/admin/events/${event.id}/edit`}
-                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:text-amber-700 hover:bg-white hover:shadow-sm transition-all"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-white hover:text-amber-700 hover:shadow-sm"
                           title={t('admin.common.edit')}
                         >
-                          <i className="ri-edit-line text-lg" />
+                          <i className="ri-edit-line text-lg" aria-hidden="true" />
                         </Link>
                         <button
                           type="button"
                           onClick={() => handleDeleteEvent(event.id, event.title)}
-                          className="inline-flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:text-red-700 hover:bg-white hover:shadow-sm transition-all"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-all hover:bg-white hover:text-red-700 hover:shadow-sm"
                           title={t('admin.common.delete')}
                         >
-                          <i className="ri-delete-bin-line text-lg" />
+                          <i className="ri-delete-bin-line text-lg" aria-hidden="true" />
                         </button>
                       </div>
                     </td>

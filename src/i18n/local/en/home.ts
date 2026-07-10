@@ -61,6 +61,13 @@ export default {
   'public.home.zones.deputy': 'Deputy',
   'public.home.zones.regions': 'Provinces and territories',
 
+  'public.home.events.badge': 'Community calendar',
+  'public.home.events.title': 'Upcoming events worth noting.',
+  'public.home.events.subtitle':
+    'Gatherings, assemblies and activities organized for the Burkinabè diaspora in Canada.',
+  'public.home.events.viewAll': 'View all events',
+  'public.home.events.details': 'View details',
+
   'public.home.cta.label': 'Take action',
   'public.home.cta.title': 'A community grows stronger when everyone knows how to contribute.',
   'public.home.cta.subtitle':

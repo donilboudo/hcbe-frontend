@@ -35,7 +35,7 @@ const AnnoncesPage = () => {
                 <i className="ri-newspaper-line shrink-0" aria-hidden="true"></i>
                 <span className="truncate">{t('public.news.annonces.badge')}</span>
               </div>
-              <h1 className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+              <h1 className="max-w-3xl text-balance break-words text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
                 {t('public.news.annonces.title')}
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-emerald-50/90 sm:mt-7 sm:text-lg sm:leading-8">

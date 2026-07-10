@@ -4,6 +4,8 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
 import { AuthProvider } from "./contexts/AuthContext";
 import DocumentLanguageSync from "./components/DocumentLanguageSync";
+import ScrollToTop from "./components/ScrollToTop";
+import BackToTopButton from "./components/feature/BackToTopButton";
 
 
 function App() {
@@ -12,7 +14,9 @@ function App() {
       <DocumentLanguageSync />
       <AuthProvider>
         <BrowserRouter basename={__BASE_PATH__}>
+          <ScrollToTop />
           <AppRoutes />
+          <BackToTopButton />
         </BrowserRouter>
       </AuthProvider>
     </I18nextProvider>

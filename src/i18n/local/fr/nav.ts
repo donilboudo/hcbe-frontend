@@ -1,5 +1,6 @@
 export default {
   'public.lang': 'Langue',
+  'public.backToTop': 'Retour en haut',
   'public.nav.home': 'Accueil',
   'public.nav.services': 'Services',
   'public.nav.news': 'Actualités',

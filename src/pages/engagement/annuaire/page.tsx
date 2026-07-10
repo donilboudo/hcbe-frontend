@@ -11,10 +11,10 @@ const AnnuairePage = () => {
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="mb-5 text-balance break-words text-3xl font-bold leading-tight sm:mb-6 sm:text-4xl md:text-5xl">
               Annuaire des Associations
             </h1>
-            <p className="text-xl max-w-3xl mx-auto">
+            <p className="mx-auto max-w-3xl text-base sm:text-lg md:text-xl">
               Découvrez les associations burkinabè actives au Canada. 
               Trouvez la communauté qui vous correspond et rejoignez-nous dans nos actions.
             </p>

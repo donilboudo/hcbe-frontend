@@ -128,22 +128,26 @@ export default {
 
   // Actualités — événements
   'public.news.evenements.badge': 'Actualités et événements',
-  'public.news.evenements.title': 'Événements à venir',
+  'public.news.evenements.title': 'Événements communautaires',
   'public.news.evenements.subtitle':
     'Rencontres, ateliers et moments communautaires à suivre pour rester proche du réseau burkinabè au Canada.',
-  'public.news.evenements.filter.all': 'Tous les événements',
-  'public.news.evenements.filter.upcoming': 'À venir',
-  'public.news.evenements.filter.ongoing': 'En cours',
+  'public.news.evenements.filter.current': 'À venir et en cours',
+  'public.news.evenements.filter.past': 'Passés',
+  'public.news.evenements.filter.all': 'Tous',
   'public.news.evenements.error.unavailable': "Les événements ne sont pas disponibles pour le moment.",
   'public.news.evenements.error.load': 'Impossible de charger les événements.',
   'public.news.evenements.empty.title': 'Aucun événement trouvé',
-  'public.news.evenements.empty.upcoming': 'Aucun événement à venir pour le moment.',
-  'public.news.evenements.empty.ongoing': 'Aucun événement en cours actuellement.',
+  'public.news.evenements.empty.current': 'Aucun événement à venir ou en cours pour le moment.',
+  'public.news.evenements.empty.past': 'Aucun événement passé à afficher.',
   'public.news.evenements.empty.all':
     'Consultez régulièrement cette page pour ne manquer aucun événement.',
+  'public.news.evenements.status.upcoming': 'À venir',
   'public.news.evenements.status.ongoing': 'En cours',
+  'public.news.evenements.status.past': 'Terminé',
   'public.news.evenements.status.virtual': 'Virtuel',
+  'public.news.evenements.pastNotice': 'Cet événement est terminé.',
   'public.news.evenements.cta.details': 'Détails',
+  'public.news.evenements.cta.recap': 'Voir le récapitulatif',
   'public.news.evenements.cta.register': "S'inscrire",
 
   // Actualités — souvenirs

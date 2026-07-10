@@ -74,10 +74,7 @@ const NewsAdminPage: React.FC = () => {
   return (
     <div>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.news.title')}</h1>
-          <p className="mt-1 text-sm text-gray-600">{t('admin.news.subtitle')}</p>
-        </div>
+        <p className="text-sm text-gray-600">{t('admin.news.subtitle')}</p>
         <div className="flex flex-wrap items-center gap-3">
           <select
             value={statusFilter}

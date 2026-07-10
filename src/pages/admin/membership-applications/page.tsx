@@ -119,14 +119,11 @@ const MembershipApplicationsPage: React.FC = () => {
   return (
     <div>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.applications.title')}</h1>
-          <p className="mt-1 text-sm text-gray-600">{t('admin.applications.subtitle')}</p>
-        </div>
+        <p className="text-sm text-gray-600">{t('admin.applications.subtitle')}</p>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as MembershipApplicationStatus | 'all')}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500 sm:w-auto"
         >
           <option value="Pending">{t('admin.applications.filterPending')}</option>
           <option value="Approved">{t('admin.applications.filterApproved')}</option>

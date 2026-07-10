@@ -73,14 +73,11 @@ const AdminUsersPage: React.FC = () => {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.users.title')}</h1>
-          <p className="mt-1 text-sm text-gray-600">{t('admin.users.subtitle')}</p>
-        </div>
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-gray-600">{t('admin.users.subtitle')}</p>
         <Link
           to="/admin/users/create"
-          className="inline-flex items-center rounded-lg bg-emerald-700 px-4 py-2 text-white transition hover:bg-emerald-800"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-emerald-700 px-4 py-2 text-white transition hover:bg-emerald-800 sm:w-auto"
         >
           <i className="ri-add-line mr-2" aria-hidden="true"></i>
           {t('admin.users.create')}

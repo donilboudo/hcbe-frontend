@@ -17,10 +17,10 @@ const BoursesPage = () => {
               <i className="ri-hand-coin-line" aria-hidden="true"></i>
               <span className="text-sm font-semibold">{t('public.grants.badge')}</span>
             </div>
-            <h1 className="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl">
+            <h1 className="mb-5 text-balance break-words text-3xl font-bold leading-tight sm:mb-6 sm:text-4xl md:text-5xl lg:text-6xl">
               {t('public.grants.heroTitle')}
             </h1>
-            <p className="mx-auto max-w-3xl text-xl text-gray-100">
+            <p className="mx-auto max-w-3xl text-base text-gray-100 sm:text-lg md:text-xl">
               {t('public.grants.heroSubtitle')}
             </p>
           </div>

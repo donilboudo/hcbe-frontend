@@ -63,10 +63,10 @@ const ServicesPage = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="mb-4 text-balance break-words text-3xl font-bold text-gray-900 sm:text-4xl">
               {t('public.services.page.section.title')}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="mx-auto max-w-3xl text-base text-gray-600 sm:text-lg md:text-xl">
               {t('public.services.page.section.subtitle')}
             </p>
           </div>

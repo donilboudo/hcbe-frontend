@@ -62,6 +62,11 @@ const Navbar = () => {
     };
   }, [isMobileMenuOpen]);
 
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+    setOpenDropdown(null);
+  }, [location.pathname]);
+
   const handleDropdownToggle = (path: string) => {
     setOpenDropdown(openDropdown === path ? null : path);
   };

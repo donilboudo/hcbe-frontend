@@ -88,14 +88,11 @@ const AdminProjectsList = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.projects.title')}</h1>
-          <p className="text-gray-600">{t('admin.projects.subtitle')}</p>
-        </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-gray-600">{t('admin.projects.subtitle')}</p>
         <Link
           to="/admin/projects/create"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 sm:w-auto"
         >
           <i className="ri-add-line mr-2"></i>
           {t('admin.projects.create')}
@@ -103,11 +100,11 @@ const AdminProjectsList = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-auto"
         >
           <option value="all">{t('admin.projects.filterAllStatus')}</option>
           <option value="En cours">En cours</option>
@@ -119,20 +116,21 @@ const AdminProjectsList = () => {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:w-auto"
         >
           <option value="all">{t('admin.projects.filterAllTypes')}</option>
           <option value="Développement au Burkina">Développement au Burkina</option>
           <option value="Initiative Locale">Initiative Locale</option>
         </select>
 
-        <div className="ml-auto text-sm text-gray-600">
+        <div className="text-sm text-gray-600 sm:ml-auto">
           {t('admin.projects.count', { count: filteredProjects.length, total: projects.length })}
         </div>
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-hidden rounded-lg bg-white shadow">
+        <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -240,6 +238,7 @@ const AdminProjectsList = () => {
             ))}
           </tbody>
         </table>
+        </div>
 
         {filteredProjects.length === 0 && (
           <div className="text-center py-12">
