@@ -80,9 +80,9 @@ export default {
   'public.news.page.cards.announcements.title': 'Announcements and Press Releases',
   'public.news.page.cards.announcements.description':
     'Stay informed of the latest news and official announcements',
-  // 'public.news.page.cards.memories.title': 'Memories from Our Events',
-  // 'public.news.page.cards.memories.description':
-  //   'Relive the highlights of our community in pictures',
+  'public.news.page.cards.memories.title': 'Memories from Our Events',
+  'public.news.page.cards.memories.description':
+    'Relive the highlights of our community in pictures',
 
   // News — announcements
   'public.news.annonces.badge': 'News',
@@ -156,10 +156,25 @@ export default {
   'public.news.souvenirs.badge': 'Memories',
   'public.news.souvenirs.title': 'Moments that tell our community\'s story.',
   'public.news.souvenirs.subtitle':
-    'Archives, gatherings and highlights from HCBE Canada, enriched with real photos shared by members.',
+    'Relive HCBE Canada highlights through photos and videos from past events.',
+  'public.news.souvenirs.archivesBadge': 'Community archives',
+  'public.news.souvenirs.archivesIntro':
+    'Each album is linked to a past event. Open a page to browse photos and videos.',
   'public.news.souvenirs.share.title': 'Share your photos',
   'public.news.souvenirs.share.description':
     'Did you attend one of our events and want to share your photos? Write to us at',
+  'public.news.souvenirs.empty.title': 'No memories published yet',
+  'public.news.souvenirs.empty.description':
+    'Galleries will appear here once a past event has photos or videos.',
+  'public.news.souvenirs.empty.error': 'Unable to load memories.',
+  'public.news.souvenirs.photoCount': '{{count}} photo',
+  'public.news.souvenirs.photoCount_plural': '{{count}} photos',
+  'public.news.souvenirs.videoCount': '{{count}} video',
+  'public.news.souvenirs.videoCount_plural': '{{count}} videos',
+  'public.news.souvenirs.gallery.title': 'Gallery',
+  'public.news.souvenirs.gallery.close': 'Close',
+  'public.news.souvenirs.gallery.video': 'Video',
+  'public.news.souvenirs.gallery.openExternal': 'Open video',
 
   // Engagement — main hero
   'public.engagement.hero.badge': 'Community Engagement',

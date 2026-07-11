@@ -141,11 +141,11 @@ const AnnuaireSection = () => {
                   key={assoc.id}
                   className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg transition-all hover:shadow-xl"
                 >
-                  <div className="relative h-56 w-full bg-gray-100">
+                  <div className="relative flex h-56 w-full items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 to-gray-100">
                     <img
                       src={imageSrc}
                       alt={assoc.name}
-                      className="h-full w-full object-cover object-center"
+                      className="max-h-full max-w-full object-contain p-4"
                       onError={() =>
                         setBrokenImages((prev) => ({
                           ...prev,

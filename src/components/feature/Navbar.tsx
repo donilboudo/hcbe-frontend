@@ -29,7 +29,7 @@ const Navbar = () => {
         dropdown: [
           { path: '/actualites/evenements', labelKey: 'public.nav.events' },
           { path: '/actualites/annonces', labelKey: 'public.nav.announcements' },
-          // { path: '/actualites/souvenirs', labelKey: 'public.nav.memories' },
+          { path: '/actualites/souvenirs', labelKey: 'public.nav.memories' },
         ],
       },
       {

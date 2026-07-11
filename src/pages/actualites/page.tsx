@@ -24,14 +24,14 @@ const ActualitesPage = () => {
       color: 'from-blue-600 to-blue-800',
       image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=600&fit=crop',
     },
-    // {
-    //   titleKey: 'public.news.page.cards.memories.title',
-    //   descriptionKey: 'public.news.page.cards.memories.description',
-    //   icon: 'ri-image-line',
-    //   path: '/actualites/souvenirs',
-    //   color: 'from-amber-600 to-orange-700',
-    //   image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop',
-    // },
+    {
+      titleKey: 'public.news.page.cards.memories.title',
+      descriptionKey: 'public.news.page.cards.memories.description',
+      icon: 'ri-image-line',
+      path: '/actualites/souvenirs',
+      color: 'from-amber-600 to-orange-700',
+      image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop',
+    },
   ];
 
   return (

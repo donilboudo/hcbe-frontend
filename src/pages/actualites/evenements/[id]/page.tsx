@@ -4,20 +4,10 @@ import { useTranslation } from 'react-i18next';
 import Navbar from '../../../../components/feature/Navbar';
 import Footer from '../../../../components/feature/Footer';
 import { buildApiUrl } from '../../../../lib/api/base-url';
+import { resolveMediaUrl } from '../../../../lib/api/media-url';
 import { getEventLifecycle } from '../../../../lib/events/lifecycle';
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-  imageUrl?: string;
-  type?: string;
-  meetingLink?: string;
-  status: string;
-  capacity?: number;
-}
+import { EventMediaGallery } from '../../../../components/events/EventMediaGallery';
+import type { Event } from '../../../../lib/api/types';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -115,7 +105,7 @@ export const EventDetailPage: React.FC = () => {
         {event.imageUrl && (
           <>
             <img
-              src={event.imageUrl}
+              src={resolveMediaUrl(event.imageUrl)}
               alt=""
               className={`absolute inset-0 h-full w-full object-cover ${isPast ? 'grayscale-[30%]' : ''}`}
             />
@@ -170,6 +160,12 @@ export const EventDetailPage: React.FC = () => {
               </h2>
               <p className="whitespace-pre-line leading-relaxed text-gray-700">{event.description}</p>
             </div>
+
+            {(event.media?.length ?? 0) > 0 && (
+              <div className="rounded-lg bg-white p-8 shadow-md">
+                <EventMediaGallery media={event.media ?? []} />
+              </div>
+            )}
           </div>
 
           <div>

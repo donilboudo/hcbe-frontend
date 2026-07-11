@@ -54,6 +54,18 @@ export interface UpdateAdminUserRequest {
   isAdmin?: boolean;
 }
 
+export interface EventMedia {
+  id: string;
+  mediaType: 'image' | 'video' | string;
+  url: string;
+  fileName?: string;
+  contentType?: string;
+  sizeBytes?: number;
+  caption?: string;
+  displayOrder: number;
+  createdAt: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -69,6 +81,7 @@ export interface Event {
   status: string;
   createdAt: string;
   updatedAt: string;
+  media?: EventMedia[];
 }
 
 export interface CreateEventRequest {

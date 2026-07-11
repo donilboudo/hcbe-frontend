@@ -1,52 +1,57 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { eventsApi } from '../../../lib/api/events';
+import type { Event } from '../../../lib/api/types';
+import { getEventLifecycle } from '../../../lib/events/lifecycle';
+import { resolveMediaUrl } from '../../../lib/api/media-url';
 
 const GalerieSection = () => {
-  const [selectedMedia, setSelectedMedia] = useState<{ title: string; date: string; theme: string } | null>(null);
+  const { t, i18n } = useTranslation();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const galerie = [
-    {
-      id: 1,
-      titre: 'Forum Entrepreneuriat 2023',
-      date: '2023-11-15',
-      theme: 'Réseautage',
-      gradient: 'from-emerald-700 to-slate-900',
-    },
-    {
-      id: 2,
-      titre: 'Célébration Fête Nationale 2023',
-      date: '2023-12-11',
-      theme: 'Culture',
-      gradient: 'from-amber-500 to-red-700',
-    },
-    {
-      id: 3,
-      titre: 'Atelier Intégration Nouveaux Arrivants',
-      date: '2023-10-20',
-      theme: 'Accueil',
-      gradient: 'from-blue-600 to-emerald-800',
-    },
-    {
-      id: 4,
-      titre: 'Soirée Culturelle Traditionnelle',
-      date: '2023-09-30',
-      theme: 'Patrimoine',
-      gradient: 'from-orange-600 to-amber-700',
-    },
-    {
-      id: 5,
-      titre: 'Tournoi Football Communautaire',
-      date: '2023-08-15',
-      theme: 'Sport',
-      gradient: 'from-emerald-600 to-lime-700',
-    },
-    {
-      id: 6,
-      titre: 'Remise de Bourses d\'Études',
-      date: '2023-07-10',
-      theme: 'Éducation',
-      gradient: 'from-indigo-600 to-emerald-800',
-    },
-  ];
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setIsLoading(true);
+        const response = await eventsApi.getEvents();
+        if (response.success && response.data) {
+          const withMemories = response.data
+            .filter((event) => getEventLifecycle(event) === 'past')
+            .filter((event) => (event.media?.length ?? 0) > 0)
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          setEvents(withMemories);
+        } else {
+          setError(t('public.news.souvenirs.empty.error'));
+        }
+      } catch (err) {
+        console.error('Error loading souvenirs:', err);
+        setError(t('public.news.souvenirs.empty.error'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void load();
+  }, [t]);
+
+  const locale = i18n.language.startsWith('fr') ? 'fr-CA' : 'en-CA';
+
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+  const coverFor = (event: Event) => {
+    const firstImage = event.media?.find((m) => m.mediaType === 'image');
+    if (firstImage) return resolveMediaUrl(firstImage.url);
+    if (event.imageUrl) return resolveMediaUrl(event.imageUrl);
+    return null;
+  };
 
   return (
     <section className="bg-white py-24">
@@ -55,74 +60,85 @@ const GalerieSection = () => {
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700">
               <i className="ri-camera-line" aria-hidden="true"></i>
-              Archives communautaires
+              {t('public.news.souvenirs.archivesBadge')}
             </div>
-            {/* <h2 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
-              Souvenirs de nos événements
-            </h2> */}
           </div>
-          <p className="text-lg leading-8 text-gray-600">
-            Revivez les moments forts de la communauté burkinabè au Canada à travers nos photos et vidéos
-          </p>
+          <p className="text-lg leading-8 text-gray-600">{t('public.news.souvenirs.archivesIntro')}</p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {galerie.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className="group overflow-hidden rounded-[2rem] border border-gray-200 bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-amber-200 hover:shadow-xl"
-              onClick={() => setSelectedMedia({ title: item.titre, date: item.date, theme: item.theme })}
-            >
-              <div className={`relative h-64 bg-gradient-to-br ${item.gradient} p-6 text-white`}>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.25),transparent_28%)]" />
-                <div className="relative flex h-full flex-col justify-between">
-                  <span className="w-fit rounded-full bg-white/15 px-4 py-2 text-sm font-semibold backdrop-blur">
-                    {item.theme}
-                  </span>
-                  <div>
-                    <i className="ri-image-line text-4xl text-white/80" aria-hidden="true"></i>
-                    <h3 className="mt-4 text-2xl font-bold">{item.titre}</h3>
+        {isLoading && (
+          <div className="flex justify-center py-16">
+            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
+          </div>
+        )}
+
+        {!isLoading && error && (
+          <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-800">{error}</p>
+        )}
+
+        {!isLoading && !error && events.length === 0 && (
+          <div className="rounded-[2rem] border border-dashed border-gray-300 bg-gray-50 px-8 py-16 text-center">
+            <i className="ri-image-line text-5xl text-gray-400" aria-hidden="true" />
+            <h3 className="mt-4 text-xl font-semibold text-gray-900">
+              {t('public.news.souvenirs.empty.title')}
+            </h3>
+            <p className="mx-auto mt-2 max-w-xl text-gray-600">
+              {t('public.news.souvenirs.empty.description')}
+            </p>
+          </div>
+        )}
+
+        {!isLoading && events.length > 0 && (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => {
+              const cover = coverFor(event);
+              const photoCount = event.media?.filter((m) => m.mediaType === 'image').length ?? 0;
+              const videoCount = event.media?.filter((m) => m.mediaType === 'video').length ?? 0;
+
+              return (
+                <Link
+                  key={event.id}
+                  to={`/actualites/evenements/${event.id}`}
+                  className="group overflow-hidden rounded-[2rem] border border-gray-200 bg-white text-left shadow-sm transition hover:-translate-y-1 hover:border-amber-200 hover:shadow-xl"
+                >
+                  <div className="relative h-64 overflow-hidden bg-gradient-to-br from-emerald-800 to-slate-900">
+                    {cover ? (
+                      <img
+                        src={cover}
+                        alt=""
+                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-white/80">
+                        <i className="ri-play-circle-line text-5xl" aria-hidden="true" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-2xl font-bold">{event.title}</h3>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500">
-                  <i className="ri-calendar-line mr-2" aria-hidden="true"></i>
-                  <span>{new Date(item.date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {selectedMedia && (
-          <div
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedMedia(null)}
-          >
-            <div className="relative max-w-6xl w-full">
-              <button
-                onClick={() => setSelectedMedia(null)}
-                className="absolute -top-12 right-0 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer"
-              >
-                <i className="ri-close-line text-xl text-gray-900"></i>
-              </button>
-              <div className="rounded-[2rem] bg-white p-8 text-gray-950" onClick={(e) => e.stopPropagation()}>
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-amber-50 text-4xl text-amber-700">
-                  <i className="ri-image-line" aria-hidden="true"></i>
-                </div>
-                <p className="mt-6 text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">{selectedMedia.theme}</p>
-                <h3 className="mt-3 text-3xl font-bold">{selectedMedia.title}</h3>
-                <p className="mt-3 text-gray-600">
-                  {new Date(selectedMedia.date).toLocaleDateString('fr-CA', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </p>
-                <p className="mt-6 leading-7 text-gray-600">
-                  Les vraies photos pourront être branchées ici lorsqu'elles seront disponibles dans
-                  la médiathèque du HCBE Canada.
-                </p>
-              </div>
-            </div>
+                  <div className="space-y-3 p-6">
+                    <div className="flex items-center text-sm text-gray-500">
+                      <i className="ri-calendar-line mr-2" aria-hidden="true" />
+                      <span>{formatDate(event.date)}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs font-semibold text-gray-600">
+                      {photoCount > 0 && (
+                        <span className="rounded-full bg-amber-50 px-3 py-1 text-amber-800">
+                          {t('public.news.souvenirs.photoCount', { count: photoCount })}
+                        </span>
+                      )}
+                      {videoCount > 0 && (
+                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-800">
+                          {t('public.news.souvenirs.videoCount', { count: videoCount })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

@@ -13,7 +13,7 @@ export default {
   'public.nav.grants': 'Grants and scholarships',
   'public.nav.events': 'Events',
   'public.nav.announcements': 'Announcements',
-  // 'public.nav.memories': 'Memories',
+  'public.nav.memories': 'Memories',
   'public.nav.associations': 'Associations',
   'public.nav.projects': 'Projects',
   'public.nav.consultations': 'Consultations',

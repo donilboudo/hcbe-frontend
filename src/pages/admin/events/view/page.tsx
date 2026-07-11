@@ -9,6 +9,7 @@ import {
   translateEventLifecycle,
 } from '../../../../lib/i18n/adminStatus';
 import { AdminBackButton } from '../../../../components/admin/AdminBackButton';
+import { EventGalleryManager } from '../../../../components/admin/EventGalleryManager';
 
 export const ViewEventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -283,6 +284,12 @@ export const ViewEventPage: React.FC = () => {
               <p className="whitespace-pre-wrap text-gray-700">{event.description}</p>
             </div>
           )}
+
+          <EventGalleryManager
+            eventId={event.id}
+            media={event.media ?? []}
+            onChange={(media) => setEvent({ ...event, media })}
+          />
         </div>
       </div>
     </div>

@@ -80,9 +80,9 @@ export default {
   'public.news.page.cards.announcements.title': 'Annonces et Communiqués',
   'public.news.page.cards.announcements.description':
     'Restez informé des dernières nouvelles et annonces officielles',
-  // 'public.news.page.cards.memories.title': 'Souvenirs de nos Événements',
-  // 'public.news.page.cards.memories.description':
-  //   'Revivez les moments forts de notre communauté en images',
+  'public.news.page.cards.memories.title': 'Souvenirs de nos Événements',
+  'public.news.page.cards.memories.description':
+    'Revivez les moments forts de notre communauté en images',
 
   // Actualités — annonces
   'public.news.annonces.badge': 'Actualités',
@@ -156,10 +156,25 @@ export default {
   'public.news.souvenirs.badge': 'Souvenirs',
   'public.news.souvenirs.title': 'Les moments qui racontent la communauté.',
   'public.news.souvenirs.subtitle':
-    'Archives, rencontres et temps forts du HCBE Canada, à enrichir avec les vraies photos partagées par les membres.',
+    'Revivez les temps forts du HCBE Canada à travers les photos et vidéos de nos événements passés.',
+  'public.news.souvenirs.archivesBadge': 'Archives communautaires',
+  'public.news.souvenirs.archivesIntro':
+    'Chaque album est lié à un événement passé. Ouvrez une fiche pour parcourir les photos et vidéos.',
   'public.news.souvenirs.share.title': 'Partagez vos photos',
   'public.news.souvenirs.share.description':
     'Vous avez participé à un de nos événements et souhaitez partager vos photos ? Écrivez-nous à',
+  'public.news.souvenirs.empty.title': 'Aucun souvenir publié pour le moment',
+  'public.news.souvenirs.empty.description':
+    'Les galeries apparaîtront ici dès qu’un événement passé aura des photos ou des vidéos.',
+  'public.news.souvenirs.empty.error': 'Impossible de charger les souvenirs.',
+  'public.news.souvenirs.photoCount': '{{count}} photo',
+  'public.news.souvenirs.photoCount_plural': '{{count}} photos',
+  'public.news.souvenirs.videoCount': '{{count}} vidéo',
+  'public.news.souvenirs.videoCount_plural': '{{count}} vidéos',
+  'public.news.souvenirs.gallery.title': 'Galerie',
+  'public.news.souvenirs.gallery.close': 'Fermer',
+  'public.news.souvenirs.gallery.video': 'Vidéo',
+  'public.news.souvenirs.gallery.openExternal': 'Ouvrir la vidéo',
 
   // Engagement — hero principal
   'public.engagement.hero.badge': 'Engagement Communautaire',
