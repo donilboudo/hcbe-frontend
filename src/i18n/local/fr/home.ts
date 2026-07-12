@@ -59,7 +59,12 @@ export default {
   'public.home.zones.representation': 'Représentation',
   'public.home.zones.delegate': 'Délégué titulaire',
   'public.home.zones.deputy': 'Suppléant',
+  'public.home.zones.welcomeLabel': "Message d'accueil",
   'public.home.zones.regions': 'Provinces et territoires',
+  'public.home.zones.zone1.welcome':
+    "Bienvenue dans la Zone 1. Je suis heureuse de vous accompagner sur ce vaste territoire de l'Ouest et du centre du Canada. N'hésitez pas à me contacter pour toute question liée à votre intégration, à la vie associative ou aux services du HCBE.",
+  'public.home.zones.zone2.welcome':
+    "Bienvenue dans la Zone 2. Au nom du HCBE Canada, je vous souhaite la bienvenue sur le territoire de l'Est. Notre équipe et moi sommes à votre écoute pour vous orienter, vous relier à la communauté et faciliter vos démarches.",
 
   'public.home.events.badge': 'Agenda communautaire',
   'public.home.events.title': 'Prochains événements à ne pas manquer.',

@@ -59,7 +59,12 @@ export default {
   'public.home.zones.representation': 'Representation',
   'public.home.zones.delegate': 'Lead delegate',
   'public.home.zones.deputy': 'Deputy',
+  'public.home.zones.welcomeLabel': 'Welcome message',
   'public.home.zones.regions': 'Provinces and territories',
+  'public.home.zones.zone1.welcome':
+    'Welcome to Zone 1. I am glad to support you across this vast territory covering Western and Central Canada. Feel free to reach out with any question about settling in, community life, or HCBE services.',
+  'public.home.zones.zone2.welcome':
+    'Welcome to Zone 2. On behalf of HCBE Canada, I welcome you to Eastern Canada. My team and I are here to guide you, connect you with the community, and help with your next steps.',
 
   'public.home.events.badge': 'Community calendar',
   'public.home.events.title': 'Upcoming events worth noting.',

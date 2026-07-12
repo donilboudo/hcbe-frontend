@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { InstitutionalFlags } from '../../../components/brand/InstitutionalFlags';
 
 const HeroSection = () => {
   const { t } = useTranslation();
@@ -30,6 +31,7 @@ const HeroSection = () => {
       <div className="mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl flex-col justify-center px-4 pb-20 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
           <div>
+            <InstitutionalFlags variant="hero" />
             <div className="mb-8 inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-emerald-50 backdrop-blur">
               <span className="h-2 w-2 rounded-full bg-amber-300" />
               {t('public.home.hero.badge')}

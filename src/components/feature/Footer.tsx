@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { HcbeLogo } from '../brand/HcbeLogo';
+import { InstitutionalFlags } from '../brand/InstitutionalFlags';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -20,6 +21,7 @@ const Footer = () => {
               className="mb-4"
             />
             <p className="text-sm text-gray-600 leading-relaxed">{t('public.footer.description')}</p>
+            <InstitutionalFlags variant="footer" />
           </div>
 
           <div>

@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import zone1DelegatePhoto from '../../../assets/delegates/zone1-delegate.png';
+import zone1DeputyPhoto from '../../../assets/delegates/zone1-deputy.png';
+import zone2DelegatePhoto from '../../../assets/delegates/zone2-delegate.png';
+import zone2DeputyPhoto from '../../../assets/delegates/zone2-deputy.png';
 
 const ZonesSection = () => {
   const { t, i18n } = useTranslation();
@@ -8,8 +12,15 @@ const ZonesSection = () => {
   const zones = [
     {
       name: 'Zone 1',
-      delegate: 'Mâ Ouédraogo Diallo',
-      deputy: 'Ismaël Ratouissanmda Zeba',
+      welcomeKey: 'public.home.zones.zone1.welcome',
+      delegate: {
+        name: 'Mâ Ouédraogo Diallo',
+        photo: zone1DelegatePhoto,
+      },
+      deputy: {
+        name: 'Ismaël Ratouissanmda Zeba',
+        photo: zone1DeputyPhoto,
+      },
       accent: 'from-emerald-600 to-emerald-800',
       regions: isEnglish
         ? ['Ontario', 'Manitoba', 'Saskatchewan', 'Alberta', 'British Columbia', 'Northwest Territories']
@@ -17,8 +28,15 @@ const ZonesSection = () => {
     },
     {
       name: 'Zone 2',
-      delegate: 'Aziz Ismaël Daboné',
-      deputy: 'Ahmed Arnaud Dao',
+      welcomeKey: 'public.home.zones.zone2.welcome',
+      delegate: {
+        name: 'Aziz Ismaël Daboné',
+        photo: zone2DelegatePhoto,
+      },
+      deputy: {
+        name: 'Ahmed Arnaud Dao',
+        photo: zone2DeputyPhoto,
+      },
       accent: 'from-amber-500 to-orange-600',
       regions: isEnglish
         ? ['Quebec', 'New Brunswick', 'Nova Scotia', 'Prince Edward Island', 'Newfoundland and Labrador']
@@ -66,16 +84,48 @@ const ZonesSection = () => {
                   </div>
                 </div>
 
-                <div className="grid gap-8 p-7 md:grid-cols-[0.9fr_1.1fr]">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gray-500">
-                      {t('public.home.zones.representation')}
-                    </p>
-                    <h4 className="mt-3 text-2xl font-bold text-gray-950">{zone.delegate}</h4>
-                    <p className="mt-1 font-semibold text-emerald-700">{t('public.home.zones.delegate')}</p>
-                    <div className="mt-5 rounded-2xl bg-gray-50 p-4 text-sm leading-6 text-gray-700">
-                      <span className="font-semibold text-gray-950">{t('public.home.zones.deputy')}:</span>{' '}
-                      {zone.deputy}
+                <div className="grid gap-8 p-7 lg:grid-cols-[1.15fr_0.85fr]">
+                  <div className="space-y-6">
+                    <div className="flex gap-4 sm:gap-6">
+                      <img
+                        src={zone.delegate.photo}
+                        alt={zone.delegate.name}
+                        className="h-32 w-32 flex-shrink-0 rounded-2xl object-cover object-top shadow-sm sm:h-40 sm:w-40"
+                      />
+                      <div className="min-w-0 self-center">
+                        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-gray-500">
+                          {t('public.home.zones.representation')}
+                        </p>
+                        <h4 className="mt-2 text-xl font-bold text-gray-950 sm:text-2xl">
+                          {zone.delegate.name}
+                        </h4>
+                        <p className="mt-1 font-semibold text-emerald-700">
+                          {t('public.home.zones.delegate')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <blockquote className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
+                        {t('public.home.zones.welcomeLabel')}
+                      </p>
+                      <p className="mt-3 text-sm leading-7 text-gray-700 sm:text-base sm:leading-7">
+                        {t(zone.welcomeKey)}
+                      </p>
+                    </blockquote>
+
+                    <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-4 sm:gap-5 sm:p-5">
+                      <img
+                        src={zone.deputy.photo}
+                        alt={zone.deputy.name}
+                        className="h-24 w-24 flex-shrink-0 rounded-2xl object-cover object-top sm:h-28 sm:w-28"
+                      />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-500">
+                          {t('public.home.zones.deputy')}
+                        </p>
+                        <p className="mt-0.5 text-base font-bold text-gray-950 sm:text-lg">{zone.deputy.name}</p>
+                      </div>
                     </div>
                   </div>
 
