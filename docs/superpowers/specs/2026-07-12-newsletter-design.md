@@ -79,7 +79,7 @@ Response: `200` with generic success message payload (always same for duplicate 
 ### Admin (authenticated)
 
 - `GET /api/newsletter/subscriptions?language=&isActive=`
-- `PATCH /api/newsletter/subscriptions/{id}` — set `isActive`
+- `PATCH /api/newsletter/subscriptions/{id}` — body `{ "isActive": boolean }`
 - `GET /api/newsletter/subscriptions/export` — CSV of active subscribers
 
 ## Frontend
@@ -88,8 +88,8 @@ Response: `200` with generic success message payload (always same for duplicate 
 
 - `NewsletterSignup` component (i18n FR/EN): first name, email, language select, consent checkbox + privacy link, submit.
 - Home: new section before `CTASection`.
-- Footer: compact inline variant in brand column or bottom bar.
-- New page `/confidentialite` (FR) with EN equivalent route/content via i18n — minimal privacy policy covering newsletter data use.
+- Footer: compact inline variant under the brand/description block (same column as institutional flags).
+- Privacy page at `/confidentialite` with bilingual content via i18n (no separate EN URL required).
 
 ### Admin
 
