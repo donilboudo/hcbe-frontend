@@ -22,6 +22,9 @@ export default {
   'public.privacy.newsletterTitle': 'Newsletter',
   'public.privacy.newsletterBody':
     'When you subscribe to the newsletter, we collect your first name, email address and language preference to send communications about HCBE Canada activities. Your consent is stored with the acceptance timestamp.',
+  'public.privacy.analyticsTitle': 'Traffic analytics',
+  'public.privacy.analyticsBody':
+    'We use Vercel Web Analytics to measure anonymous site traffic (pages viewed, trends over time). These metrics are not used for advertising and do not rely on advertising cookies.',
   'public.privacy.retentionTitle': 'Retention',
   'public.privacy.retentionBody':
     'Your information is kept while your subscription remains active. You can request deactivation by writing to contact@hcbecanada.org.',

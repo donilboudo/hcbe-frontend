@@ -21,6 +21,10 @@ const PrivacyPage = () => {
             <p className="mt-3 text-base leading-7 text-gray-600">{t('public.privacy.newsletterBody')}</p>
           </div>
           <div>
+            <h2 className="text-2xl font-bold text-gray-950">{t('public.privacy.analyticsTitle')}</h2>
+            <p className="mt-3 text-base leading-7 text-gray-600">{t('public.privacy.analyticsBody')}</p>
+          </div>
+          <div>
             <h2 className="text-2xl font-bold text-gray-950">{t('public.privacy.retentionTitle')}</h2>
             <p className="mt-3 text-base leading-7 text-gray-600">{t('public.privacy.retentionBody')}</p>
           </div>
