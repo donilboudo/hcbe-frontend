@@ -10,18 +10,8 @@ import {
   sortEventsForPublic,
   type EventLifecycle,
 } from '../../../lib/events/lifecycle';
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-  imageUrl?: string;
-  type?: string;
-  meetingLink?: string;
-  status: string;
-}
+import type { Event } from '../../../lib/api/types';
+import { localized, localizedOptional } from '../../../lib/i18n/localized';
 
 type PublicFilter = 'current' | 'past' | 'all';
 
@@ -256,18 +246,24 @@ export const EvenementsPage: React.FC = () => {
                     </div>
 
                     <div className="p-7">
-                      <h3 className="mb-2 text-2xl font-bold text-gray-950">{event.title}</h3>
-                      <p className="mb-4 line-clamp-2 text-gray-600">{event.description}</p>
+                      <h3 className="mb-2 text-2xl font-bold text-gray-950">
+                        {localized(event.title, event.titleEn, i18n.language)}
+                      </h3>
+                      <p className="mb-4 line-clamp-2 text-gray-600">
+                        {localized(event.description, event.descriptionEn, i18n.language)}
+                      </p>
 
                       <div className="mb-4 space-y-2">
                         <div className="flex items-center text-gray-700">
                           <i className="ri-calendar-line mr-2 text-emerald-600" aria-hidden="true"></i>
                           <span className="text-sm">{formatDate(event.date)}</span>
                         </div>
-                        {event.location && (
+                        {localizedOptional(event.location, event.locationEn, i18n.language) && (
                           <div className="flex items-center text-gray-700">
                             <i className="ri-map-pin-line mr-2 text-emerald-600" aria-hidden="true"></i>
-                            <span className="text-sm">{event.location}</span>
+                            <span className="text-sm">
+                              {localized(event.location, event.locationEn, i18n.language)}
+                            </span>
                           </div>
                         )}
                       </div>

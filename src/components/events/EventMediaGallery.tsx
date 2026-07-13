@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { EventMedia } from '../../lib/api/types';
 import { resolveMediaUrl } from '../../lib/api/media-url';
 import { getVideoEmbedInfo } from '../../lib/media/video-embed';
+import { localizedOptional } from '../../lib/i18n/localized';
 
 interface EventMediaGalleryProps {
   media: EventMedia[];
@@ -10,13 +11,16 @@ interface EventMediaGalleryProps {
 }
 
 export const EventMediaGallery: React.FC<EventMediaGalleryProps> = ({ media, title }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [active, setActive] = useState<EventMedia | null>(null);
 
   const sorted = [...media].sort((a, b) => a.displayOrder - b.displayOrder);
   if (sorted.length === 0) return null;
 
   const activeVideo = active?.mediaType === 'video' ? getVideoEmbedInfo(active.url) : null;
+  const activeCaption = active
+    ? localizedOptional(active.caption, active.captionEn, i18n.language)
+    : undefined;
 
   return (
     <section className="mt-10">
@@ -27,6 +31,7 @@ export const EventMediaGallery: React.FC<EventMediaGalleryProps> = ({ media, tit
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sorted.map((item) => {
           const video = item.mediaType === 'video' ? getVideoEmbedInfo(item.url) : null;
+          const caption = localizedOptional(item.caption, item.captionEn, i18n.language);
           return (
             <button
               key={item.id}
@@ -37,7 +42,7 @@ export const EventMediaGallery: React.FC<EventMediaGalleryProps> = ({ media, tit
               {item.mediaType === 'image' ? (
                 <img
                   src={resolveMediaUrl(item.url)}
-                  alt={item.caption || ''}
+                  alt={caption || ''}
                   className="h-48 w-full object-cover transition group-hover:scale-[1.02]"
                 />
               ) : (
@@ -50,8 +55,8 @@ export const EventMediaGallery: React.FC<EventMediaGalleryProps> = ({ media, tit
                   </div>
                 </div>
               )}
-              {item.caption && (
-                <p className="truncate px-4 py-3 text-sm text-gray-600">{item.caption}</p>
+              {caption && (
+                <p className="truncate px-4 py-3 text-sm text-gray-600">{caption}</p>
               )}
             </button>
           );
@@ -78,14 +83,14 @@ export const EventMediaGallery: React.FC<EventMediaGalleryProps> = ({ media, tit
             {active.mediaType === 'image' ? (
               <img
                 src={resolveMediaUrl(active.url)}
-                alt={active.caption || ''}
+                alt={activeCaption || ''}
                 className="max-h-[80vh] w-full rounded-xl object-contain"
               />
             ) : activeVideo ? (
               <div className="aspect-video overflow-hidden rounded-xl bg-black">
                 <iframe
                   src={activeVideo.embedUrl}
-                  title={active.caption || t('public.news.souvenirs.gallery.video')}
+                  title={activeCaption || t('public.news.souvenirs.gallery.video')}
                   className="h-full w-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -101,8 +106,8 @@ export const EventMediaGallery: React.FC<EventMediaGalleryProps> = ({ media, tit
                 {t('public.news.souvenirs.gallery.openExternal')}
               </a>
             )}
-            {active.caption && (
-              <p className="mt-4 text-center text-white/90">{active.caption}</p>
+            {activeCaption && (
+              <p className="mt-4 text-center text-white/90">{activeCaption}</p>
             )}
           </div>
         </div>

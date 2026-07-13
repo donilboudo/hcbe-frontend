@@ -6,6 +6,7 @@ import { newsApi } from '../../../../lib/api/news';
 import type { NewsArticle } from '../../../../lib/api/types';
 import { formatFileSize, resolveMediaUrl } from '../../../../lib/api/media-url';
 import { getNewsCategoryStyle } from '../../../../lib/news/category-styles';
+import { newsImageObjectPositionClass } from '../../../../lib/news/image-position';
 
 const NewsViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,9 +66,11 @@ const NewsViewPage: React.FC = () => {
   }
 
   const style = getNewsCategoryStyle(article.category);
+  const showCover = Boolean(article.imageUrl);
+  const coverObjectPosition = newsImageObjectPositionClass(article.imagePosition);
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-7xl">
       <AdminBackButton to="/admin/news" />
 
       <div className={`mb-6 overflow-hidden rounded-2xl bg-gradient-to-br ${style.accent} p-6 text-white sm:p-8`}>
@@ -102,20 +105,25 @@ const NewsViewPage: React.FC = () => {
         </div>
       </div>
 
-      {article.imageUrl && (
-        <img
-          src={resolveMediaUrl(article.imageUrl)}
-          alt={article.title}
-          className="mb-6 h-64 w-full rounded-2xl object-cover"
-        />
-      )}
+      <div className={showCover ? 'grid gap-6 lg:grid-cols-2 lg:items-start' : undefined}>
+        <div className="rounded-lg bg-white p-6 shadow">
+          {article.excerpt && (
+            <p className="mb-4 border-b border-gray-100 pb-4 text-sm italic leading-6 text-gray-500">
+              {article.excerpt}
+            </p>
+          )}
+          <p className="whitespace-pre-wrap text-base leading-7 text-gray-700">{article.content}</p>
+        </div>
 
-      {article.excerpt && (
-        <p className="mb-4 text-lg font-medium text-gray-700">{article.excerpt}</p>
-      )}
-
-      <div className="rounded-lg bg-white p-6 shadow">
-        <p className="whitespace-pre-wrap text-base leading-7 text-gray-700">{article.content}</p>
+        {showCover && (
+          <div className="order-first overflow-hidden rounded-2xl bg-gray-100 shadow lg:order-none lg:sticky lg:top-6">
+            <img
+              src={resolveMediaUrl(article.imageUrl)}
+              alt={article.title}
+              className={`h-72 w-full object-cover sm:h-80 lg:h-[26rem] ${coverObjectPosition}`}
+            />
+          </div>
+        )}
       </div>
 
       {(article.attachments?.length ?? 0) > 0 && (

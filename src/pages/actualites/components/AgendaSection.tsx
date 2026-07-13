@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { eventsApi } from '../../../lib/api/events';
 import type { Event } from '../../../lib/api/types';
+import { localized } from '../../../lib/i18n/localized';
+import { getEventTypeLabelKey } from '../../../lib/news/category-styles';
 
 const AgendaSection = () => {
+  const { t, i18n } = useTranslation();
   const [selectedMonth, setSelectedMonth] = useState('tous');
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [events, setEvents] = useState<Event[]>([]);
@@ -35,24 +39,32 @@ const AgendaSection = () => {
   };
 
   // Convert backend Event to display format
-  const formatEventForDisplay = (event: Event) => ({
-    id: event.id,
-    titre: event.title,
-    date: event.date.split('T')[0], // Extract date part
-    heure: new Date(event.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-    lieu: event.location || 'Lieu à confirmer',
-    adresse: event.location || 'Adresse à confirmer',
-    type: event.type || 'HCBE',
-    description: event.description || 'Description à venir',
-    descriptionComplete: event.description || 'Description complète à venir',
-    image: event.imageUrl || 'https://readdy.ai/api/search-image?query=Professional%20business%20event%20with%20community%20gathering&width=600&height=400&seq=event-default&orientation=landscape',
-    participants: event.capacity ? `${event.capacity}` : 'Inscription libre',
-    statut: event.status,
-    organisateur: 'HCBE Canada',
-    contact: 'info@hcbecanada.org',
-    inscription: event.meetingLink || 'https://hcbecanada.org/events',
-  });
-
+  const formatEventForDisplay = (event: Event) => {
+    const title = localized(event.title, event.titleEn, i18n.language);
+    const description = localized(event.description, event.descriptionEn, i18n.language);
+    const location = localized(event.location, event.locationEn, i18n.language);
+    const typeKey = getEventTypeLabelKey(event.type);
+    return {
+      id: event.id,
+      titre: title,
+      date: event.date.split('T')[0],
+      heure: new Date(event.date).toLocaleTimeString(
+        i18n.language.startsWith('en') ? 'en-CA' : 'fr-CA',
+        { hour: '2-digit', minute: '2-digit' },
+      ),
+      lieu: location || 'Lieu à confirmer',
+      adresse: location || 'Adresse à confirmer',
+      type: typeKey ? t(typeKey) : event.type || 'HCBE',
+      description: description || 'Description à venir',
+      descriptionComplete: description || 'Description complète à venir',
+      image: event.imageUrl || 'https://readdy.ai/api/search-image?query=Professional%20business%20event%20with%20community%20gathering&width=600&height=400&seq=event-default&orientation=landscape',
+      participants: event.capacity ? `${event.capacity}` : 'Inscription libre',
+      statut: event.status,
+      organisateur: 'HCBE Canada',
+      contact: 'info@hcbecanada.org',
+      inscription: event.meetingLink || 'https://hcbecanada.org/events',
+    };
+  };
   const evenements = events.map(formatEventForDisplay);
 
   // Generate months dynamically from actual events

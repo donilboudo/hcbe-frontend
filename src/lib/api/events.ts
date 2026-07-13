@@ -58,8 +58,13 @@ export const eventsApi = {
   uploadPhoto: (id: string, file: File): Promise<ApiResponse<EventMedia>> =>
     uploadMultipart<EventMedia>(`/api/events/${id}/media/photos`, file),
 
-  addVideo: (id: string, url: string, caption?: string): Promise<ApiResponse<EventMedia>> =>
-    apiClient.post<EventMedia>(`/api/events/${id}/media/videos`, { url, caption }),
+  addVideo: (
+    id: string,
+    url: string,
+    caption?: string,
+    captionEn?: string,
+  ): Promise<ApiResponse<EventMedia>> =>
+    apiClient.post<EventMedia>(`/api/events/${id}/media/videos`, { url, caption, captionEn }),
 
   deleteMedia: (id: string, mediaId: string): Promise<ApiResponse<void>> =>
     apiClient.delete<void>(`/api/events/${id}/media/${mediaId}`),

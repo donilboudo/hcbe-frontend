@@ -8,6 +8,8 @@ import { resolveMediaUrl } from '../../../../lib/api/media-url';
 import { getEventLifecycle } from '../../../../lib/events/lifecycle';
 import { EventMediaGallery } from '../../../../components/events/EventMediaGallery';
 import type { Event } from '../../../../lib/api/types';
+import { localized, localizedOptional } from '../../../../lib/i18n/localized';
+import { getEventTypeLabelKey } from '../../../../lib/news/category-styles';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -140,7 +142,7 @@ export const EventDetailPage: React.FC = () => {
             </div>
 
             <h1 className="mb-4 text-balance break-words text-3xl font-bold sm:text-4xl md:text-5xl">
-              {event.title}
+              {localized(event.title, event.titleEn, i18n.language)}
             </h1>
             {isPast && (
               <p className="max-w-2xl rounded-xl bg-black/25 px-4 py-2 text-sm text-white/90 backdrop-blur">
@@ -158,7 +160,9 @@ export const EventDetailPage: React.FC = () => {
               <h2 className="mb-4 text-2xl font-bold text-gray-900">
                 {t('admin.common.description')}
               </h2>
-              <p className="whitespace-pre-line leading-relaxed text-gray-700">{event.description}</p>
+              <p className="whitespace-pre-line leading-relaxed text-gray-700">
+                {localized(event.description, event.descriptionEn, i18n.language)}
+              </p>
             </div>
 
             {(event.media?.length ?? 0) > 0 && (
@@ -178,10 +182,20 @@ export const EventDetailPage: React.FC = () => {
                   <i className="ri-calendar-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
                   <span>{formatDate(event.date)}</span>
                 </div>
-                {event.location && (
+                {localizedOptional(event.location, event.locationEn, i18n.language) && (
                   <div className="flex items-start gap-3">
                     <i className="ri-map-pin-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
-                    <span>{event.location}</span>
+                    <span>{localized(event.location, event.locationEn, i18n.language)}</span>
+                  </div>
+                )}
+                {event.type && (
+                  <div className="flex items-start gap-3">
+                    <i className="ri-bookmark-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
+                    <span>
+                      {getEventTypeLabelKey(event.type)
+                        ? t(getEventTypeLabelKey(event.type)!)
+                        : event.type}
+                    </span>
                   </div>
                 )}
                 {event.capacity && (

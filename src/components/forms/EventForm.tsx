@@ -18,9 +18,12 @@ export const EventForm: React.FC<EventFormProps> = ({
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: initialValues?.title || '',
+    titleEn: initialValues?.titleEn || '',
     description: initialValues?.description || '',
+    descriptionEn: initialValues?.descriptionEn || '',
     date: initialValues?.date ? new Date(initialValues.date).toISOString().slice(0, 16) : '',
     location: initialValues?.location || '',
+    locationEn: initialValues?.locationEn || '',
     type: initialValues?.type || '',
     zone: initialValues?.zone || '',
     capacity: initialValues?.capacity?.toString() || '',
@@ -87,9 +90,12 @@ export const EventForm: React.FC<EventFormProps> = ({
 
     const submitData: CreateEventRequest | UpdateEventRequest = {
       title: formData.title,
+      titleEn: formData.titleEn,
       description: formData.description || undefined,
+      descriptionEn: formData.descriptionEn,
       date: formData.date,
       location: formData.location || undefined,
+      locationEn: formData.locationEn,
       type: formData.type || undefined,
       zone: formData.zone || undefined,
       capacity: formData.capacity ? parseInt(formData.capacity, 10) : undefined,
@@ -132,9 +138,14 @@ export const EventForm: React.FC<EventFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="md:col-span-2 rounded-lg border border-emerald-100 bg-emerald-50/40 px-4 py-3">
+          <p className="text-sm font-semibold text-emerald-900">{t('admin.content.lang.fr')}</p>
+          <p className="mt-1 text-xs text-emerald-800/80">{t('admin.content.lang.frHint')}</p>
+        </div>
+
         <div className="md:col-span-2">
           <label htmlFor="title" className="mb-1 block text-sm font-medium text-gray-700">
-            {t('admin.events.form.title')} *
+            {t('admin.events.form.title')} (FR) *
           </label>
           <input
             type="text"
@@ -152,7 +163,7 @@ export const EventForm: React.FC<EventFormProps> = ({
 
         <div className="md:col-span-2">
           <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700">
-            {t('admin.common.description')}
+            {t('admin.common.description')} (FR)
           </label>
           <textarea
             id="description"
@@ -162,6 +173,71 @@ export const EventForm: React.FC<EventFormProps> = ({
             onChange={handleChange}
             className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
             placeholder={t('admin.events.form.descriptionPlaceholder')}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="location" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.location')} (FR)
+          </label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
+            placeholder={t('admin.events.form.locationPlaceholder')}
+          />
+        </div>
+
+        <div className="md:col-span-2 rounded-lg border border-sky-100 bg-sky-50/50 px-4 py-3">
+          <p className="text-sm font-semibold text-sky-900">{t('admin.content.lang.en')}</p>
+          <p className="mt-1 text-xs text-sky-800/80">{t('admin.content.lang.enHint')}</p>
+        </div>
+
+        <div className="md:col-span-2">
+          <label htmlFor="titleEn" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.events.form.title')} (EN)
+          </label>
+          <input
+            type="text"
+            id="titleEn"
+            name="titleEn"
+            value={formData.titleEn}
+            onChange={handleChange}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
+            placeholder={t('admin.events.form.titleEnPlaceholder')}
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <label htmlFor="descriptionEn" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.description')} (EN)
+          </label>
+          <textarea
+            id="descriptionEn"
+            name="descriptionEn"
+            rows={4}
+            value={formData.descriptionEn}
+            onChange={handleChange}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
+            placeholder={t('admin.events.form.descriptionEnPlaceholder')}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="locationEn" className="mb-1 block text-sm font-medium text-gray-700">
+            {t('admin.common.location')} (EN)
+          </label>
+          <input
+            type="text"
+            id="locationEn"
+            name="locationEn"
+            value={formData.locationEn}
+            onChange={handleChange}
+            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
+            placeholder={t('admin.events.form.locationEnPlaceholder')}
           />
         </div>
 
@@ -202,21 +278,6 @@ export const EventForm: React.FC<EventFormProps> = ({
           {errors.registrationDeadline && (
             <p className="mt-1 text-sm text-red-600">{errors.registrationDeadline}</p>
           )}
-        </div>
-
-        <div>
-          <label htmlFor="location" className="mb-1 block text-sm font-medium text-gray-700">
-            {t('admin.common.location')}
-          </label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-emerald-500"
-            placeholder={t('admin.events.form.locationPlaceholder')}
-          />
         </div>
 
         <div>

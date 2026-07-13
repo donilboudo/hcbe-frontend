@@ -20,6 +20,7 @@ export const EventGalleryManager: React.FC<EventGalleryManagerProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [videoUrl, setVideoUrl] = useState('');
   const [videoCaption, setVideoCaption] = useState('');
+  const [videoCaptionEn, setVideoCaptionEn] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [isAddingVideo, setIsAddingVideo] = useState(false);
   const [error, setError] = useState('');
@@ -72,11 +73,17 @@ export const EventGalleryManager: React.FC<EventGalleryManagerProps> = ({
     setIsAddingVideo(true);
 
     try {
-      const response = await eventsApi.addVideo(eventId, trimmed, videoCaption.trim() || undefined);
+      const response = await eventsApi.addVideo(
+        eventId,
+        trimmed,
+        videoCaption.trim() || undefined,
+        videoCaptionEn.trim() || undefined,
+      );
       if (response.success && response.data) {
         onChange([...media, response.data]);
         setVideoUrl('');
         setVideoCaption('');
+        setVideoCaptionEn('');
       } else {
         setError(response.message || t('admin.events.gallery.errorVideo'));
       }
@@ -136,19 +143,26 @@ export const EventGalleryManager: React.FC<EventGalleryManagerProps> = ({
         </button>
       </div>
 
-      <form onSubmit={handleAddVideo} className="mb-8 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+      <form onSubmit={handleAddVideo} className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]">
         <input
           type="url"
           value={videoUrl}
           onChange={(e) => setVideoUrl(e.target.value)}
           placeholder={t('admin.events.gallery.videoUrlPlaceholder')}
-          className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm sm:col-span-2 lg:col-span-1"
         />
         <input
           type="text"
           value={videoCaption}
           onChange={(e) => setVideoCaption(e.target.value)}
           placeholder={t('admin.events.gallery.captionPlaceholder')}
+          className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+        />
+        <input
+          type="text"
+          value={videoCaptionEn}
+          onChange={(e) => setVideoCaptionEn(e.target.value)}
+          placeholder={t('admin.events.gallery.captionEnPlaceholder')}
           className="rounded-md border border-gray-300 px-3 py-2 text-sm"
         />
         <button

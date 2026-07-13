@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { newsApi } from '../../../lib/api/news';
 import type { NewsArticle } from '../../../lib/api/types';
 import { resolveMediaUrl } from '../../../lib/api/media-url';
-import { getNewsCategoryStyle } from '../../../lib/news/category-styles';
+import { getNewsCategoryStyle, getNewsCategoryLabelKey } from '../../../lib/news/category-styles';
+import { newsImageObjectPositionClass } from '../../../lib/news/image-position';
+import { localized, localizedOptional } from '../../../lib/i18n/localized';
 
 const MAX_ANNOUNCEMENTS = 6;
 
@@ -90,7 +92,10 @@ const RecentAnnouncementsSection = () => {
           {announcements.map((item) => {
             const style = getNewsCategoryStyle(item.category);
             const publishedAt = item.publishedDate || item.createdAt;
-            const preview = item.excerpt || item.content;
+            const excerpt = localizedOptional(item.excerpt, item.excerptEn, i18n.language);
+            const content = localized(item.content, item.contentEn, i18n.language);
+            const preview = excerpt || content;
+            const categoryLabelKey = getNewsCategoryLabelKey(item.category);
 
             return (
               <article
@@ -102,7 +107,7 @@ const RecentAnnouncementsSection = () => {
                     <img
                       src={resolveMediaUrl(item.imageUrl)}
                       alt=""
-                      className="h-full w-full object-cover"
+                      className={`h-full w-full object-cover ${newsImageObjectPositionClass(item.imagePosition)}`}
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-white/80">
@@ -113,7 +118,7 @@ const RecentAnnouncementsSection = () => {
                   <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center gap-2">
                     {item.category && (
                       <span className="inline-flex rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-emerald-800">
-                        {item.category}
+                        {categoryLabelKey ? t(categoryLabelKey) : item.category}
                       </span>
                     )}
                     {item.isPinned && (
@@ -129,7 +134,9 @@ const RecentAnnouncementsSection = () => {
                   <time className="text-sm text-gray-500" dateTime={publishedAt}>
                     {formatDate(publishedAt)}
                   </time>
-                  <h3 className="mt-2 text-xl font-bold text-gray-950">{item.title}</h3>
+                  <h3 className="mt-2 text-xl font-bold text-gray-950">
+                    {localized(item.title, item.titleEn, i18n.language)}
+                  </h3>
                   {preview && (
                     <p className="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">{preview}</p>
                   )}

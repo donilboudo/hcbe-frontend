@@ -15,9 +15,13 @@ const NewsCreatePage: React.FC = () => {
   const [pendingAttachments, setPendingAttachments] = useState<File[]>([]);
   const [formData, setFormData] = useState<CreateNewsRequest>({
     title: '',
+    titleEn: '',
     content: '',
+    contentEn: '',
     excerpt: '',
+    excerptEn: '',
     imageUrl: '',
+    imagePosition: 'center',
     author: '',
     category: '',
     publishedDate: new Date().toISOString(),

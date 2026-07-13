@@ -62,6 +62,7 @@ export interface EventMedia {
   contentType?: string;
   sizeBytes?: number;
   caption?: string;
+  captionEn?: string;
   displayOrder: number;
   createdAt: string;
 }
@@ -69,9 +70,12 @@ export interface EventMedia {
 export interface Event {
   id: string;
   title: string;
+  titleEn?: string;
   description?: string;
+  descriptionEn?: string;
   date: string;
   location?: string;
+  locationEn?: string;
   type?: string;
   zone?: string;
   capacity?: number;
@@ -86,9 +90,12 @@ export interface Event {
 
 export interface CreateEventRequest {
   title: string;
+  titleEn?: string;
   description?: string;
+  descriptionEn?: string;
   date: string;
   location?: string;
+  locationEn?: string;
   type?: string;
   zone?: string;
   capacity?: number;
@@ -100,9 +107,12 @@ export interface CreateEventRequest {
 
 export interface UpdateEventRequest {
   title?: string;
+  titleEn?: string;
   description?: string;
+  descriptionEn?: string;
   date?: string;
   location?: string;
+  locationEn?: string;
   type?: string;
   zone?: string;
   capacity?: number;
@@ -465,9 +475,13 @@ export interface MediaUpload {
 export interface NewsArticle {
   id: string;
   title: string;
+  titleEn?: string;
   content: string;
+  contentEn?: string;
   excerpt?: string;
+  excerptEn?: string;
   imageUrl?: string;
+  imagePosition?: 'top' | 'center' | 'bottom';
   author?: string;
   category?: string;
   publishedDate?: string;
@@ -480,9 +494,13 @@ export interface NewsArticle {
 
 export interface CreateNewsRequest {
   title: string;
+  titleEn?: string;
   content: string;
+  contentEn?: string;
   excerpt?: string;
+  excerptEn?: string;
   imageUrl?: string;
+  imagePosition?: 'top' | 'center' | 'bottom';
   author?: string;
   category?: string;
   publishedDate?: string;

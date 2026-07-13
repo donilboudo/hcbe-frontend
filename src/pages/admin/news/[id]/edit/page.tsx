@@ -18,9 +18,13 @@ const NewsEditPage: React.FC = () => {
   const [existingAttachments, setExistingAttachments] = useState<NewsAttachment[]>([]);
   const [formData, setFormData] = useState<CreateNewsRequest>({
     title: '',
+    titleEn: '',
     content: '',
+    contentEn: '',
     excerpt: '',
+    excerptEn: '',
     imageUrl: '',
+    imagePosition: 'center',
     author: '',
     category: '',
     publishedDate: '',
@@ -38,9 +42,13 @@ const NewsEditPage: React.FC = () => {
           const article = response.data;
           setFormData({
             title: article.title,
+            titleEn: article.titleEn || '',
             content: article.content,
+            contentEn: article.contentEn || '',
             excerpt: article.excerpt || '',
+            excerptEn: article.excerptEn || '',
             imageUrl: article.imageUrl || '',
+            imagePosition: article.imagePosition || 'center',
             author: article.author || '',
             category: article.category || '',
             publishedDate: article.publishedDate || '',

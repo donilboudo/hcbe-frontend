@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { newsApi } from '../../../lib/api/news';
 import type { NewsArticle } from '../../../lib/api/types';
-import { getNewsCategoryStyle } from '../../../lib/news/category-styles';
+import { getNewsCategoryStyle, getNewsCategoryLabelKey } from '../../../lib/news/category-styles';
+import { newsImageObjectPositionClass } from '../../../lib/news/image-position';
+import { localized, localizedOptional } from '../../../lib/i18n/localized';
+import { resolveMediaUrl } from '../../../lib/api/media-url';
 
 interface AnnoncesExemplesProps {
   selectedCategory: string;
@@ -87,7 +90,10 @@ const AnnoncesExemples = ({ selectedCategory }: AnnoncesExemplesProps) => {
       {sortedNews.map((item) => {
         const style = getNewsCategoryStyle(item.category);
         const publishedAt = item.publishedDate || item.createdAt;
-        const preview = item.excerpt || item.content;
+        const excerpt = localizedOptional(item.excerpt, item.excerptEn, i18n.language);
+        const content = localized(item.content, item.contentEn, i18n.language);
+        const preview = excerpt || content;
+        const categoryLabelKey = getNewsCategoryLabelKey(item.category);
 
         return (
           <article
@@ -95,12 +101,22 @@ const AnnoncesExemples = ({ selectedCategory }: AnnoncesExemplesProps) => {
             className="overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-emerald-200 hover:shadow-lg sm:rounded-[2rem]"
           >
             <div className="grid gap-0 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr]">
-              <div className={`relative min-h-[140px] bg-gradient-to-br ${style.accent} p-5 text-white sm:min-h-[160px] md:min-h-full`}>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.2),transparent_35%)]" />
-                <div className="relative flex h-full flex-col justify-between">
-                  <i className={`${style.icon} text-3xl text-white/85`} aria-hidden="true"></i>
-                  <span className="mt-4 inline-flex w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">
-                    {item.category}
+              <div className={`relative min-h-[140px] overflow-hidden bg-gradient-to-br ${style.accent} text-white sm:min-h-[160px] md:min-h-full`}>
+                {item.imageUrl ? (
+                  <img
+                    src={resolveMediaUrl(item.imageUrl)}
+                    alt=""
+                    className={`absolute inset-0 h-full w-full object-cover ${newsImageObjectPositionClass(item.imagePosition)}`}
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.2),transparent_35%)]" />
+                )}
+                <div className={`relative flex h-full min-h-[140px] flex-col justify-between p-5 sm:min-h-[160px] ${item.imageUrl ? 'bg-gradient-to-t from-black/55 via-black/20 to-transparent' : ''}`}>
+                  {!item.imageUrl && (
+                    <i className={`${style.icon} text-3xl text-white/85`} aria-hidden="true"></i>
+                  )}
+                  <span className={`inline-flex w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur ${item.imageUrl ? 'mt-auto' : 'mt-4'}`}>
+                    {categoryLabelKey ? t(categoryLabelKey) : item.category}
                   </span>
                 </div>
               </div>
@@ -116,7 +132,9 @@ const AnnoncesExemples = ({ selectedCategory }: AnnoncesExemplesProps) => {
                   <span className="text-sm text-gray-500">{formatDate(publishedAt, i18n.language)}</span>
                 </div>
 
-                <h2 className="text-xl font-bold leading-snug text-gray-950 sm:text-2xl">{item.title}</h2>
+                <h2 className="text-xl font-bold leading-snug text-gray-950 sm:text-2xl">
+                  {localized(item.title, item.titleEn, i18n.language)}
+                </h2>
 
                 {item.author && <p className="mt-2 text-sm text-gray-600 sm:text-base">{item.author}</p>}
 

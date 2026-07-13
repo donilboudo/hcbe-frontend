@@ -5,6 +5,7 @@ import { eventsApi } from '../../../lib/api/events';
 import type { Event } from '../../../lib/api/types';
 import { getEventLifecycle } from '../../../lib/events/lifecycle';
 import { resolveMediaUrl } from '../../../lib/api/media-url';
+import { localized } from '../../../lib/i18n/localized';
 
 const GalerieSection = () => {
   const { t, i18n } = useTranslation();
@@ -115,7 +116,9 @@ const GalerieSection = () => {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                      <h3 className="text-2xl font-bold">{event.title}</h3>
+                      <h3 className="text-2xl font-bold">
+                        {localized(event.title, event.titleEn, i18n.language)}
+                      </h3>
                     </div>
                   </div>
                   <div className="space-y-3 p-6">

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { eventsApi } from '../../../lib/api/events';
 import type { Event } from '../../../lib/api/types';
 import { isCurrentOrUpcomingEvent } from '../../../lib/events/lifecycle';
+import { localized, localizedOptional } from '../../../lib/i18n/localized';
 
 const MAX_EVENTS = 3;
 
@@ -114,10 +115,12 @@ const UpcomingEventsSection = () => {
               </div>
 
               <div className="flex flex-1 flex-col p-5 sm:p-6">
-                <h3 className="text-xl font-bold text-gray-950">{event.title}</h3>
-                {event.description && (
+                <h3 className="text-xl font-bold text-gray-950">
+                  {localized(event.title, event.titleEn, i18n.language)}
+                </h3>
+                {localizedOptional(event.description, event.descriptionEn, i18n.language) && (
                   <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600">
-                    {event.description}
+                    {localized(event.description, event.descriptionEn, i18n.language)}
                   </p>
                 )}
 
@@ -126,10 +129,12 @@ const UpcomingEventsSection = () => {
                     <i className="ri-time-line text-emerald-600" aria-hidden="true"></i>
                     <span>{formatTime(event.date)}</span>
                   </div>
-                  {event.location && (
+                  {localizedOptional(event.location, event.locationEn, i18n.language) && (
                     <div className="flex items-start gap-2">
                       <i className="ri-map-pin-line mt-0.5 text-emerald-600" aria-hidden="true"></i>
-                      <span className="line-clamp-1">{event.location}</span>
+                      <span className="line-clamp-1">
+                        {localized(event.location, event.locationEn, i18n.language)}
+                      </span>
                     </div>
                   )}
                 </div>

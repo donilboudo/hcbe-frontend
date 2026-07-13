@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { NEWS_CATEGORIES } from '../../../lib/news/category-styles';
+import { NEWS_CATEGORIES, getNewsCategoryLabelKey } from '../../../lib/news/category-styles';
+import {
+  NEWS_IMAGE_POSITIONS,
+  newsImageObjectPositionClass,
+  resolveNewsImagePosition,
+  type NewsImagePosition,
+} from '../../../lib/news/image-position';
 import { formatFileSize, resolveMediaUrl } from '../../../lib/api/media-url';
 import type { CreateNewsRequest, NewsAttachment } from '../../../lib/api/types';
 
@@ -38,6 +44,8 @@ export const NewsForm: React.FC<NewsFormProps> = ({
   const attachmentInputRef = useRef<HTMLInputElement>(null);
   const [deletingAttachmentId, setDeletingAttachmentId] = useState<string | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState('');
+  const imagePosition = resolveNewsImagePosition(formData.imagePosition);
+  const hasCover = Boolean(coverFile || formData.imageUrl);
 
   useEffect(() => {
     if (!coverFile) {
@@ -73,6 +81,10 @@ export const NewsForm: React.FC<NewsFormProps> = ({
     updateField('imageUrl', value);
   };
 
+  const handleImagePositionChange = (position: NewsImagePosition) => {
+    onChange({ ...formData, imagePosition: position });
+  };
+
   const handleAttachmentsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
@@ -98,8 +110,12 @@ export const NewsForm: React.FC<NewsFormProps> = ({
     <form onSubmit={onSubmit} className="overflow-hidden rounded-lg bg-white shadow">
       <div className="space-y-6 p-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="md:col-span-2 rounded-lg border border-emerald-100 bg-emerald-50/40 px-4 py-3">
+            <p className="text-sm font-semibold text-emerald-900">{t('admin.content.lang.fr')}</p>
+            <p className="mt-1 text-xs text-emerald-800/80">{t('admin.content.lang.frHint')}</p>
+          </div>
           <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} *</label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} (FR) *</label>
             <input
               type="text"
               value={formData.title}
@@ -108,6 +124,61 @@ export const NewsForm: React.FC<NewsFormProps> = ({
               className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
             />
           </div>
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.excerpt')} (FR)</label>
+            <textarea
+              value={formData.excerpt || ''}
+              onChange={(e) => updateField('excerpt', e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.content')} (FR) *</label>
+            <textarea
+              value={formData.content}
+              onChange={(e) => updateField('content', e.target.value)}
+              required
+              rows={10}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+            />
+          </div>
+
+          <div className="md:col-span-2 rounded-lg border border-sky-100 bg-sky-50/50 px-4 py-3">
+            <p className="text-sm font-semibold text-sky-900">{t('admin.content.lang.en')}</p>
+            <p className="mt-1 text-xs text-sky-800/80">{t('admin.content.lang.enHint')}</p>
+          </div>
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} (EN)</label>
+            <input
+              type="text"
+              value={formData.titleEn || ''}
+              onChange={(e) => updateField('titleEn', e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              placeholder={t('admin.news.titleEnPlaceholder')}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.excerpt')} (EN)</label>
+            <textarea
+              value={formData.excerptEn || ''}
+              onChange={(e) => updateField('excerptEn', e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              placeholder={t('admin.news.excerptEnPlaceholder')}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.content')} (EN)</label>
+            <textarea
+              value={formData.contentEn || ''}
+              onChange={(e) => updateField('contentEn', e.target.value)}
+              rows={10}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              placeholder={t('admin.news.contentEnPlaceholder')}
+            />
+          </div>
+
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.category')}</label>
             <select
@@ -118,7 +189,7 @@ export const NewsForm: React.FC<NewsFormProps> = ({
               <option value="">{t('admin.news.selectCategory')}</option>
               {NEWS_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
-                  {category}
+                  {t(getNewsCategoryLabelKey(category) ?? category)}
                 </option>
               ))}
             </select>
@@ -152,25 +223,6 @@ export const NewsForm: React.FC<NewsFormProps> = ({
               <option value="draft">{t('admin.news.statusDraft')}</option>
             </select>
           </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.excerpt')}</label>
-            <textarea
-              value={formData.excerpt || ''}
-              onChange={(e) => updateField('excerpt', e.target.value)}
-              rows={2}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.content')} *</label>
-            <textarea
-              value={formData.content}
-              onChange={(e) => updateField('content', e.target.value)}
-              required
-              rows={10}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
 
           <div className="md:col-span-2">
             <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.coverImage')}</label>
@@ -180,7 +232,7 @@ export const NewsForm: React.FC<NewsFormProps> = ({
                 <img
                   src={coverPreviewUrl}
                   alt=""
-                  className="mb-4 h-48 w-full rounded-lg object-cover"
+                  className={`mb-4 h-48 w-full rounded-lg object-cover ${newsImageObjectPositionClass(imagePosition)}`}
                 />
               ) : (
                 <div className="mb-4 flex h-40 items-center justify-center rounded-lg bg-white text-gray-400">
@@ -196,7 +248,7 @@ export const NewsForm: React.FC<NewsFormProps> = ({
                 >
                   {t('admin.news.uploadCover')}
                 </button>
-                {(coverFile || formData.imageUrl) && (
+                {hasCover && (
                   <button
                     type="button"
                     onClick={() => {
@@ -224,6 +276,32 @@ export const NewsForm: React.FC<NewsFormProps> = ({
                 className="hidden"
                 onChange={handleCoverChange}
               />
+              {hasCover && (
+                <div className="mt-4">
+                  <p className="mb-2 text-xs font-medium text-gray-500">{t('admin.news.imagePosition')}</p>
+                  <p className="mb-3 text-xs text-gray-500">{t('admin.news.imagePositionHint')}</p>
+                  <div className="flex flex-wrap gap-2" role="group" aria-label={t('admin.news.imagePosition')}>
+                    {NEWS_IMAGE_POSITIONS.map((position) => {
+                      const selected = imagePosition === position;
+                      return (
+                        <button
+                          key={position}
+                          type="button"
+                          onClick={() => handleImagePositionChange(position)}
+                          disabled={submitting}
+                          className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                            selected
+                              ? 'bg-gray-900 text-white'
+                              : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          {t(`admin.news.imagePosition.${position}`)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div className="mt-4">
                 <label className="mb-1 block text-xs font-medium text-gray-500">{t('admin.news.imageUrl')}</label>
                 <input
