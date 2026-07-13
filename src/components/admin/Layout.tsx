@@ -95,6 +95,11 @@ export const AdminLayout = () => {
           href: '/admin/membership-applications',
           icon: 'ri-user-add-line',
         },
+        {
+          nameKey: 'admin.nav.newsletter',
+          href: '/admin/newsletter',
+          icon: 'ri-mail-send-line',
+        },
       ],
     },
     ...(features.adminTeamMembersEnabled

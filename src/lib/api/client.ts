@@ -144,6 +144,20 @@ export class ApiClient {
     }
   }
 
+  async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    try {
+      const response = await fetch(`${this.baseURL}${endpoint}`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: data ? JSON.stringify(data) : undefined,
+      });
+
+      return this.handleResponse<T>(response);
+    } catch (error) {
+      this.handleFetchError(error, endpoint);
+    }
+  }
+
   async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {

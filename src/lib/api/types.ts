@@ -334,6 +334,31 @@ export interface CreateMembershipApplicationRequest {
   motivation?: string;
 }
 
+// Newsletter
+export interface NewsletterSubscriptionDto {
+  id: string;
+  email: string;
+  fullName: string;
+  preferredLanguage: string;
+  consentAcceptedAt: string;
+  isActive: boolean;
+  source: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SubscribeNewsletterRequest {
+  email: string;
+  fullName: string;
+  preferredLanguage: 'fr' | 'en';
+  consentAccepted: boolean;
+  source: 'home' | 'footer';
+}
+
+export interface UpdateNewsletterSubscriptionRequest {
+  isActive: boolean;
+}
+
 // Grant Programs
 export interface GrantProgram {
   id: string;

@@ -9,6 +9,7 @@ const ActualitesPage = lazy(() => import('../pages/actualites/page'));
 const EngagementPage = lazy(() => import('../pages/engagement/page'));
 const EspaceMembrePage = lazy(() => import('../pages/espace-membre/page'));
 const ContactPage = lazy(() => import('../pages/contact/page'));
+const PrivacyPage = lazy(() => import('../pages/confidentialite/page'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Engagement sub-pages
@@ -63,6 +64,7 @@ const EditMemberPage = lazy(() => import('../pages/admin/members/[id]/edit/page'
 // Admin Membership Applications Pages
 const AdminMembershipApplicationsList = lazy(() => import('../pages/admin/membership-applications/page').then(module => ({ default: module.default })));
 const ViewMembershipApplicationPage = lazy(() => import('../pages/admin/membership-applications/[id]/page').then(module => ({ default: module.default })));
+const AdminNewsletterPage = lazy(() => import('../pages/admin/newsletter/page').then(module => ({ default: module.default })));
 
 // Admin Grants Pages
 const AdminGrantsList = lazy(() => import('../pages/admin/grants/page').then(module => ({ default: module.default })));
@@ -161,6 +163,10 @@ const routes: RouteObject[] = [
   {
     path: '/contact',
     element: <ContactPage />,
+  },
+  {
+    path: '/confidentialite',
+    element: <PrivacyPage />,
   },
   {
     path: '/admin/login',
@@ -281,6 +287,10 @@ const routes: RouteObject[] = [
       {
         path: 'membership-applications/:id',
         element: <ViewMembershipApplicationPage />,
+      },
+      {
+        path: 'newsletter',
+        element: <AdminNewsletterPage />,
       },
       {
         path: 'grants',
