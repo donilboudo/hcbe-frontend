@@ -204,19 +204,6 @@ export const AssociationForm: React.FC<AssociationFormProps> = ({
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
-              {t('admin.associations.phone')}
-            </label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
-              placeholder="+1 (XXX) XXX-XXXX"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
               {t('admin.associations.website')}
             </label>
             <input

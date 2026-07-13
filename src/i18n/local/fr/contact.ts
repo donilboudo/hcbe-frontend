@@ -39,7 +39,6 @@ export default {
   'public.contact.coordinates.country': 'Canada',
   'public.contact.links.title': 'Liens utiles',
   'public.contact.links.embassy': 'Ambassade du Burkina Faso au Canada',
-  'public.contact.links.consulate': 'Consulat du Burkina Faso',
   'public.contact.links.ircc': 'Immigration, Réfugiés et Citoyenneté Canada',
   'public.contact.links.govCanada': 'Services gouvernementaux du Canada',
   'public.contact.social.title': 'Suivez-nous',

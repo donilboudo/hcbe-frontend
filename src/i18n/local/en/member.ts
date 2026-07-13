@@ -20,7 +20,7 @@ export default {
   'public.member.help.title': 'Need help?',
   'public.member.help.description':
     'If you have questions about registration, our team can guide you.',
-  'public.member.help.cta': 'Contact support',
+  'public.member.help.cta': 'Contact us',
   'public.member.form.label': 'Registration',
   'public.member.form.title': 'Membership application',
   'public.member.form.intro':

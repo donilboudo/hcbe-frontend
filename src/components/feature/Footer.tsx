@@ -57,16 +57,16 @@ const Footer = () => {
             <div>
               <h3 className="font-bold text-lg mb-4 text-gray-900">{t('public.footer.contacts')}</h3>
               <ul className="space-y-3">
-                <li className="flex items-start space-x-2">
-                  <i className="ri-mail-line text-lg mt-0.5 text-gray-500" aria-hidden="true"></i>
+                <li className="flex items-center gap-2">
+                  <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center text-gray-500">
+                    <i className="ri-mail-line text-lg leading-none" aria-hidden="true"></i>
+                  </span>
                   <span className="text-sm text-gray-600">contact@hcbecanada.org</span>
                 </li>
-                <li className="flex items-start space-x-2">
-                  <i className="ri-phone-line text-lg mt-0.5 text-gray-500" aria-hidden="true"></i>
-                  <span className="text-sm text-gray-600">+1 (XXX) XXX-XXXX</span>
-                </li>
-                <li className="flex items-start space-x-2">
-                  <i className="ri-map-pin-line text-lg mt-0.5 text-gray-500" aria-hidden="true"></i>
+                <li className="flex items-center gap-2">
+                  <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center text-gray-500">
+                    <i className="ri-map-pin-line text-lg leading-none" aria-hidden="true"></i>
+                  </span>
                   <span className="text-sm text-gray-600">{t('public.footer.country')}</span>
                 </li>
               </ul>

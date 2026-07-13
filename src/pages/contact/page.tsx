@@ -285,15 +285,6 @@ const ContactPage = () => {
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100">
-                      <i className="ri-phone-line text-2xl text-amber-600" aria-hidden="true"></i>
-                    </div>
-                    <div>
-                      <h4 className="mb-1 font-semibold text-gray-900">{t('public.contact.coordinates.phone')}</h4>
-                      <p className="text-gray-600">+1 (XXX) XXX-XXXX</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-4">
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-orange-100">
                       <i className="ri-map-pin-line text-2xl text-orange-600" aria-hidden="true"></i>
                     </div>
@@ -309,15 +300,9 @@ const ContactPage = () => {
                 <h3 className="mb-4 text-xl font-bold text-gray-900">{t('public.contact.links.title')}</h3>
                 <ul className="space-y-3">
                   <li>
-                    <a href="https://www.ambassadeburkina.ca" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
+                    <a href="https://ambabf-ca.org/home-en/" target="_blank" rel="noopener noreferrer" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
                       <i className="ri-external-link-line mr-2" aria-hidden="true"></i>
                       {t('public.contact.links.embassy')}
-                    </a>
-                  </li>
-                  <li>
-                    <a href="mailto:contact@hcbecanada.org?subject=Demande%20consulaire" className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600">
-                      <i className="ri-mail-line mr-2" aria-hidden="true"></i>
-                      {t('public.contact.links.consulate')}
                     </a>
                   </li>
                   <li>
