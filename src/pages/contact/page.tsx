@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '../../components/feature/Navbar';
 import Footer from '../../components/feature/Footer';
+import { SOCIAL_LINKS } from '../../lib/social-links';
 
 const ContactPage = () => {
   const { t } = useTranslation();
@@ -336,9 +337,22 @@ const ContactPage = () => {
 
               <div className="rounded-[2rem] border border-gray-200 bg-white p-8 shadow-sm">
                 <h3 className="mb-4 text-xl font-bold text-gray-900">{t('public.contact.social.title')}</h3>
-                <div className="rounded-2xl bg-emerald-50 p-5 text-sm leading-6 text-emerald-900">
-                  {t('public.contact.social.placeholder')}
-                </div>
+                <p className="mb-5 text-sm leading-6 text-gray-600">{t('public.contact.social.intro')}</p>
+                <ul className="space-y-3">
+                  {SOCIAL_LINKS.map((network) => (
+                    <li key={network.id}>
+                      <a
+                        href={network.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex cursor-pointer items-center text-gray-700 transition-colors hover:text-emerald-600"
+                      >
+                        <i className={`${network.iconClass} mr-2 text-xl`} aria-hidden="true"></i>
+                        {network.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </div>

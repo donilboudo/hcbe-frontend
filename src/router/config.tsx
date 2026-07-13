@@ -27,6 +27,7 @@ const BoursesPage = lazy(() => import('../pages/services/bourses/page'));
 const EvenementsPage = lazy(() => import('../pages/actualites/evenements/page'));
 const EventDetailPage = lazy(() => import('../pages/actualites/evenements/[id]/page'));
 const AnnoncesPage = lazy(() => import('../pages/actualites/annonces/page'));
+const AnnonceDetailPage = lazy(() => import('../pages/actualites/annonces/[id]/page'));
 const SouvenirsPage = lazy(() => import('../pages/actualites/souvenirs/page'));
 
 // Admin Pages
@@ -131,6 +132,10 @@ const routes: RouteObject[] = [
   {
     path: '/actualites/annonces',
     element: <AnnoncesPage />,
+  },
+  {
+    path: '/actualites/annonces/:id',
+    element: <AnnonceDetailPage />,
   },
   {
     path: '/actualites/souvenirs',

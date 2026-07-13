@@ -135,7 +135,7 @@ const RecentAnnouncementsSection = () => {
                   )}
 
                   <Link
-                    to="/actualites/annonces"
+                    to={`/actualites/annonces/${item.id}`}
                     className="mt-6 inline-flex items-center font-semibold text-emerald-700 transition hover:text-emerald-800"
                   >
                     {t('public.home.announcements.readMore')}

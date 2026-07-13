@@ -43,8 +43,8 @@ export default {
   'public.contact.links.ircc': 'Immigration, Refugees and Citizenship Canada',
   'public.contact.links.govCanada': 'Government of Canada services',
   'public.contact.social.title': 'Follow us',
-  'public.contact.social.placeholder':
-    'Official accounts will be added here once they are confirmed.',
+  'public.contact.social.intro':
+    'Find HCBE Canada on Facebook. YouTube, X, and LinkedIn accounts will be added once they are available.',
   'public.contact.faq.title': 'Frequently asked questions',
   'public.contact.faq.subtitle': 'Quickly find answers to your questions',
   'public.contact.faq.items.membership.q': 'How do I become a member of HCBE Canada?',

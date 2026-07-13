@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { HcbeLogo } from '../brand/HcbeLogo';
 import { InstitutionalFlags } from '../brand/InstitutionalFlags';
 import NewsletterSignup from './NewsletterSignup';
+import { SOCIAL_LINKS } from '../../lib/social-links';
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -74,14 +75,16 @@ const Footer = () => {
             <div>
               <h3 className="font-bold text-lg mb-4 text-gray-900">{t('public.footer.follow')}</h3>
               <div className="flex space-x-3 mb-4">
-                {['facebook', 'twitter-x', 'linkedin', 'youtube'].map((network) => (
+                {SOCIAL_LINKS.map((network) => (
                   <a
-                    key={network}
-                    href="#"
-                    className="w-10 h-10 bg-gray-200 hover:bg-emerald-600 hover:text-white rounded-lg flex items-center justify-center transition-all"
-                    aria-label={network}
+                    key={network.id}
+                    href={network.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200 text-gray-700 transition-all hover:bg-emerald-600 hover:text-white"
+                    aria-label={network.label}
                   >
-                    <i className={`ri-${network}-fill text-xl text-gray-700 hover:text-white`} aria-hidden="true"></i>
+                    <i className={`${network.iconClass} text-xl`} aria-hidden="true"></i>
                   </a>
                 ))}
               </div>
