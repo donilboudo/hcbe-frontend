@@ -76,10 +76,10 @@ const NewsCreatePage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto w-full min-w-0 max-w-4xl">
       <AdminBackButton to="/admin/news" />
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('admin.news.createTitle')}</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">{t('admin.news.createTitle')}</h1>
       </div>
       {error && <div className="mb-6 rounded border border-red-200 bg-red-50 px-4 py-3 text-red-700">{error}</div>}
       <NewsForm

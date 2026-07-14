@@ -2,9 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AdminBackButton } from '../../../../../components/admin/AdminBackButton';
+import {
+  AdminLanguageTabs,
+  isEnglishContentIncomplete,
+} from '../../../../../components/admin/AdminLanguageTabs';
 import { grantsApi } from '../../../../../lib/api/grants';
 import type { UpdateGrantProgramRequest } from '../../../../../lib/api/types';
 import { GRANT_ICON_OPTIONS, formatCriteriaText, parseCriteriaText } from '../../grant-form-utils';
+
+const fieldClass =
+  'w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500';
 
 const GrantEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,12 +21,25 @@ const GrantEditPage: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [criteriaText, setCriteriaText] = useState('');
-  const [formData, setFormData] = useState<UpdateGrantProgramRequest & { title: string; description: string; icon: string; amount: string; duration: string }>({
+  const [criteriaTextEn, setCriteriaTextEn] = useState('');
+  const [formData, setFormData] = useState<
+    UpdateGrantProgramRequest & {
+      title: string;
+      description: string;
+      icon: string;
+      amount: string;
+      duration: string;
+    }
+  >({
     title: '',
+    titleEn: '',
     description: '',
+    descriptionEn: '',
     icon: 'ri-graduation-cap-line',
     amount: '',
+    amountEn: '',
     duration: '',
+    durationEn: '',
     applicationUrl: '',
     displayOrder: 0,
     isActive: true,
@@ -36,15 +56,20 @@ const GrantEditPage: React.FC = () => {
           const grant = response.data;
           setFormData({
             title: grant.title,
+            titleEn: grant.titleEn || '',
             description: grant.description,
+            descriptionEn: grant.descriptionEn || '',
             icon: grant.icon,
             amount: grant.amount,
+            amountEn: grant.amountEn || '',
             duration: grant.duration,
+            durationEn: grant.durationEn || '',
             applicationUrl: grant.applicationUrl || '',
             displayOrder: grant.displayOrder,
             isActive: grant.isActive,
           });
           setCriteriaText(formatCriteriaText(grant.eligibilityCriteria));
+          setCriteriaTextEn(formatCriteriaText(grant.eligibilityCriteriaEn || []));
         } else {
           setError(t('admin.grants.errorLoad'));
         }
@@ -85,6 +110,7 @@ const GrantEditPage: React.FC = () => {
       const response = await grantsApi.updateGrant(id, {
         ...formData,
         eligibilityCriteria: parseCriteriaText(criteriaText),
+        eligibilityCriteriaEn: parseCriteriaText(criteriaTextEn),
       });
       if (response.success) {
         navigate(`/admin/grants/${id}`);
@@ -107,12 +133,19 @@ const GrantEditPage: React.FC = () => {
     );
   }
 
-  return (
-    <div className="mx-auto max-w-4xl">
-      <AdminBackButton to={`/admin/grants/${id}`} label={t('admin.common.back')} />
+  const enIncomplete = isEnglishContentIncomplete([
+    [formData.title, formData.titleEn],
+    [formData.description, formData.descriptionEn],
+    [formData.amount, formData.amountEn],
+    [formData.duration, formData.durationEn],
+    [criteriaText, criteriaTextEn],
+  ]);
 
+  return (
+    <div className="mx-auto w-full min-w-0 max-w-4xl">
+      <AdminBackButton to={`/admin/grants/${id}`} label={t('admin.common.back')} />
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('admin.grants.editTitle')}</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">{t('admin.grants.editTitle')}</h1>
       </div>
 
       {error && (
@@ -120,59 +153,96 @@ const GrantEditPage: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} className="overflow-hidden rounded-lg bg-white shadow">
-        <div className="space-y-6 p-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} *</label>
-              <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.description')} *</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.icon')} *</label>
-              <select name="icon" value={formData.icon} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500">
-                {GRANT_ICON_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colOrder')}</label>
-              <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleChange} min={0} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colAmount')} *</label>
-              <input type="text" name="amount" value={formData.amount} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colDuration')} *</label>
-              <input type="text" name="duration" value={formData.duration} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.applicationUrl')}</label>
-              <input type="url" name="applicationUrl" value={formData.applicationUrl} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.criteria')} *</label>
-              <textarea value={criteriaText} onChange={(e) => setCriteriaText(e.target.value)} required rows={6} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-              <p className="mt-1 text-xs text-gray-500">{t('admin.grants.criteriaHint')}</p>
-            </div>
-            <div className="flex items-center md:col-span-2">
-              <label className="flex cursor-pointer items-center">
-                <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
-                <span className="ml-2 text-sm font-medium text-gray-700">{t('admin.common.active')}</span>
-              </label>
+        <div className="space-y-8 p-4 sm:p-6">
+          <AdminLanguageTabs
+            enIncomplete={enIncomplete}
+            frPanel={
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} *</label>
+                  <input type="text" name="title" value={formData.title} onChange={handleChange} required className={fieldClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.description')} *</label>
+                  <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} className={fieldClass} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colAmount')} *</label>
+                  <input type="text" name="amount" value={formData.amount} onChange={handleChange} required className={fieldClass} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colDuration')} *</label>
+                  <input type="text" name="duration" value={formData.duration} onChange={handleChange} required className={fieldClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.criteria')} *</label>
+                  <textarea value={criteriaText} onChange={(e) => setCriteriaText(e.target.value)} required rows={6} className={fieldClass} />
+                  <p className="mt-1 text-xs text-gray-500">{t('admin.grants.criteriaHint')}</p>
+                </div>
+              </div>
+            }
+            enPanel={
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')}</label>
+                  <input type="text" name="titleEn" value={formData.titleEn || ''} onChange={handleChange} className={fieldClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.description')}</label>
+                  <textarea name="descriptionEn" value={formData.descriptionEn || ''} onChange={handleChange} rows={4} className={fieldClass} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colAmount')}</label>
+                  <input type="text" name="amountEn" value={formData.amountEn || ''} onChange={handleChange} className={fieldClass} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colDuration')}</label>
+                  <input type="text" name="durationEn" value={formData.durationEn || ''} onChange={handleChange} className={fieldClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.criteria')}</label>
+                  <textarea value={criteriaTextEn} onChange={(e) => setCriteriaTextEn(e.target.value)} rows={6} className={fieldClass} />
+                </div>
+              </div>
+            }
+          />
+
+          <div>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              {t('admin.content.lang.settings')}
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.icon')} *</label>
+                <select name="icon" value={formData.icon} onChange={handleChange} className={fieldClass}>
+                  {GRANT_ICON_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.colOrder')}</label>
+                <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleChange} min={0} className={fieldClass} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.grants.applicationUrl')}</label>
+                <input type="url" name="applicationUrl" value={formData.applicationUrl} onChange={handleChange} className={fieldClass} />
+              </div>
+              <div className="flex items-center md:col-span-2">
+                <label className="flex cursor-pointer items-center">
+                  <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                  <span className="ml-2 text-sm font-medium text-gray-700">{t('admin.common.active')}</span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-          <button type="button" onClick={() => navigate(`/admin/grants/${id}`)} className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50" disabled={submitting}>
+        <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:flex-row sm:justify-end sm:gap-0 sm:space-x-3 sm:px-6">
+          <button type="button" onClick={() => navigate(`/admin/grants/${id}`)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-700 transition hover:bg-gray-50 sm:w-auto" disabled={submitting}>
             {t('admin.common.cancel')}
           </button>
-          <button type="submit" disabled={submitting} className="rounded-lg bg-emerald-700 px-4 py-2 text-white transition hover:bg-emerald-800 disabled:opacity-50">
+          <button type="submit" disabled={submitting} className="w-full rounded-lg bg-emerald-700 px-4 py-2.5 text-white transition hover:bg-emerald-800 disabled:opacity-50 sm:w-auto">
             {submitting ? t('admin.common.loading') : t('admin.common.save')}
           </button>
         </div>

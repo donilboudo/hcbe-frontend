@@ -9,6 +9,7 @@ export const CreateAssociationPage: React.FC = () => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState<AssociationFormValues>({
     name: '',
     description: '',
@@ -41,7 +42,20 @@ export const CreateAssociationPage: React.FC = () => {
       setIsSubmitting(true);
       setError('');
 
-      const response = await associationsApi.createAssociation(formData);
+      let imageUrl = formData.imageUrl || undefined;
+      if (imageFile) {
+        const mediaResponse = await associationsApi.uploadMedia(imageFile);
+        if (!mediaResponse.success || !mediaResponse.data) {
+          setError(mediaResponse.message || t('admin.associations.errorUpload'));
+          return;
+        }
+        imageUrl = mediaResponse.data.url;
+      }
+
+      const response = await associationsApi.createAssociation({
+        ...formData,
+        imageUrl,
+      });
       if (response.success) {
         navigate('/admin/associations');
       } else {
@@ -78,6 +92,8 @@ export const CreateAssociationPage: React.FC = () => {
         submitLabel={t('admin.associations.create')}
         submittingLabel={t('admin.associations.creating')}
         onCancel={() => navigate('/admin/associations')}
+        imageFile={imageFile}
+        onImageFileChange={setImageFile}
       />
     </div>
   );

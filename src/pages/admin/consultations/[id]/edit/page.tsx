@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AdminBackButton } from '../../../../../components/admin/AdminBackButton';
+import {
+  AdminLanguageTabs,
+  isEnglishContentIncomplete,
+} from '../../../../../components/admin/AdminLanguageTabs';
 import { consultationsApi } from '../../../../../lib/api/consultations';
 import type { UpdateConsultationRequest } from '../../../../../lib/api/types';
 import {
@@ -10,6 +14,9 @@ import {
   CONSULTATION_LAYOUT_OPTIONS,
 } from '../../consultation-form-utils';
 
+const fieldClass =
+  'w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500';
+
 const ConsultationEditPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -17,21 +24,27 @@ const ConsultationEditPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<UpdateConsultationRequest & {
-    title: string;
-    description: string;
-    icon: string;
-    layoutType: 'featured' | 'card';
-    accentColor: 'emerald' | 'amber';
-  }>({
+  const [formData, setFormData] = useState<
+    UpdateConsultationRequest & {
+      title: string;
+      description: string;
+      icon: string;
+      layoutType: 'featured' | 'card';
+      accentColor: 'emerald' | 'amber';
+    }
+  >({
     title: '',
+    titleEn: '',
     description: '',
+    descriptionEn: '',
     icon: 'ri-chat-poll-line',
     layoutType: 'card',
     actionUrl: '',
     actionLabel: '',
+    actionLabelEn: '',
     secondaryActionUrl: '',
     secondaryActionLabel: '',
+    secondaryActionLabelEn: '',
     accentColor: 'emerald',
     displayOrder: 0,
     isActive: true,
@@ -48,13 +61,17 @@ const ConsultationEditPage: React.FC = () => {
           const item = response.data;
           setFormData({
             title: item.title,
+            titleEn: item.titleEn || '',
             description: item.description,
+            descriptionEn: item.descriptionEn || '',
             icon: item.icon,
             layoutType: item.layoutType,
             actionUrl: item.actionUrl || '',
             actionLabel: item.actionLabel || '',
+            actionLabelEn: item.actionLabelEn || '',
             secondaryActionUrl: item.secondaryActionUrl || '',
             secondaryActionLabel: item.secondaryActionLabel || '',
+            secondaryActionLabelEn: item.secondaryActionLabelEn || '',
             accentColor: item.accentColor,
             displayOrder: item.displayOrder,
             isActive: item.isActive,
@@ -118,11 +135,18 @@ const ConsultationEditPage: React.FC = () => {
     );
   }
 
+  const enIncomplete = isEnglishContentIncomplete([
+    [formData.title, formData.titleEn],
+    [formData.description, formData.descriptionEn],
+    [formData.actionLabel, formData.actionLabelEn],
+    [formData.secondaryActionLabel, formData.secondaryActionLabelEn],
+  ]);
+
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto w-full min-w-0 max-w-4xl">
       <AdminBackButton to={`/admin/consultations/${id}`} />
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('admin.consultations.editTitle')}</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">{t('admin.consultations.editTitle')}</h1>
       </div>
 
       {error && (
@@ -130,77 +154,122 @@ const ConsultationEditPage: React.FC = () => {
       )}
 
       <form onSubmit={handleSubmit} className="overflow-hidden rounded-lg bg-white shadow">
-        <div className="space-y-6 p-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} *</label>
-              <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div className="md:col-span-2">
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.description')} *</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.icon')}</label>
-              <select name="icon" value={formData.icon} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500">
-                {CONSULTATION_ICON_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.colLayout')}</label>
-              <select name="layoutType" value={formData.layoutType} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500">
-                {CONSULTATION_LAYOUT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.accentColor')}</label>
-              <select name="accentColor" value={formData.accentColor} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500">
-                {CONSULTATION_ACCENT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.colOrder')}</label>
-              <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleChange} min={0} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.actionUrl')}</label>
-              <input type="text" name="actionUrl" value={formData.actionUrl} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.actionLabel')}</label>
-              <input type="text" name="actionLabel" value={formData.actionLabel} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-            </div>
-            {formData.layoutType === 'featured' && (
-              <>
+        <div className="space-y-8 p-4 sm:p-6">
+          <AdminLanguageTabs
+            enIncomplete={enIncomplete}
+            frPanel={
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    {t('admin.common.title')} *
+                  </label>
+                  <input type="text" name="title" value={formData.title} onChange={handleChange} required className={fieldClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    {t('admin.common.description')} *
+                  </label>
+                  <textarea name="description" value={formData.description} onChange={handleChange} required rows={4} className={fieldClass} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
+                    {t('admin.consultations.actionLabel')}
+                  </label>
+                  <input type="text" name="actionLabel" value={formData.actionLabel} onChange={handleChange} className={fieldClass} />
+                </div>
+                {formData.layoutType === 'featured' && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      {t('admin.consultations.secondaryActionLabel')}
+                    </label>
+                    <input type="text" name="secondaryActionLabel" value={formData.secondaryActionLabel} onChange={handleChange} className={fieldClass} />
+                  </div>
+                )}
+              </div>
+            }
+            enPanel={
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')}</label>
+                  <input type="text" name="titleEn" value={formData.titleEn || ''} onChange={handleChange} className={fieldClass} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.description')}</label>
+                  <textarea name="descriptionEn" value={formData.descriptionEn || ''} onChange={handleChange} rows={4} className={fieldClass} />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.actionLabel')}</label>
+                  <input type="text" name="actionLabelEn" value={formData.actionLabelEn || ''} onChange={handleChange} className={fieldClass} />
+                </div>
+                {formData.layoutType === 'featured' && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      {t('admin.consultations.secondaryActionLabel')}
+                    </label>
+                    <input type="text" name="secondaryActionLabelEn" value={formData.secondaryActionLabelEn || ''} onChange={handleChange} className={fieldClass} />
+                  </div>
+                )}
+              </div>
+            }
+          />
+
+          <div>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+              {t('admin.content.lang.settings')}
+            </h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.icon')}</label>
+                <select name="icon" value={formData.icon} onChange={handleChange} className={fieldClass}>
+                  {CONSULTATION_ICON_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.colLayout')}</label>
+                <select name="layoutType" value={formData.layoutType} onChange={handleChange} className={fieldClass}>
+                  {CONSULTATION_LAYOUT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.accentColor')}</label>
+                <select name="accentColor" value={formData.accentColor} onChange={handleChange} className={fieldClass}>
+                  {CONSULTATION_ACCENT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>{t(option.labelKey)}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.colOrder')}</label>
+                <input type="number" name="displayOrder" value={formData.displayOrder} onChange={handleChange} min={0} className={fieldClass} />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.actionUrl')}</label>
+                <input type="text" name="actionUrl" value={formData.actionUrl} onChange={handleChange} className={fieldClass} />
+              </div>
+              {formData.layoutType === 'featured' && (
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.secondaryActionUrl')}</label>
-                  <input type="text" name="secondaryActionUrl" value={formData.secondaryActionUrl} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
+                  <input type="text" name="secondaryActionUrl" value={formData.secondaryActionUrl} onChange={handleChange} className={fieldClass} />
                 </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.consultations.secondaryActionLabel')}</label>
-                  <input type="text" name="secondaryActionLabel" value={formData.secondaryActionLabel} onChange={handleChange} className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500" />
-                </div>
-              </>
-            )}
-            <div className="flex items-center md:col-span-2">
-              <label className="flex cursor-pointer items-center">
-                <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
-                <span className="ml-2 text-sm font-medium text-gray-700">{t('admin.common.active')}</span>
-              </label>
+              )}
+              <div className="flex items-center md:col-span-2">
+                <label className="flex cursor-pointer items-center">
+                  <input type="checkbox" name="isActive" checked={formData.isActive} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500" />
+                  <span className="ml-2 text-sm font-medium text-gray-700">{t('admin.common.active')}</span>
+                </label>
+              </div>
             </div>
           </div>
         </div>
-        <div className="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-          <button type="button" onClick={() => navigate(`/admin/consultations/${id}`)} className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50" disabled={submitting}>
+        <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:flex-row sm:justify-end sm:gap-0 sm:space-x-3 sm:px-6">
+          <button type="button" onClick={() => navigate(`/admin/consultations/${id}`)} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-700 transition hover:bg-gray-50 sm:w-auto" disabled={submitting}>
             {t('admin.common.cancel')}
           </button>
-          <button type="submit" disabled={submitting} className="rounded-lg bg-emerald-700 px-4 py-2 text-white transition hover:bg-emerald-800 disabled:opacity-50">
+          <button type="submit" disabled={submitting} className="w-full rounded-lg bg-emerald-700 px-4 py-2.5 text-white transition hover:bg-emerald-800 disabled:opacity-50 sm:w-auto">
             {submitting ? t('admin.common.loading') : t('admin.common.save')}
           </button>
         </div>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { consultationsApi } from '../../../lib/api/consultations';
 import type { Consultation } from '../../../lib/api/types';
 import { getConsultationAccentClasses } from '../../../lib/consultations/accent-styles';
+import { localized, localizedOptional } from '../../../lib/i18n/localized';
 
 const isExternalUrl = (url: string) => /^https?:\/\//i.test(url);
 
@@ -27,7 +28,7 @@ const ActionLink = ({
   );
 
 const ConsultationsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -92,25 +93,39 @@ const ConsultationsSection = () => {
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-4xl">
                   <i className={featured.icon} aria-hidden="true"></i>
                 </div>
-                <h3 className="mt-6 text-3xl font-bold">{featured.title}</h3>
+                <h3 className="mt-6 text-3xl font-bold">
+                  {localized(featured.title, featured.titleEn, i18n.language)}
+                </h3>
               </div>
               <div className="p-8 md:p-10">
-                <p className="text-lg leading-8 text-gray-700">{featured.description}</p>
+                <p className="text-lg leading-8 text-gray-700">
+                  {localized(featured.description, featured.descriptionEn, i18n.language)}
+                </p>
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  {featured.actionUrl && featured.actionLabel && (
-                    <ActionLink
-                      url={featured.actionUrl}
-                      label={featured.actionLabel}
-                      className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-7 py-4 font-semibold text-white transition hover:bg-emerald-800"
-                    />
-                  )}
-                  {featured.secondaryActionUrl && featured.secondaryActionLabel && (
-                    <ActionLink
-                      url={featured.secondaryActionUrl}
-                      label={featured.secondaryActionLabel}
-                      className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-7 py-4 font-semibold text-gray-800 transition hover:bg-gray-50"
-                    />
-                  )}
+                  {featured.actionUrl &&
+                    localizedOptional(featured.actionLabel, featured.actionLabelEn, i18n.language) && (
+                      <ActionLink
+                        url={featured.actionUrl}
+                        label={localized(featured.actionLabel, featured.actionLabelEn, i18n.language)}
+                        className="inline-flex items-center justify-center rounded-full bg-emerald-700 px-7 py-4 font-semibold text-white transition hover:bg-emerald-800"
+                      />
+                    )}
+                  {featured.secondaryActionUrl &&
+                    localizedOptional(
+                      featured.secondaryActionLabel,
+                      featured.secondaryActionLabelEn,
+                      i18n.language,
+                    ) && (
+                      <ActionLink
+                        url={featured.secondaryActionUrl}
+                        label={localized(
+                          featured.secondaryActionLabel,
+                          featured.secondaryActionLabelEn,
+                          i18n.language,
+                        )}
+                        className="inline-flex items-center justify-center rounded-full border border-gray-200 bg-white px-7 py-4 font-semibold text-gray-800 transition hover:bg-gray-50"
+                      />
+                    )}
                 </div>
               </div>
             </div>
@@ -121,17 +136,26 @@ const ConsultationsSection = () => {
           <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-2">
             {cards.map((item) => {
               const accent = getConsultationAccentClasses(item.accentColor);
+              const actionLabel = localizedOptional(
+                item.actionLabel,
+                item.actionLabelEn,
+                i18n.language,
+              );
               return (
                 <div key={item.id} className="rounded-[2rem] border border-gray-200 bg-white p-7 shadow-sm">
                   <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-3xl ${accent.iconBg}`}>
                     <i className={item.icon} aria-hidden="true"></i>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-950">{item.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-gray-600">{item.description}</p>
-                  {item.actionUrl && item.actionLabel && (
+                  <h3 className="text-xl font-bold text-gray-950">
+                    {localized(item.title, item.titleEn, i18n.language)}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-gray-600">
+                    {localized(item.description, item.descriptionEn, i18n.language)}
+                  </p>
+                  {item.actionUrl && actionLabel && (
                     <ActionLink
                       url={item.actionUrl}
-                      label={item.actionLabel}
+                      label={actionLabel}
                       className={`mt-6 inline-flex w-full items-center justify-center rounded-full px-6 py-3 font-semibold text-white transition ${accent.button}`}
                     />
                   )}

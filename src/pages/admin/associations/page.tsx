@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { associationsApi } from '../../../lib/api/associations';
 import type { Association } from '../../../lib/api/types';
+import { resolveMediaUrl } from '../../../lib/api/media-url';
 
 export const AdminAssociationsList: React.FC = () => {
   const [associations, setAssociations] = useState<Association[]>([]);
@@ -204,7 +205,11 @@ export const AdminAssociationsList: React.FC = () => {
                         <div className="h-10 w-10 flex-shrink-0">
                           <img
                             className="h-10 w-10 rounded-full object-cover"
-                            src={association.imageUrl || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'40\' height=\'40\' fill=\'#e5e7eb\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'18\' fill=\'#6b7280\'>?</text></svg>'}
+                            src={
+                              association.imageUrl
+                                ? resolveMediaUrl(association.imageUrl)
+                                : 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'40\' height=\'40\' fill=\'#e5e7eb\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'18\' fill=\'#6b7280\'>?</text></svg>'
+                            }
                             alt={association.name}
                             onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\'><rect width=\'40\' height=\'40\' fill=\'#e5e7eb\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'18\' fill=\'#6b7280\'>?</text></svg>'; }}
                           />

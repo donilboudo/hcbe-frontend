@@ -13,6 +13,7 @@ export const EditAssociationPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState<AssociationFormValues>({
     name: '',
     description: '',
@@ -88,7 +89,20 @@ export const EditAssociationPage: React.FC = () => {
       setIsSubmitting(true);
       setError('');
 
-      const response = await associationsApi.updateAssociation(id, formData);
+      let imageUrl = formData.imageUrl || undefined;
+      if (imageFile) {
+        const imageResponse = await associationsApi.uploadImage(id, imageFile);
+        if (!imageResponse.success || !imageResponse.data) {
+          setError(imageResponse.message || t('admin.associations.errorUpload'));
+          return;
+        }
+        imageUrl = imageResponse.data.url;
+      }
+
+      const response = await associationsApi.updateAssociation(id, {
+        ...formData,
+        imageUrl,
+      });
       if (response.success) {
         navigate(`/admin/associations/${id}`);
       } else {
@@ -151,6 +165,8 @@ export const EditAssociationPage: React.FC = () => {
         submittingLabel={t('admin.associations.saving')}
         onCancel={() => navigate(`/admin/associations/${id}`)}
         showActiveToggle
+        imageFile={imageFile}
+        onImageFileChange={setImageFile}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { associationsApi } from '../../../../lib/api/associations';
 import type { Association } from '../../../../lib/api/types';
+import { resolveMediaUrl } from '../../../../lib/api/media-url';
 
 export const ViewAssociationPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -135,7 +136,7 @@ export const ViewAssociationPage: React.FC = () => {
               {association.imageUrl && (
                 <div className="shrink-0">
                   <img
-                    src={association.imageUrl}
+                    src={resolveMediaUrl(association.imageUrl)}
                     alt={association.name}
                     className="h-32 w-32 rounded-lg border border-gray-300 object-cover"
                     onError={(e) => {

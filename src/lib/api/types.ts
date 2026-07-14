@@ -67,6 +67,15 @@ export interface EventMedia {
   createdAt: string;
 }
 
+export interface EventAttachment {
+  id: string;
+  fileName: string;
+  url: string;
+  contentType: string;
+  sizeBytes: number;
+  createdAt: string;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -86,6 +95,7 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
   media?: EventMedia[];
+  attachments?: EventAttachment[];
 }
 
 export interface CreateEventRequest {
@@ -176,15 +186,19 @@ export interface UpdateAssociationRequest {
 export interface Project {
   id: string;
   title: string;
+  titleEn?: string;
   location: string;
+  locationEn?: string;
   type: string; // "Développement au Burkina", "Initiative Locale"
   status: string; // "En cours", "Actif", "Planification", "Terminé"
   progress: number; // 0-100
   description: string;
+  descriptionEn?: string;
   imageUrl?: string;
   budget: string;
   fundsRaised: string;
   beneficiaries: string;
+  beneficiariesEn?: string;
   startDate?: string;
   endDate?: string;
   partners: string[];
@@ -195,15 +209,19 @@ export interface Project {
 
 export interface CreateProjectRequest {
   title: string;
+  titleEn?: string;
   location: string;
+  locationEn?: string;
   type: string;
   status: string;
   progress: number;
   description: string;
+  descriptionEn?: string;
   imageUrl?: string;
   budget: string;
   fundsRaised: string;
   beneficiaries: string;
+  beneficiariesEn?: string;
   startDate?: string;
   endDate?: string;
   partners?: string[];
@@ -211,15 +229,19 @@ export interface CreateProjectRequest {
 
 export interface UpdateProjectRequest {
   title?: string;
+  titleEn?: string;
   location?: string;
+  locationEn?: string;
   type?: string;
   status?: string;
   progress?: number;
   description?: string;
+  descriptionEn?: string;
   imageUrl?: string;
   budget?: string;
   fundsRaised?: string;
   beneficiaries?: string;
+  beneficiariesEn?: string;
   startDate?: string;
   endDate?: string;
   partners?: string[];
@@ -373,11 +395,16 @@ export interface UpdateNewsletterSubscriptionRequest {
 export interface GrantProgram {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   icon: string;
   amount: string;
+  amountEn?: string;
   duration: string;
+  durationEn?: string;
   eligibilityCriteria: string[];
+  eligibilityCriteriaEn?: string[];
   applicationUrl?: string;
   displayOrder: number;
   isActive: boolean;
@@ -387,11 +414,16 @@ export interface GrantProgram {
 
 export interface CreateGrantProgramRequest {
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   icon: string;
   amount: string;
+  amountEn?: string;
   duration: string;
+  durationEn?: string;
   eligibilityCriteria: string[];
+  eligibilityCriteriaEn?: string[];
   applicationUrl?: string;
   displayOrder?: number;
   isActive?: boolean;
@@ -399,11 +431,16 @@ export interface CreateGrantProgramRequest {
 
 export interface UpdateGrantProgramRequest {
   title?: string;
+  titleEn?: string;
   description?: string;
+  descriptionEn?: string;
   icon?: string;
   amount?: string;
+  amountEn?: string;
   duration?: string;
+  durationEn?: string;
   eligibilityCriteria?: string[];
+  eligibilityCriteriaEn?: string[];
   applicationUrl?: string;
   displayOrder?: number;
   isActive?: boolean;
@@ -413,13 +450,17 @@ export interface UpdateGrantProgramRequest {
 export interface Consultation {
   id: string;
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   icon: string;
   layoutType: 'featured' | 'card';
   actionUrl?: string;
   actionLabel?: string;
+  actionLabelEn?: string;
   secondaryActionUrl?: string;
   secondaryActionLabel?: string;
+  secondaryActionLabelEn?: string;
   accentColor: 'emerald' | 'amber';
   displayOrder: number;
   isActive: boolean;
@@ -429,13 +470,17 @@ export interface Consultation {
 
 export interface CreateConsultationRequest {
   title: string;
+  titleEn?: string;
   description: string;
+  descriptionEn?: string;
   icon: string;
   layoutType: 'featured' | 'card';
   actionUrl?: string;
   actionLabel?: string;
+  actionLabelEn?: string;
   secondaryActionUrl?: string;
   secondaryActionLabel?: string;
+  secondaryActionLabelEn?: string;
   accentColor?: 'emerald' | 'amber';
   displayOrder?: number;
   isActive?: boolean;
@@ -443,13 +488,17 @@ export interface CreateConsultationRequest {
 
 export interface UpdateConsultationRequest {
   title?: string;
+  titleEn?: string;
   description?: string;
+  descriptionEn?: string;
   icon?: string;
   layoutType?: 'featured' | 'card';
   actionUrl?: string;
   actionLabel?: string;
+  actionLabelEn?: string;
   secondaryActionUrl?: string;
   secondaryActionLabel?: string;
+  secondaryActionLabelEn?: string;
   accentColor?: 'emerald' | 'amber';
   displayOrder?: number;
   isActive?: boolean;

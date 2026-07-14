@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  AdminLanguageTabs,
+  isEnglishContentIncomplete,
+} from '../../../components/admin/AdminLanguageTabs';
 import { NEWS_CATEGORIES, getNewsCategoryLabelKey } from '../../../lib/news/category-styles';
 import {
   NEWS_IMAGE_POSITIONS,
@@ -106,315 +110,369 @@ export const NewsForm: React.FC<NewsFormProps> = ({
     }
   };
 
+  const enIncomplete = isEnglishContentIncomplete([
+    [formData.title, formData.titleEn],
+    [formData.excerpt, formData.excerptEn],
+    [formData.content, formData.contentEn],
+  ]);
+
   return (
-    <form onSubmit={onSubmit} className="overflow-hidden rounded-lg bg-white shadow">
-      <div className="space-y-6 p-6">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="md:col-span-2 rounded-lg border border-emerald-100 bg-emerald-50/40 px-4 py-3">
-            <p className="text-sm font-semibold text-emerald-900">{t('admin.content.lang.fr')}</p>
-            <p className="mt-1 text-xs text-emerald-800/80">{t('admin.content.lang.frHint')}</p>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} (FR) *</label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => updateField('title', e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.excerpt')} (FR)</label>
-            <textarea
-              value={formData.excerpt || ''}
-              onChange={(e) => updateField('excerpt', e.target.value)}
-              rows={2}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.content')} (FR) *</label>
-            <textarea
-              value={formData.content}
-              onChange={(e) => updateField('content', e.target.value)}
-              required
-              rows={10}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
-
-          <div className="md:col-span-2 rounded-lg border border-sky-100 bg-sky-50/50 px-4 py-3">
-            <p className="text-sm font-semibold text-sky-900">{t('admin.content.lang.en')}</p>
-            <p className="mt-1 text-xs text-sky-800/80">{t('admin.content.lang.enHint')}</p>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.title')} (EN)</label>
-            <input
-              type="text"
-              value={formData.titleEn || ''}
-              onChange={(e) => updateField('titleEn', e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-              placeholder={t('admin.news.titleEnPlaceholder')}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.excerpt')} (EN)</label>
-            <textarea
-              value={formData.excerptEn || ''}
-              onChange={(e) => updateField('excerptEn', e.target.value)}
-              rows={2}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-              placeholder={t('admin.news.excerptEnPlaceholder')}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.content')} (EN)</label>
-            <textarea
-              value={formData.contentEn || ''}
-              onChange={(e) => updateField('contentEn', e.target.value)}
-              rows={10}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-              placeholder={t('admin.news.contentEnPlaceholder')}
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.category')}</label>
-            <select
-              value={formData.category || ''}
-              onChange={(e) => updateField('category', e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            >
-              <option value="">{t('admin.news.selectCategory')}</option>
-              {NEWS_CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {t(getNewsCategoryLabelKey(category) ?? category)}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.author')}</label>
-            <input
-              type="text"
-              value={formData.author || ''}
-              onChange={(e) => updateField('author', e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.publishedDate')}</label>
-            <input
-              type="datetime-local"
-              value={formData.publishedDate ? formData.publishedDate.slice(0, 16) : ''}
-              onChange={(e) => updateField('publishedDate', e.target.value ? new Date(e.target.value).toISOString() : '')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.common.status')}</label>
-            <select
-              value={formData.status}
-              onChange={(e) => updateField('status', e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
-            >
-              <option value="published">{t('admin.news.statusPublished')}</option>
-              <option value="draft">{t('admin.news.statusDraft')}</option>
-            </select>
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.coverImage')}</label>
-            <p className="mb-3 text-sm text-gray-500">{t('admin.news.coverImageHint')}</p>
-            <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
-              {coverPreviewUrl ? (
-                <img
-                  src={coverPreviewUrl}
-                  alt=""
-                  className={`mb-4 h-48 w-full rounded-lg object-cover ${newsImageObjectPositionClass(imagePosition)}`}
-                />
-              ) : (
-                <div className="mb-4 flex h-40 items-center justify-center rounded-lg bg-white text-gray-400">
-                  <i className="ri-image-add-line text-4xl" aria-hidden="true"></i>
-                </div>
-              )}
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => coverInputRef.current?.click()}
-                  className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800"
-                  disabled={submitting}
-                >
-                  {t('admin.news.uploadCover')}
-                </button>
-                {hasCover && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onCoverFileChange(null);
-                      updateField('imageUrl', '');
-                      if (coverInputRef.current) coverInputRef.current.value = '';
-                    }}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-white"
-                    disabled={submitting}
-                  >
-                    {t('admin.news.removeCover')}
-                  </button>
-                )}
-                {coverFile && (
-                  <span className="text-sm text-emerald-800">
-                    <i className="ri-checkbox-circle-line mr-1" aria-hidden="true"></i>
-                    {coverFile.name}
-                  </span>
-                )}
-              </div>
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                className="hidden"
-                onChange={handleCoverChange}
-              />
-              {hasCover && (
-                <div className="mt-4">
-                  <p className="mb-2 text-xs font-medium text-gray-500">{t('admin.news.imagePosition')}</p>
-                  <p className="mb-3 text-xs text-gray-500">{t('admin.news.imagePositionHint')}</p>
-                  <div className="flex flex-wrap gap-2" role="group" aria-label={t('admin.news.imagePosition')}>
-                    {NEWS_IMAGE_POSITIONS.map((position) => {
-                      const selected = imagePosition === position;
-                      return (
-                        <button
-                          key={position}
-                          type="button"
-                          onClick={() => handleImagePositionChange(position)}
-                          disabled={submitting}
-                          className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                            selected
-                              ? 'bg-gray-900 text-white'
-                              : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                          }`}
-                        >
-                          {t(`admin.news.imagePosition.${position}`)}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-              <div className="mt-4">
-                <label className="mb-1 block text-xs font-medium text-gray-500">{t('admin.news.imageUrl')}</label>
+    <form onSubmit={onSubmit} className="min-w-0 overflow-hidden rounded-lg bg-white shadow">
+      <div className="space-y-8 p-4 sm:p-6">
+        <AdminLanguageTabs
+          enIncomplete={enIncomplete}
+          frPanel={
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  {t('admin.common.title')} *
+                </label>
                 <input
                   type="text"
-                  inputMode="url"
-                  value={formData.imageUrl || ''}
-                  onChange={(e) => handleImageUrlChange(e.target.value)}
-                  placeholder="https://"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                  value={formData.title}
+                  onChange={(e) => updateField('title', e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  {t('admin.news.excerpt')}
+                </label>
+                <textarea
+                  value={formData.excerpt || ''}
+                  onChange={(e) => updateField('excerpt', e.target.value)}
+                  rows={2}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  {t('admin.news.content')} *
+                </label>
+                <textarea
+                  value={formData.content}
+                  onChange={(e) => updateField('content', e.target.value)}
+                  required
+                  rows={10}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
             </div>
-          </div>
+          }
+          enPanel={
+            <div className="grid grid-cols-1 gap-6">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  {t('admin.common.title')}
+                </label>
+                <input
+                  type="text"
+                  value={formData.titleEn || ''}
+                  onChange={(e) => updateField('titleEn', e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+                  placeholder={t('admin.news.titleEnPlaceholder')}
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  {t('admin.news.excerpt')}
+                </label>
+                <textarea
+                  value={formData.excerptEn || ''}
+                  onChange={(e) => updateField('excerptEn', e.target.value)}
+                  rows={2}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+                  placeholder={t('admin.news.excerptEnPlaceholder')}
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  {t('admin.news.content')}
+                </label>
+                <textarea
+                  value={formData.contentEn || ''}
+                  onChange={(e) => updateField('contentEn', e.target.value)}
+                  rows={10}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+                  placeholder={t('admin.news.contentEnPlaceholder')}
+                />
+              </div>
+            </div>
+          }
+        />
 
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-sm font-medium text-gray-700">{t('admin.news.attachments')}</label>
-            <p className="mb-3 text-sm text-gray-500">{t('admin.news.attachmentsHint')}</p>
+        <div>
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
+            {t('admin.content.lang.settings')}
+          </h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {t('admin.news.category')}
+              </label>
+              <select
+                value={formData.category || ''}
+                onChange={(e) => updateField('category', e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              >
+                <option value="">{t('admin.news.selectCategory')}</option>
+                {NEWS_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>
+                    {t(getNewsCategoryLabelKey(category) ?? category)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {t('admin.news.author')}
+              </label>
+              <input
+                type="text"
+                value={formData.author || ''}
+                onChange={(e) => updateField('author', e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {t('admin.news.publishedDate')}
+              </label>
+              <input
+                type="datetime-local"
+                value={formData.publishedDate ? formData.publishedDate.slice(0, 16) : ''}
+                onChange={(e) =>
+                  updateField(
+                    'publishedDate',
+                    e.target.value ? new Date(e.target.value).toISOString() : '',
+                  )
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {t('admin.common.status')}
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => updateField('status', e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-emerald-500 focus:ring-emerald-500"
+              >
+                <option value="published">{t('admin.news.statusPublished')}</option>
+                <option value="draft">{t('admin.news.statusDraft')}</option>
+              </select>
+            </div>
 
-            {existingAttachments.length > 0 && (
-              <ul className="mb-3 space-y-2">
-                {existingAttachments.map((attachment) => (
-                  <li
-                    key={attachment.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2"
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {t('admin.news.coverImage')}
+              </label>
+              <p className="mb-3 text-sm text-gray-500">{t('admin.news.coverImageHint')}</p>
+              <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+                {coverPreviewUrl ? (
+                  <img
+                    src={coverPreviewUrl}
+                    alt=""
+                    className={`mb-4 h-48 w-full rounded-lg object-cover ${newsImageObjectPositionClass(imagePosition)}`}
+                  />
+                ) : (
+                  <div className="mb-4 flex h-40 items-center justify-center rounded-lg bg-white text-gray-400">
+                    <i className="ri-image-add-line text-4xl" aria-hidden="true"></i>
+                  </div>
+                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800"
+                    disabled={submitting}
                   >
-                    <a
-                      href={resolveMediaUrl(attachment.url)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-700 hover:underline"
+                    {t('admin.news.uploadCover')}
+                  </button>
+                  {hasCover && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onCoverFileChange(null);
+                        updateField('imageUrl', '');
+                        if (coverInputRef.current) coverInputRef.current.value = '';
+                      }}
+                      className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-white"
+                      disabled={submitting}
                     >
-                      <i className="ri-attachment-2 mr-2" aria-hidden="true"></i>
-                      {attachment.fileName}
-                      <span className="ml-2 text-gray-500">({formatFileSize(attachment.sizeBytes)})</span>
-                    </a>
-                    {onDeleteAttachment && (
+                      {t('admin.news.removeCover')}
+                    </button>
+                  )}
+                  {coverFile && (
+                    <span className="text-sm text-emerald-800">
+                      <i className="ri-checkbox-circle-line mr-1" aria-hidden="true"></i>
+                      {coverFile.name}
+                    </span>
+                  )}
+                </div>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleCoverChange}
+                />
+                {hasCover && (
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-medium text-gray-500">
+                      {t('admin.news.imagePosition')}
+                    </p>
+                    <p className="mb-3 text-xs text-gray-500">{t('admin.news.imagePositionHint')}</p>
+                    <div
+                      className="flex flex-wrap gap-2"
+                      role="group"
+                      aria-label={t('admin.news.imagePosition')}
+                    >
+                      {NEWS_IMAGE_POSITIONS.map((position) => {
+                        const selected = imagePosition === position;
+                        return (
+                          <button
+                            key={position}
+                            type="button"
+                            onClick={() => handleImagePositionChange(position)}
+                            disabled={submitting}
+                            className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+                              selected
+                                ? 'bg-gray-900 text-white'
+                                : 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {t(`admin.news.imagePosition.${position}`)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div className="mt-4">
+                  <label className="mb-1 block text-xs font-medium text-gray-500">
+                    {t('admin.news.imageUrl')}
+                  </label>
+                  <input
+                    type="text"
+                    inputMode="url"
+                    value={formData.imageUrl || ''}
+                    onChange={(e) => handleImageUrlChange(e.target.value)}
+                    placeholder="https://"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                {t('admin.news.attachments')}
+              </label>
+              <p className="mb-3 text-sm text-gray-500">{t('admin.news.attachmentsHint')}</p>
+
+              {existingAttachments.length > 0 && (
+                <ul className="mb-3 space-y-2">
+                  {existingAttachments.map((attachment) => (
+                    <li
+                      key={attachment.id}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2"
+                    >
+                      <a
+                        href={resolveMediaUrl(attachment.url)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="min-w-0 flex-1 truncate text-sm font-medium text-emerald-700 hover:underline"
+                      >
+                        <i className="ri-attachment-2 mr-2" aria-hidden="true"></i>
+                        {attachment.fileName}
+                        <span className="ml-2 text-gray-500">
+                          ({formatFileSize(attachment.sizeBytes)})
+                        </span>
+                      </a>
+                      {onDeleteAttachment && (
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteExisting(attachment.id)}
+                          disabled={submitting || deletingAttachmentId === attachment.id}
+                          className="rounded-lg px-2 py-1 text-sm text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                        >
+                          {t('admin.common.delete')}
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {pendingAttachments.length > 0 && (
+                <ul className="mb-3 space-y-2">
+                  {pendingAttachments.map((file, index) => (
+                    <li
+                      key={`${file.name}-${index}`}
+                      className="flex items-center justify-between gap-3 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2"
+                    >
+                      <span className="min-w-0 flex-1 truncate text-sm text-gray-800">
+                        <i className="ri-upload-2-line mr-2 text-emerald-700" aria-hidden="true"></i>
+                        {file.name}
+                        <span className="ml-2 text-gray-500">({formatFileSize(file.size)})</span>
+                      </span>
                       <button
                         type="button"
-                        onClick={() => handleDeleteExisting(attachment.id)}
-                        disabled={submitting || deletingAttachmentId === attachment.id}
-                        className="rounded-lg px-2 py-1 text-sm text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+                        onClick={() => removePendingAttachment(index)}
+                        disabled={submitting}
+                        className="rounded-lg px-2 py-1 text-sm text-red-600 transition hover:bg-red-50"
                       >
                         {t('admin.common.delete')}
                       </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-            {pendingAttachments.length > 0 && (
-              <ul className="mb-3 space-y-2">
-                {pendingAttachments.map((file, index) => (
-                  <li
-                    key={`${file.name}-${index}`}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2"
-                  >
-                    <span className="min-w-0 flex-1 truncate text-sm text-gray-800">
-                      <i className="ri-upload-2-line mr-2 text-emerald-700" aria-hidden="true"></i>
-                      {file.name}
-                      <span className="ml-2 text-gray-500">({formatFileSize(file.size)})</span>
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removePendingAttachment(index)}
-                      disabled={submitting}
-                      className="rounded-lg px-2 py-1 text-sm text-red-600 transition hover:bg-red-50"
-                    >
-                      {t('admin.common.delete')}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <button
-              type="button"
-              onClick={() => attachmentInputRef.current?.click()}
-              className="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
-              disabled={submitting}
-            >
-              <i className="ri-attachment-line mr-2" aria-hidden="true"></i>
-              {t('admin.news.addAttachments')}
-            </button>
-            <input
-              ref={attachmentInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,application/pdf,image/*"
-              className="hidden"
-              onChange={handleAttachmentsChange}
-            />
-          </div>
-
-          <div className="flex items-center md:col-span-2">
-            <label className="flex cursor-pointer items-center">
+              <button
+                type="button"
+                onClick={() => attachmentInputRef.current?.click()}
+                className="inline-flex items-center rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                disabled={submitting}
+              >
+                <i className="ri-attachment-line mr-2" aria-hidden="true"></i>
+                {t('admin.news.addAttachments')}
+              </button>
               <input
-                type="checkbox"
-                checked={formData.isPinned ?? false}
-                onChange={(e) => updateField('isPinned', e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                ref={attachmentInputRef}
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.gif,application/pdf,image/*"
+                className="hidden"
+                onChange={handleAttachmentsChange}
               />
-              <span className="ml-2 text-sm font-medium text-gray-700">{t('admin.news.isPinned')}</span>
-            </label>
+            </div>
+
+            <div className="flex items-center md:col-span-2">
+              <label className="flex cursor-pointer items-center">
+                <input
+                  type="checkbox"
+                  checked={formData.isPinned ?? false}
+                  onChange={(e) => updateField('isPinned', e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="ml-2 text-sm font-medium text-gray-700">
+                  {t('admin.news.isPinned')}
+                </span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end space-x-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+      <div className="flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-50 px-4 py-4 sm:flex-row sm:justify-end sm:gap-0 sm:space-x-3 sm:px-6">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-50"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-gray-700 transition hover:bg-gray-50 sm:w-auto sm:py-2"
           disabled={submitting}
         >
           {t('admin.common.cancel')}
@@ -422,7 +480,7 @@ export const NewsForm: React.FC<NewsFormProps> = ({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-emerald-700 px-4 py-2 text-white transition hover:bg-emerald-800 disabled:opacity-50"
+          className="w-full rounded-lg bg-emerald-700 px-4 py-2.5 text-white transition hover:bg-emerald-800 disabled:opacity-50 sm:w-auto sm:py-2"
         >
           {submitting ? t('admin.common.loading') : submitLabel}
         </button>

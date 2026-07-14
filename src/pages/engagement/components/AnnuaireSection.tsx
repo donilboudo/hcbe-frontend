@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { associationsApi } from '../../../lib/api/associations';
 import type { Association } from '../../../lib/api/types';
+import { resolveMediaUrl } from '../../../lib/api/media-url';
 import associationDefaultImage from '../../../assets/association-default.jpg';
 
 const AnnuaireSection = () => {
@@ -57,7 +58,7 @@ const AnnuaireSection = () => {
     if (!assoc.imageUrl || brokenImages[assoc.id]) {
       return associationDefaultImage;
     }
-    return assoc.imageUrl;
+    return resolveMediaUrl(assoc.imageUrl);
   };
 
   return (
@@ -134,7 +135,14 @@ const AnnuaireSection = () => {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredAssociations.map((assoc) => {
               const imageSrc = getImageSrc(assoc);
-              const hasContactEmail = Boolean(assoc.contact?.trim());
+              const email = assoc.contact?.trim() || '';
+              const phone = assoc.phone?.trim() || '';
+              const website = assoc.website?.trim() || '';
+              const websiteHref = website
+                ? /^https?:\/\//i.test(website)
+                  ? website
+                  : `https://${website}`
+                : '';
 
               return (
                 <article
@@ -213,14 +221,49 @@ const AnnuaireSection = () => {
                       )}
                     </div>
 
-                    {hasContactEmail && (
-                      <a
-                        href={`mailto:${assoc.contact}`}
-                        className="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
-                      >
-                        <i className="ri-mail-line mr-2" aria-hidden="true"></i>
-                        {t('public.engagement.annuaire.contact')}
-                      </a>
+                    {(email || phone || websiteHref) && (
+                      <div className="relative z-10 flex flex-wrap items-center gap-2">
+                        {email && (
+                          <a
+                            href={`mailto:${email}`}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              window.location.assign(`mailto:${email}`);
+                            }}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-600 hover:text-white"
+                            aria-label={`${t('public.engagement.annuaire.contactEmail')}: ${email}`}
+                            title={email}
+                          >
+                            <i className="ri-mail-line pointer-events-none text-xl" aria-hidden="true"></i>
+                          </a>
+                        )}
+                        {phone && (
+                          <a
+                            href={`tel:${phone.replace(/[^\d+]/g, '')}`}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              window.location.assign(`tel:${phone.replace(/[^\d+]/g, '')}`);
+                            }}
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-600 hover:text-white"
+                            aria-label={`${t('public.engagement.annuaire.contactPhone')}: ${phone}`}
+                            title={phone}
+                          >
+                            <i className="ri-phone-line pointer-events-none text-xl" aria-hidden="true"></i>
+                          </a>
+                        )}
+                        {websiteHref && (
+                          <a
+                            href={websiteHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition hover:bg-emerald-600 hover:text-white"
+                            aria-label={t('public.engagement.annuaire.visitWebsite')}
+                            title={websiteHref}
+                          >
+                            <i className="ri-global-line pointer-events-none text-xl" aria-hidden="true"></i>
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 </article>

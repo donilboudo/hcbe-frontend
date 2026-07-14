@@ -10,6 +10,9 @@ import { EventMediaGallery } from '../../../../components/events/EventMediaGalle
 import type { Event } from '../../../../lib/api/types';
 import { localized, localizedOptional } from '../../../../lib/i18n/localized';
 import { getEventTypeLabelKey } from '../../../../lib/news/category-styles';
+import { formatFileSize } from '../../../../lib/api/media-url';
+import { isImageFile } from '../../../../lib/media/is-image-file';
+import ImageCarousel from '../../../../components/media/ImageCarousel';
 
 export const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -80,6 +83,14 @@ export const EventDetailPage: React.FC = () => {
     Boolean(event.meetingLink) ||
     (event.type || '').toLowerCase().includes('virtuel') ||
     (event.type || '').toLowerCase().includes('virtual');
+
+  const attachments = event.attachments ?? [];
+  const imageAttachments = attachments.filter((attachment) =>
+    isImageFile(attachment.contentType, attachment.fileName),
+  );
+  const fileAttachments = attachments.filter(
+    (attachment) => !isImageFile(attachment.contentType, attachment.fileName),
+  );
 
   const lifecycleBadge =
     lifecycle === 'ongoing' ? (
@@ -168,6 +179,45 @@ export const EventDetailPage: React.FC = () => {
             {(event.media?.length ?? 0) > 0 && (
               <div className="rounded-lg bg-white p-8 shadow-md">
                 <EventMediaGallery media={event.media ?? []} />
+              </div>
+            )}
+
+            {(imageAttachments.length > 0 || fileAttachments.length > 0) && (
+              <div className="mt-8 rounded-lg bg-white p-8 shadow-md">
+                <h2 className="mb-4 text-2xl font-bold text-gray-900">
+                  {t('public.news.evenements.attachments')}
+                </h2>
+                {imageAttachments.length > 0 && (
+                  <div className="mb-6">
+                    <ImageCarousel
+                      images={imageAttachments.map((attachment) => ({
+                        id: attachment.id,
+                        url: attachment.url,
+                        alt: attachment.fileName,
+                      }))}
+                    />
+                  </div>
+                )}
+                {fileAttachments.length > 0 && (
+                  <ul className="space-y-2">
+                    {fileAttachments.map((attachment) => (
+                      <li key={attachment.id}>
+                        <a
+                          href={resolveMediaUrl(attachment.url)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-emerald-700 hover:underline"
+                        >
+                          <i className="ri-download-2-line mr-2" aria-hidden="true" />
+                          {attachment.fileName}
+                          <span className="ml-2 text-sm text-gray-500">
+                            ({formatFileSize(attachment.sizeBytes)})
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             )}
           </div>

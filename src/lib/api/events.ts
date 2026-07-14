@@ -1,12 +1,29 @@
 import { apiClient } from './client';
 import { getApiBaseUrl } from './base-url';
-import type { Event, CreateEventRequest, UpdateEventRequest, ApiResponse, EventMedia } from './types';
+import type {
+  Event,
+  CreateEventRequest,
+  UpdateEventRequest,
+  ApiResponse,
+  EventMedia,
+  EventAttachment,
+  MediaUpload,
+} from './types';
 
 const getAuthToken = (): string | null => localStorage.getItem('hcbe_token');
 
-const uploadMultipart = async <T>(endpoint: string, file: File): Promise<ApiResponse<T>> => {
+const uploadMultipart = async <T>(
+  endpoint: string,
+  file: File,
+  extraFields?: Record<string, string>,
+): Promise<ApiResponse<T>> => {
   const formData = new FormData();
   formData.append('file', file);
+  if (extraFields) {
+    Object.entries(extraFields).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+  }
 
   const headers: HeadersInit = {};
   const token = getAuthToken();
@@ -55,6 +72,9 @@ export const eventsApi = {
     return apiClient.delete<void>(`/api/events/${id}`);
   },
 
+  uploadMedia: (file: File): Promise<ApiResponse<MediaUpload>> =>
+    uploadMultipart<MediaUpload>('/api/media/upload', file, { folder: 'events' }),
+
   uploadPhoto: (id: string, file: File): Promise<ApiResponse<EventMedia>> =>
     uploadMultipart<EventMedia>(`/api/events/${id}/media/photos`, file),
 
@@ -68,4 +88,10 @@ export const eventsApi = {
 
   deleteMedia: (id: string, mediaId: string): Promise<ApiResponse<void>> =>
     apiClient.delete<void>(`/api/events/${id}/media/${mediaId}`),
+
+  uploadAttachment: (id: string, file: File): Promise<ApiResponse<EventAttachment>> =>
+    uploadMultipart<EventAttachment>(`/api/events/${id}/attachments`, file),
+
+  deleteAttachment: (id: string, attachmentId: string): Promise<ApiResponse<void>> =>
+    apiClient.delete<void>(`/api/events/${id}/attachments/${attachmentId}`),
 };

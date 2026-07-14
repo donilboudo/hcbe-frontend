@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { resolveMediaUrl } from '../../../lib/api/media-url';
 
 export const CANADA_PROVINCES = [
   'Alberta',
@@ -42,6 +43,8 @@ interface AssociationFormProps {
   submittingLabel: string;
   onCancel: () => void;
   showActiveToggle?: boolean;
+  imageFile: File | null;
+  onImageFileChange: (file: File | null) => void;
 }
 
 export const AssociationForm: React.FC<AssociationFormProps> = ({
@@ -53,9 +56,25 @@ export const AssociationForm: React.FC<AssociationFormProps> = ({
   submittingLabel,
   onCancel,
   showActiveToggle = false,
+  imageFile,
+  onImageFileChange,
 }) => {
   const { t } = useTranslation();
   const [domainInput, setDomainInput] = useState('');
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState('');
+  const hasImage = Boolean(imageFile || formData.imageUrl);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreviewUrl(resolveMediaUrl(formData.imageUrl));
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    setImagePreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [imageFile, formData.imageUrl]);
 
   const updateField = <K extends keyof AssociationFormValues>(
     field: K,
@@ -98,6 +117,28 @@ export const AssociationForm: React.FC<AssociationFormProps> = ({
       e.preventDefault();
       handleAddDomain();
     }
+  };
+
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    onImageFileChange(file);
+    if (file) {
+      updateField('imageUrl', '');
+    }
+  };
+
+  const handleImageUrlChange = (value: string) => {
+    if (value.trim()) {
+      onImageFileChange(null);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+    updateField('imageUrl', value);
+  };
+
+  const handleRemoveImage = () => {
+    onImageFileChange(null);
+    updateField('imageUrl', '');
+    if (imageInputRef.current) imageInputRef.current.value = '';
   };
 
   return (
@@ -236,6 +277,19 @@ export const AssociationForm: React.FC<AssociationFormProps> = ({
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
+              {t('admin.associations.phone')}
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+              placeholder={t('admin.associations.phonePlaceholder')}
+            />
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               {t('admin.associations.memberCount')}
             </label>
             <input
@@ -313,31 +367,66 @@ export const AssociationForm: React.FC<AssociationFormProps> = ({
 
       <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">{t('admin.associations.sectionImage')}</h2>
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            {t('admin.associations.imageUrl')}
-          </label>
-          <input
-            type="url"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleInputChange}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
-            placeholder="https://example.com/image.jpg"
-          />
-          <p className="mt-1 text-sm text-gray-500">{t('admin.associations.imageUrlHint')}</p>
-          {formData.imageUrl && (
-            <div className="mt-4">
-              <img
-                src={formData.imageUrl}
-                alt={t('admin.associations.imagePreview')}
-                className="h-32 w-32 rounded-lg border border-gray-300 object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+        <p className="mb-3 text-sm text-gray-500">{t('admin.associations.imageHint')}</p>
+        <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-4">
+          {imagePreviewUrl ? (
+            <img
+              src={imagePreviewUrl}
+              alt={t('admin.associations.imagePreview')}
+              className="mb-4 h-40 w-40 rounded-lg border border-gray-300 object-cover"
+            />
+          ) : (
+            <div className="mb-4 flex h-40 w-40 items-center justify-center rounded-lg bg-white text-gray-400">
+              <i className="ri-image-add-line text-4xl" aria-hidden="true"></i>
             </div>
           )}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => imageInputRef.current?.click()}
+              className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-800"
+              disabled={submitting}
+            >
+              {t('admin.associations.uploadImage')}
+            </button>
+            {hasImage && (
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-white"
+                disabled={submitting}
+              >
+                {t('admin.associations.removeImage')}
+              </button>
+            )}
+            {imageFile && (
+              <span className="text-sm text-emerald-800">
+                <i className="ri-checkbox-circle-line mr-1" aria-hidden="true"></i>
+                {imageFile.name}
+              </span>
+            )}
+          </div>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            className="hidden"
+            onChange={handleImageFileChange}
+          />
+          <div className="mt-4">
+            <label className="mb-1 block text-xs font-medium text-gray-500">
+              {t('admin.associations.imageUrl')}
+            </label>
+            <input
+              type="text"
+              inputMode="url"
+              name="imageUrl"
+              value={formData.imageUrl}
+              onChange={(e) => handleImageUrlChange(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+              placeholder="https://"
+            />
+          </div>
         </div>
       </div>
 

@@ -10,6 +10,7 @@ import {
 } from '../../../../lib/i18n/adminStatus';
 import { AdminBackButton } from '../../../../components/admin/AdminBackButton';
 import { EventGalleryManager } from '../../../../components/admin/EventGalleryManager';
+import { EventAttachmentsManager } from '../../../../components/admin/EventAttachmentsManager';
 
 export const ViewEventPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -284,6 +285,12 @@ export const ViewEventPage: React.FC = () => {
               <p className="whitespace-pre-wrap text-gray-700">{event.description}</p>
             </div>
           )}
+
+          <EventAttachmentsManager
+            eventId={event.id}
+            attachments={event.attachments ?? []}
+            onChange={(attachments) => setEvent({ ...event, attachments })}
+          />
 
           <EventGalleryManager
             eventId={event.id}

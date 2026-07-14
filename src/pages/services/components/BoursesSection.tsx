@@ -3,9 +3,18 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { grantsApi } from '../../../lib/api/grants';
 import type { GrantProgram } from '../../../lib/api/types';
+import { localized } from '../../../lib/i18n/localized';
+
+const pickCriteria = (grant: GrantProgram, language: string): string[] => {
+  const isEnglish = language.toLowerCase().startsWith('en');
+  if (isEnglish && grant.eligibilityCriteriaEn && grant.eligibilityCriteriaEn.length > 0) {
+    return grant.eligibilityCriteriaEn;
+  }
+  return grant.eligibilityCriteria;
+};
 
 const BoursesSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [grants, setGrants] = useState<GrantProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -58,69 +67,77 @@ const BoursesSection = () => {
 
         {!loading && !error && grants.length > 0 && (
           <div className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {grants.map((grant) => (
-              <div
-                key={grant.id}
-                className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-all hover:shadow-xl"
-              >
-                <div className="p-8">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gray-100">
-                    <i className={`${grant.icon} text-3xl text-emerald-600`} aria-hidden="true"></i>
+            {grants.map((grant) => {
+              const title = localized(grant.title, grant.titleEn, i18n.language);
+              const description = localized(grant.description, grant.descriptionEn, i18n.language);
+              const amount = localized(grant.amount, grant.amountEn, i18n.language);
+              const duration = localized(grant.duration, grant.durationEn, i18n.language);
+              const criteria = pickCriteria(grant, i18n.language);
+
+              return (
+                <div
+                  key={grant.id}
+                  className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-all hover:shadow-xl"
+                >
+                  <div className="p-8">
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gray-100">
+                      <i className={`${grant.icon} text-3xl text-emerald-600`} aria-hidden="true"></i>
+                    </div>
+
+                    <h3 className="mb-3 text-xl font-bold text-gray-900">{title}</h3>
+                    <p className="mb-6 text-sm leading-relaxed text-gray-600">{description}</p>
+
+                    <div className="mb-6 space-y-3">
+                      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                        <span className="text-sm font-medium text-gray-700">{t('public.grants.amount')}</span>
+                        <span className="text-sm font-bold text-emerald-600">{amount}</span>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
+                        <span className="text-sm font-medium text-gray-700">{t('public.grants.duration')}</span>
+                        <span className="text-sm font-bold text-gray-900">{duration}</span>
+                      </div>
+                    </div>
+
+                    {criteria.length > 0 && (
+                      <div className="mb-6">
+                        <h4 className="mb-3 flex items-center text-sm font-bold text-gray-900">
+                          <i className="ri-checkbox-line mr-2 text-emerald-600" aria-hidden="true"></i>
+                          {t('public.grants.criteriaTitle')}
+                        </h4>
+                        <ul className="space-y-2">
+                          {criteria.map((critere) => (
+                            <li key={critere} className="flex items-start space-x-2">
+                              <i className="ri-arrow-right-s-line mt-0.5 flex-shrink-0 text-gray-400" aria-hidden="true"></i>
+                              <span className="text-xs text-gray-600">{critere}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {grant.applicationUrl ? (
+                      <a
+                        href={grant.applicationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-all hover:bg-emerald-700"
+                      >
+                        <i className="ri-file-text-line mr-2" aria-hidden="true"></i>
+                        {t('public.grants.apply')}
+                      </a>
+                    ) : (
+                      <Link
+                        to="/contact"
+                        className="inline-flex w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-all hover:bg-emerald-700"
+                      >
+                        <i className="ri-file-text-line mr-2" aria-hidden="true"></i>
+                        {t('public.grants.apply')}
+                      </Link>
+                    )}
                   </div>
-
-                  <h3 className="mb-3 text-xl font-bold text-gray-900">{grant.title}</h3>
-                  <p className="mb-6 text-sm leading-relaxed text-gray-600">{grant.description}</p>
-
-                  <div className="mb-6 space-y-3">
-                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                      <span className="text-sm font-medium text-gray-700">{t('public.grants.amount')}</span>
-                      <span className="text-sm font-bold text-emerald-600">{grant.amount}</span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                      <span className="text-sm font-medium text-gray-700">{t('public.grants.duration')}</span>
-                      <span className="text-sm font-bold text-gray-900">{grant.duration}</span>
-                    </div>
-                  </div>
-
-                  {grant.eligibilityCriteria.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="mb-3 flex items-center text-sm font-bold text-gray-900">
-                        <i className="ri-checkbox-line mr-2 text-emerald-600" aria-hidden="true"></i>
-                        {t('public.grants.criteriaTitle')}
-                      </h4>
-                      <ul className="space-y-2">
-                        {grant.eligibilityCriteria.map((critere) => (
-                          <li key={critere} className="flex items-start space-x-2">
-                            <i className="ri-arrow-right-s-line mt-0.5 flex-shrink-0 text-gray-400" aria-hidden="true"></i>
-                            <span className="text-xs text-gray-600">{critere}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {grant.applicationUrl ? (
-                    <a
-                      href={grant.applicationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-all hover:bg-emerald-700"
-                    >
-                      <i className="ri-file-text-line mr-2" aria-hidden="true"></i>
-                      {t('public.grants.apply')}
-                    </a>
-                  ) : (
-                    <Link
-                      to="/contact"
-                      className="inline-flex w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-all hover:bg-emerald-700"
-                    >
-                      <i className="ri-file-text-line mr-2" aria-hidden="true"></i>
-                      {t('public.grants.apply')}
-                    </Link>
-                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
