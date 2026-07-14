@@ -102,17 +102,15 @@ const DocumentsSection = () => {
   return (
     <section id="documents" className="bg-white py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-14 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-          <div>
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
-              <i className="ri-file-list-3-line" aria-hidden="true"></i>
-              {t('public.services.documents.sectionBadge')}
-            </div>
-            <h2 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
-              {t('public.services.documents.sectionTitle')}
-            </h2>
+        <div className="mb-14 max-w-3xl">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+            <i className="ri-file-list-3-line" aria-hidden="true"></i>
+            {t('public.services.documents.sectionBadge')}
           </div>
-          <p className="text-lg leading-8 text-gray-600">
+          <h2 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
+            {t('public.services.documents.sectionTitle')}
+          </h2>
+          <p className="mt-5 text-lg leading-8 text-gray-600">
             {t('public.services.documents.sectionSubtitle')}
           </p>
         </div>

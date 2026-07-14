@@ -21,22 +21,40 @@ export default {
 
   // Services — bourses et subventions
   'public.grants.badge': 'Bourses et subventions',
-  'public.grants.heroTitle': 'Bourses et Subventions',
+  'public.grants.heroTitle': 'Des opportunités de financement pour avancer.',
   'public.grants.heroSubtitle':
-    'Le HCBE Canada offre diverses opportunités de financement pour soutenir votre développement personnel et professionnel',
-  'public.grants.sectionTitle': 'Bourses et Subventions',
+    'Le HCBE Canada accompagne les étudiants, professionnels et porteurs de projets avec des programmes de bourses et de subventions adaptés à chaque parcours.',
+  'public.grants.cta.view': 'Voir les programmes',
+  'public.grants.cta.ask': 'Poser une question',
+  'public.grants.remember.label': 'À retenir',
+  'public.grants.remember.eligibility.title': 'Éligibilité',
+  'public.grants.remember.eligibility.description':
+    'Chaque programme précise ses critères et le public concerné.',
+  'public.grants.remember.support.title': 'Accompagnement',
+  'public.grants.remember.support.description':
+    'L’équipe peut vous aider à préparer votre dossier de candidature.',
+  'public.grants.remember.process.title': 'Processus',
+  'public.grants.remember.process.description':
+    'Consultez les détails puis postulez en ligne ou via le contact indiqué.',
+  'public.grants.sectionBadge': 'Financement',
+  'public.grants.sectionTitle': 'Programmes de bourses et subventions à jour.',
   'public.grants.sectionSubtitle':
-    'Le HCBE Canada offre diverses opportunités de financement pour soutenir votre développement personnel et professionnel',
+    'Les opportunités publiées sont regroupées ici pour faciliter la consultation. Chaque programme indique montant, durée et critères lorsque disponibles.',
   'public.grants.amount': 'Montant',
   'public.grants.duration': 'Durée',
   'public.grants.criteriaTitle': "Critères d'éligibilité",
   'public.grants.apply': 'Postuler',
   'public.grants.helpTitle': "Besoin d'aide pour votre candidature ?",
   'public.grants.helpText':
-    'Notre équipe est disponible pour vous accompagner dans la préparation de votre dossier de candidature et répondre à toutes vos questions sur nos programmes de bourses et subventions.',
+    'Notre équipe est disponible pour vous accompagner dans la préparation de votre dossier et répondre à vos questions sur nos programmes.',
   'public.grants.contact': 'Nous Contacter',
+  'public.grants.helpContact': "Contacter l'équipe",
+  'public.grants.helpBack': 'Retour aux services',
   'public.grants.errorLoad': 'Impossible de charger les programmes pour le moment.',
   'public.grants.empty': 'Aucun programme disponible pour le moment.',
+  'public.grants.emptyTitle': 'Aucun programme publié pour le moment.',
+  'public.grants.emptyText':
+    'Les programmes de bourses et subventions apparaîtront ici dès qu’ils seront disponibles.',
 
   // Services — comités
   'public.services.comites.badge': 'Services et ressources',

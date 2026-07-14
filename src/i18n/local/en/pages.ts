@@ -21,12 +21,25 @@ export default {
 
   // Services — grants
   'public.grants.badge': 'Grants and subsidies',
-  'public.grants.heroTitle': 'Grants and Subsidies',
+  'public.grants.heroTitle': 'Funding opportunities to move forward.',
   'public.grants.heroSubtitle':
-    'Discover our financial support programs for your educational and entrepreneurial projects',
-  'public.grants.sectionTitle': 'Grants and Subsidies',
+    'HCBE Canada supports students, professionals and project leaders with grant and subsidy programs tailored to each journey.',
+  'public.grants.cta.view': 'View programs',
+  'public.grants.cta.ask': 'Ask a question',
+  'public.grants.remember.label': 'Key points',
+  'public.grants.remember.eligibility.title': 'Eligibility',
+  'public.grants.remember.eligibility.description':
+    'Each program lists its criteria and who can apply.',
+  'public.grants.remember.support.title': 'Support',
+  'public.grants.remember.support.description':
+    'The team can help you prepare your application file.',
+  'public.grants.remember.process.title': 'Process',
+  'public.grants.remember.process.description':
+    'Review the details, then apply online or via the listed contact.',
+  'public.grants.sectionBadge': 'Funding',
+  'public.grants.sectionTitle': 'Up-to-date grant and subsidy programs.',
   'public.grants.sectionSubtitle':
-    'HCBE Canada offers various funding opportunities to support your personal and professional development',
+    'Published opportunities are grouped here for easy browsing. Each program shows amount, duration and criteria when available.',
   'public.grants.amount': 'Amount',
   'public.grants.duration': 'Duration',
   'public.grants.criteriaTitle': 'Eligibility criteria',
@@ -35,8 +48,13 @@ export default {
   'public.grants.helpText':
     'Our team is available to help you prepare your application and answer any questions about our grant and subsidy programs.',
   'public.grants.contact': 'Contact us',
+  'public.grants.helpContact': 'Contact the team',
+  'public.grants.helpBack': 'Back to services',
   'public.grants.errorLoad': 'Unable to load programs at this time.',
   'public.grants.empty': 'No programs available at this time.',
+  'public.grants.emptyTitle': 'No programs published yet.',
+  'public.grants.emptyText':
+    'Grant and subsidy programs will appear here as soon as they become available.',
 
   // Services — committees
   'public.services.comites.badge': 'Services and resources',

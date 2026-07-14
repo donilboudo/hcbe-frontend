@@ -10,63 +10,81 @@ const pickCriteria = (grant: GrantProgram, language: string): string[] => {
   if (isEnglish && grant.eligibilityCriteriaEn && grant.eligibilityCriteriaEn.length > 0) {
     return grant.eligibilityCriteriaEn;
   }
-  return grant.eligibilityCriteria;
+  return grant.eligibilityCriteria ?? [];
 };
 
 const BoursesSection = () => {
   const { t, i18n } = useTranslation();
   const [grants, setGrants] = useState<GrantProgram[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadGrants = async () => {
       try {
+        setError(null);
         const response = await grantsApi.getActiveGrants();
         if (response.success && response.data) {
           setGrants(response.data);
         } else {
-          setError(true);
+          setError(t('public.grants.errorLoad'));
         }
       } catch (err) {
         console.error('Error loading grants:', err);
-        setError(true);
+        setError(t('public.grants.errorLoad'));
       } finally {
         setLoading(false);
       }
     };
 
     loadGrants();
-  }, []);
+  }, [t]);
+
+  if (loading) {
+    return (
+      <section id="grants" className="bg-white py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div key={item} className="rounded-[2rem] border border-gray-200 bg-gray-50 p-7">
+                <div className="h-12 w-12 animate-pulse rounded-2xl bg-gray-200" />
+                <div className="mt-6 h-5 w-2/3 animate-pulse rounded-full bg-gray-200" />
+                <div className="mt-4 h-4 w-full animate-pulse rounded-full bg-gray-200" />
+                <div className="mt-2 h-4 w-4/5 animate-pulse rounded-full bg-gray-200" />
+                <div className="mt-7 h-11 w-full animate-pulse rounded-full bg-gray-200" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="bg-gray-50 py-20">
+    <section id="grants" className="bg-white py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-16 text-center">
-          <h2 className="mb-4 text-4xl font-bold text-gray-900">{t('public.grants.sectionTitle')}</h2>
-          <p className="mx-auto max-w-3xl text-xl text-gray-600">{t('public.grants.sectionSubtitle')}</p>
+        <div className="mb-14 max-w-3xl">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+            <i className="ri-hand-coin-line" aria-hidden="true" />
+            {t('public.grants.sectionBadge')}
+          </div>
+          <h2 className="text-4xl font-bold tracking-tight text-gray-950 md:text-5xl">
+            {t('public.grants.sectionTitle')}
+          </h2>
+          <p className="mt-5 text-lg leading-8 text-gray-600">{t('public.grants.sectionSubtitle')}</p>
         </div>
 
-        {loading && (
-          <div className="flex justify-center py-16">
-            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-emerald-600" />
+        {error && (
+          <div className="mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-900">
+            <div className="flex gap-3">
+              <i className="ri-error-warning-line mt-0.5 text-xl" aria-hidden="true" />
+              <p className="text-sm font-medium">{error}</p>
+            </div>
           </div>
         )}
 
-        {error && !loading && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-700">
-            {t('public.grants.errorLoad')}
-          </div>
-        )}
-
-        {!loading && !error && grants.length === 0 && (
-          <div className="rounded-2xl border border-gray-200 bg-white p-10 text-center text-gray-600">
-            {t('public.grants.empty')}
-          </div>
-        )}
-
-        {!loading && !error && grants.length > 0 && (
-          <div className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {grants.length > 0 ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {grants.map((grant) => {
               const title = localized(grant.title, grant.titleEn, i18n.language);
               const description = localized(grant.description, grant.descriptionEn, i18n.language);
@@ -75,39 +93,47 @@ const BoursesSection = () => {
               const criteria = pickCriteria(grant, i18n.language);
 
               return (
-                <div
+                <article
                   key={grant.id}
-                  className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-all hover:shadow-xl"
+                  className="group overflow-hidden rounded-[2rem] border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-xl"
                 >
-                  <div className="p-8">
-                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-gray-100">
-                      <i className={`${grant.icon} text-3xl text-emerald-600`} aria-hidden="true"></i>
+                  <div className="h-2 bg-gradient-to-r from-emerald-700 via-amber-400 to-red-500" />
+                  <div className="p-7">
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-3xl text-emerald-700 ring-1 ring-emerald-100">
+                      <i className={grant.icon || 'ri-graduation-cap-line'} aria-hidden="true" />
                     </div>
 
-                    <h3 className="mb-3 text-xl font-bold text-gray-900">{title}</h3>
-                    <p className="mb-6 text-sm leading-relaxed text-gray-600">{description}</p>
+                    <h3 className="text-2xl font-bold text-gray-950">{title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-gray-600">{description}</p>
 
-                    <div className="mb-6 space-y-3">
-                      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                        <span className="text-sm font-medium text-gray-700">{t('public.grants.amount')}</span>
-                        <span className="text-sm font-bold text-emerald-600">{amount}</span>
+                    <div className="mt-7 grid grid-cols-2 gap-3 border-y border-gray-100 py-5">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                          {t('public.grants.amount')}
+                        </p>
+                        <p className="mt-1 font-semibold text-emerald-700">{amount}</p>
                       </div>
-                      <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3">
-                        <span className="text-sm font-medium text-gray-700">{t('public.grants.duration')}</span>
-                        <span className="text-sm font-bold text-gray-900">{duration}</span>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                          {t('public.grants.duration')}
+                        </p>
+                        <p className="mt-1 font-semibold text-gray-800">{duration}</p>
                       </div>
                     </div>
 
                     {criteria.length > 0 && (
-                      <div className="mb-6">
+                      <div className="mt-6">
                         <h4 className="mb-3 flex items-center text-sm font-bold text-gray-900">
-                          <i className="ri-checkbox-line mr-2 text-emerald-600" aria-hidden="true"></i>
+                          <i className="ri-checkbox-line mr-2 text-emerald-600" aria-hidden="true" />
                           {t('public.grants.criteriaTitle')}
                         </h4>
                         <ul className="space-y-2">
                           {criteria.map((critere) => (
                             <li key={critere} className="flex items-start space-x-2">
-                              <i className="ri-arrow-right-s-line mt-0.5 flex-shrink-0 text-gray-400" aria-hidden="true"></i>
+                              <i
+                                className="ri-arrow-right-s-line mt-0.5 flex-shrink-0 text-gray-400"
+                                aria-hidden="true"
+                              />
                               <span className="text-xs text-gray-600">{critere}</span>
                             </li>
                           ))}
@@ -115,47 +141,66 @@ const BoursesSection = () => {
                       </div>
                     )}
 
-                    {grant.applicationUrl ? (
-                      <a
-                        href={grant.applicationUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-all hover:bg-emerald-700"
-                      >
-                        <i className="ri-file-text-line mr-2" aria-hidden="true"></i>
-                        {t('public.grants.apply')}
-                      </a>
-                    ) : (
-                      <Link
-                        to="/contact"
-                        className="inline-flex w-full cursor-pointer items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-6 py-3 font-semibold text-white transition-all hover:bg-emerald-700"
-                      >
-                        <i className="ri-file-text-line mr-2" aria-hidden="true"></i>
-                        {t('public.grants.apply')}
-                      </Link>
-                    )}
+                    <div className="mt-6">
+                      {grant.applicationUrl ? (
+                        <a
+                          href={grant.applicationUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-900/10 transition hover:bg-emerald-800"
+                        >
+                          {t('public.grants.apply')}
+                          <i className="ri-arrow-right-line ml-2" aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <Link
+                          to="/contact"
+                          className="inline-flex w-full items-center justify-center rounded-full bg-emerald-700 px-6 py-3 font-semibold text-white shadow-lg shadow-emerald-900/10 transition hover:bg-emerald-800"
+                        >
+                          {t('public.grants.apply')}
+                          <i className="ri-arrow-right-line ml-2" aria-hidden="true" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
+        ) : (
+          <div className="rounded-[2rem] border border-dashed border-gray-300 bg-gray-50 p-10 text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl text-emerald-700 shadow-sm">
+              <i className="ri-hand-coin-line" aria-hidden="true" />
+            </div>
+            <h3 className="mt-6 text-2xl font-bold text-gray-950">{t('public.grants.emptyTitle')}</h3>
+            <p className="mx-auto mt-3 max-w-2xl text-gray-600">{t('public.grants.emptyText')}</p>
+          </div>
         )}
 
-        <div className="rounded-2xl bg-gray-900 p-8 text-center text-white md:p-12">
-          <div className="mx-auto max-w-3xl">
-            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-              <i className="ri-question-line text-4xl text-white" aria-hidden="true"></i>
+        <div className="mt-14 overflow-hidden rounded-[2rem] bg-gray-950 text-white">
+          <div className="grid gap-0 lg:grid-cols-[0.75fr_1.25fr]">
+            <div className="bg-gradient-to-br from-emerald-700 to-emerald-950 p-8 md:p-10">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-3xl">
+                <i className="ri-question-line" aria-hidden="true" />
+              </div>
+              <h3 className="mt-6 text-3xl font-bold">{t('public.grants.helpTitle')}</h3>
             </div>
-            <h3 className="mb-4 text-3xl font-bold">{t('public.grants.helpTitle')}</h3>
-            <p className="mb-8 text-lg leading-relaxed text-gray-300">{t('public.grants.helpText')}</p>
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Link
-                to="/contact"
-                className="cursor-pointer whitespace-nowrap rounded-lg bg-emerald-600 px-8 py-4 font-semibold text-white transition-colors hover:bg-emerald-700"
-              >
-                <i className="ri-mail-line mr-2" aria-hidden="true"></i>
-                {t('public.grants.contact')}
-              </Link>
+            <div className="p-8 md:p-10">
+              <p className="max-w-3xl text-lg leading-8 text-gray-300">{t('public.grants.helpText')}</p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-gray-950 transition hover:bg-emerald-50"
+                >
+                  {t('public.grants.helpContact')}
+                </Link>
+                <Link
+                  to="/services"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/15"
+                >
+                  {t('public.grants.helpBack')}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
